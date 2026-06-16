@@ -11,3 +11,6 @@ __pycache__/
 .venv/
 assets/generated/
 data/generated/
+.agent/heartbeat.json
+.agent/watchdog.log
+.agent/current_batch.json
