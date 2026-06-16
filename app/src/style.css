@@ -105,6 +105,23 @@ h1 {
   background: #020409;
 }
 
+.hero-scene {
+  --zoom-scale: 1.015;
+  --focus-x: 0.5;
+  --focus-y: 0.5;
+  position: absolute;
+  inset: 0;
+}
+
+.hero-image,
+.hero-overlay,
+.anchor-layer {
+  transition:
+    transform 1600ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 420ms ease;
+  transform-origin: calc(var(--focus-x) * 100%) calc(var(--focus-y) * 100%);
+}
+
 .hero-image {
   position: absolute;
   inset: 0;
@@ -113,7 +130,7 @@ h1 {
   object-fit: cover;
   object-position: center;
   filter: saturate(0.98) contrast(1.02) brightness(0.92);
-  transform: scale(1.015);
+  transform: scale(var(--zoom-scale));
 }
 
 .hero-overlay {
@@ -122,12 +139,28 @@ h1 {
   background:
     linear-gradient(180deg, rgba(3, 5, 10, 0.18) 0%, rgba(3, 5, 10, 0.28) 100%),
     radial-gradient(circle at 50% 78%, rgba(2, 4, 9, 0.08), rgba(2, 4, 9, 0.58) 72%);
+  transform:
+    translate(
+      calc((0.5 - var(--focus-x)) * 18%),
+      calc((0.5 - var(--focus-y)) * 18%)
+    )
+    scale(calc(1 + (var(--zoom-scale) - 1) * 0.22));
 }
 
 .anchor-layer {
   position: absolute;
   inset: 0;
   z-index: 1;
+  transform:
+    translate(
+      calc((0.5 - var(--focus-x)) * 26%),
+      calc((0.5 - var(--focus-y)) * 26%)
+    )
+    scale(calc(1 + (var(--zoom-scale) - 1) * 0.38));
+}
+
+.hero-scene[data-zoom-state='zoomed'] .hero-caption {
+  opacity: 0.92;
 }
 
 .anchor-hotspot {
@@ -255,6 +288,26 @@ h2 {
 
 .panel-copy {
   color: rgba(233, 241, 255, 0.75);
+}
+
+.panel-actions {
+  margin-top: 12px;
+}
+
+.ghost-button {
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(244, 248, 255, 0.9);
+  border-radius: 999px;
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: background 180ms ease, border-color 180ms ease, transform 180ms ease;
+}
+
+.ghost-button:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(210, 224, 255, 0.3);
+  transform: translateY(-1px);
 }
 
 @media (max-width: 960px) {

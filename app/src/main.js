@@ -2,6 +2,13 @@ import './style.css'
 
 const anchorsUrl = '/data/anchors/phase1.json'
 
+const zoomPresets = {
+  'galactic-center': { scale: 1.85, x: 0.61, y: 0.54 },
+  'summer-triangle': { scale: 1.6, x: 0.51, y: 0.37 },
+  'solar-system-anchor': { scale: 1.45, x: 0.74, y: 0.57 },
+  'antares-region': { scale: 1.72, x: 0.69, y: 0.49 },
+}
+
 const app = document.querySelector('#app')
 
 app.innerHTML = `
@@ -18,19 +25,21 @@ app.innerHTML = `
     <main class="stage-wrap">
       <section class="stage">
         <div class="hero-view">
-          <img
-            class="hero-image"
-            src="/hero/reference-superlinear-gaia.jpg"
-            alt="Photoreal Milky Way overview reference"
-          />
-          <div class="hero-overlay"></div>
-          <div class="anchor-layer" data-anchor-layer></div>
+          <div class="hero-scene" data-hero-scene data-zoom-state="overview">
+            <img
+              class="hero-image"
+              src="/hero/reference-superlinear-gaia.jpg"
+              alt="Photoreal Milky Way overview reference"
+            />
+            <div class="hero-overlay"></div>
+            <div class="anchor-layer" data-anchor-layer></div>
+          </div>
           <div class="hero-caption">
             <div class="hero-kicker">Photoreal hero view / reference-backed</div>
             <h2>Milky Way overview</h2>
             <p>
-              The stage now supports low-noise target anchors so the image can start becoming explorable
-              without collapsing into a toy-looking demo.
+              The stage now supports a restrained cinematic zoom so anchor selection feels like exploration,
+              not a toy overlay sitting on top of a static image.
             </p>
           </div>
         </div>
@@ -43,7 +52,7 @@ app.innerHTML = `
         </div>
         <div class="panel-section">
           <div class="panel-label">Status</div>
-          <div class="panel-value">Anchor overlay enabled on the hero image</div>
+          <div class="panel-value" data-panel-status>Overview mode</div>
         </div>
         <div class="panel-section">
           <div class="panel-label">Selected target</div>
@@ -58,7 +67,10 @@ app.innerHTML = `
         </div>
         <div class="panel-section">
           <div class="panel-label">Next</div>
-          <div class="panel-value" data-panel-next>Click a target. Next batch will turn selection into cinematic zoom.</div>
+          <div class="panel-value" data-panel-next>Click a target to begin the first cinematic zoom pass.</div>
+          <div class="panel-actions">
+            <button class="ghost-button" type="button" data-reset-view>Reset view</button>
+          </div>
         </div>
       </aside>
     </main>
@@ -66,24 +78,53 @@ app.innerHTML = `
 `
 
 const layer = document.querySelector('[data-anchor-layer]')
+const heroScene = document.querySelector('[data-hero-scene]')
+const panelStatus = document.querySelector('[data-panel-status]')
 const panelTitle = document.querySelector('[data-panel-title]')
 const panelSummary = document.querySelector('[data-panel-summary]')
 const panelDetails = document.querySelector('[data-panel-details]')
 const panelNext = document.querySelector('[data-panel-next]')
+const resetButton = document.querySelector('[data-reset-view]')
 
 let selectedId = null
 let anchors = []
+
+function getZoomPreset(anchor) {
+  return zoomPresets[anchor.id] ?? {
+    scale: 1.55,
+    x: anchor.position.x,
+    y: anchor.position.y,
+  }
+}
+
+function applyOverview() {
+  heroScene.dataset.zoomState = 'overview'
+  heroScene.style.setProperty('--zoom-scale', '1.015')
+  heroScene.style.setProperty('--focus-x', '0.5')
+  heroScene.style.setProperty('--focus-y', '0.5')
+  panelStatus.textContent = 'Overview mode'
+  panelNext.textContent = 'Click a target to begin the first cinematic zoom pass.'
+}
+
+function applyZoom(anchor) {
+  const preset = getZoomPreset(anchor)
+  heroScene.dataset.zoomState = 'zoomed'
+  heroScene.style.setProperty('--zoom-scale', String(preset.scale))
+  heroScene.style.setProperty('--focus-x', String(preset.x))
+  heroScene.style.setProperty('--focus-y', String(preset.y))
+  panelStatus.textContent = `Zoomed to ${anchor.label}`
+  panelNext.textContent = anchor.zoomPresetId
+    ? `Zoom preset active: ${anchor.zoomPresetId}`
+    : 'Using a first-pass inferred zoom preset from anchor position.'
+}
 
 function renderPanel(anchor) {
   panelTitle.textContent = anchor.label
   panelSummary.textContent = anchor.summary
   panelDetails.textContent = anchor.details
-  panelNext.textContent = anchor.zoomPresetId
-    ? `Next batch target: wire ${anchor.zoomPresetId} into the zoom transition system.`
-    : 'Next batch target: define a cinematic zoom path for this anchor.'
 }
 
-function selectAnchor(anchorId) {
+function selectAnchor(anchorId, options = { applyCinematicZoom: true }) {
   selectedId = anchorId
   const anchor = anchors.find((item) => item.id === anchorId)
   if (!anchor) return
@@ -93,6 +134,10 @@ function selectAnchor(anchorId) {
   }
 
   renderPanel(anchor)
+
+  if (options.applyCinematicZoom) {
+    applyZoom(anchor)
+  }
 }
 
 function renderAnchors() {
@@ -122,14 +167,26 @@ function renderAnchors() {
 }
 
 async function init() {
+  applyOverview()
   const response = await fetch(anchorsUrl)
   anchors = await response.json()
   selectedId = anchors[0]?.id ?? null
   renderAnchors()
-  if (selectedId) selectAnchor(selectedId)
+  if (selectedId) {
+    selectAnchor(selectedId, { applyCinematicZoom: false })
+  }
 }
 
+resetButton.addEventListener('click', () => {
+  applyOverview()
+  if (selectedId) {
+    const anchor = anchors.find((item) => item.id === selectedId)
+    if (anchor) renderPanel(anchor)
+  }
+})
+
 init().catch((error) => {
+  panelStatus.textContent = 'Error state'
   panelTitle.textContent = 'Anchor load failed'
   panelSummary.textContent = 'Could not load phase-1 anchor metadata.'
   panelDetails.textContent = String(error)

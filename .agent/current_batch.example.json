@@ -1,13 +1,13 @@
 {
-  "phase": "A",
-  "batch": "A4",
-  "batch_id": "recovery-gate",
-  "title": "建立恢复执行检查表",
+  "phase": "B",
+  "batch": "B6",
+  "batch_id": "cinematic-zoom-transition",
+  "title": "实现点击后的平滑拉近",
   "status": "in_progress",
-  "updated_at": "2026-06-16T04:23:24Z",
-  "latest_commit": "6a36505",
+  "updated_at": "2026-06-16T04:25:25Z",
+  "latest_commit": "2e27659",
   "preview_url": "http://127.0.0.1:4173",
   "truth_source": ".agent/current_batch.json",
-  "activation_evidence": "Created docs/execution-recovery-gate.md and moved the active control batch to A4.",
-  "notes": "This batch defines the machine-checked gate that must pass before product work resumes."
+  "activation_evidence": "Modified app/src/main.js and app/src/style.css to add first-pass cinematic zoom state, anchor-driven focus transforms, and reset-view controls.",
+  "notes": "Product work resumed only after the recovery gate passed and the first tracked repo change for B6 existed."
 }

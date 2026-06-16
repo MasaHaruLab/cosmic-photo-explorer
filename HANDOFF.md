@@ -3,9 +3,9 @@
 Updated: 2026-06-16T04:04:33Z
 
 Current status
-- Product Batch 5 completed.
-- Control Phase A / Batch A4 is now in progress.
+- Product Batch 6 is now in progress.
 - Active truth source: `.agent/current_batch.json`
+- Recovery gate passed before product work resumed.
 - Watchdog is monitoring system health, not scheduling work.
 
 Completed product commits
@@ -27,11 +27,11 @@ Truth model
 - chat claims must never outrun repo truth
 
 Current control objective
-- Define the recovery gate that must pass before product work resumes
-- Make the pass/fail checklist explicit instead of conversational
-- Keep Product Batch B6 paused until the recovery gate passes
+- Control phase completed; product work has resumed under the new execution contract
+- Keep activation evidence and status truth aligned while B6 is active
+- Next governed stop is Batch B6 completion or a real paused/blocked condition
 
 Next single action
-1. Verify heartbeat reflects Batch A4 recovery-gate state.
-2. Commit the recovery-gate checklist.
-3. If the gate passes, resume Product Batch B6 with its first real repo change.
+1. Build and verify the first-pass cinematic zoom implementation.
+2. Commit Batch B6 if the interaction holds together visually.
+3. Then move to Batch B7: interpretation and boundary layer.
