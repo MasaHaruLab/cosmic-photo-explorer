@@ -3,9 +3,9 @@
   "batch": 5,
   "batch_id": "anchor-layer",
   "title": "加入目标锚点层",
-  "status": "in_progress",
-  "updated_at": "2026-06-16T00:57:00Z",
+  "status": "pending",
+  "updated_at": "2026-06-16T03:19:59Z",
   "latest_commit": "d3c5083",
   "preview_url": "http://127.0.0.1:4173",
-  "notes": "Batch 4 completed. Next step is adding low-noise target anchors over the hero image."
+  "notes": "Batch 4 completed. Batch 5 has not started yet. Next action: create anchor metadata and overlay UI in the web app."
 }

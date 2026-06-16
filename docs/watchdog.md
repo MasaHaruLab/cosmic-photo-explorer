@@ -20,6 +20,14 @@ This project includes an independent watchdog process so execution health is not
 - `preview_down`
 - `possible_stall`
 
+## Status semantics
+- `pending` = next batch is known but not started yet
+- `in_progress` = actual implementation work for this batch has started
+- `completed` = batch landed and the next batch should be written separately
+
+Do not mark a batch `in_progress` just because it is next in line.
+Only flip to `in_progress` after real repo work for that batch begins.
+
 ## Stall rule
 If a batch is marked `in_progress` and there has been no repository activity for 10 minutes, the watchdog marks the system as `possible_stall`.
 
