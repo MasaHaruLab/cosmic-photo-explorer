@@ -3,11 +3,11 @@
   "batch": "B8",
   "batch_id": "local-asset-entrypoints",
   "title": "接本地资产生产入口",
-  "status": "in_progress",
+  "status": "completed",
   "updated_at": "2026-06-16T04:25:25Z",
-  "latest_commit": "9f4fd53",
+  "latest_commit": "7172875",
   "preview_url": "http://127.0.0.1:4173",
   "truth_source": ".agent/current_batch.json",
   "activation_evidence": "Created pipeline/README.md, docs/gaia-local-asset-workflow.md, and scripts/prepare_runtime_assets.py as the first runtime-facing local asset entrypoints.",
-  "notes": "This batch turns the frontend demo into a product with explicit local asset ingress instead of ad hoc file replacement."
+  "notes": "Phase 1 is complete. Next step: Phase 2 planning for deeper exploration workflows."
 }
