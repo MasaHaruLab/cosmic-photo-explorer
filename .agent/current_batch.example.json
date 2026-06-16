@@ -1,13 +1,13 @@
 {
   "phase": "A",
-  "batch": "A3",
-  "batch_id": "activation-rule",
-  "title": "把 batch 切换改成开工动作优先",
+  "batch": "A4",
+  "batch_id": "recovery-gate",
+  "title": "建立恢复执行检查表",
   "status": "in_progress",
-  "updated_at": "2026-06-16T04:17:43Z",
-  "latest_commit": "c48aa47",
+  "updated_at": "2026-06-16T04:23:24Z",
+  "latest_commit": "6a36505",
   "preview_url": "http://127.0.0.1:4173",
   "truth_source": ".agent/current_batch.json",
-  "activation_evidence": "Modified scripts/watchdog.py and docs/watchdog.md to require activation_evidence before any in_progress state is valid.",
-  "notes": "This batch hardens the execution contract: no more flipping to in_progress before the first real repo action exists."
+  "activation_evidence": "Created docs/execution-recovery-gate.md and moved the active control batch to A4.",
+  "notes": "This batch defines the machine-checked gate that must pass before product work resumes."
 }

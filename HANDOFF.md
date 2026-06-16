@@ -4,7 +4,7 @@ Updated: 2026-06-16T04:04:33Z
 
 Current status
 - Product Batch 5 completed.
-- Control Phase A / Batch A3 is now in progress.
+- Control Phase A / Batch A4 is now in progress.
 - Active truth source: `.agent/current_batch.json`
 - Watchdog is monitoring system health, not scheduling work.
 
@@ -27,11 +27,11 @@ Truth model
 - chat claims must never outrun repo truth
 
 Current control objective
-- Enforce first-work-before-in-progress as a machine-visible rule
-- Treat missing activation evidence as `invalid_state`
-- Keep Product Batch 6 paused until control Batch A1-A4 are complete
+- Define the recovery gate that must pass before product work resumes
+- Make the pass/fail checklist explicit instead of conversational
+- Keep Product Batch B6 paused until the recovery gate passes
 
 Next single action
-1. Restart watchdog so the new activation rule is live.
-2. Verify heartbeat exposes `activation_evidence` and never marks bare `in_progress` as valid.
-3. Commit Batch A3 activation-rule changes.
+1. Verify heartbeat reflects Batch A4 recovery-gate state.
+2. Commit the recovery-gate checklist.
+3. If the gate passes, resume Product Batch B6 with its first real repo change.
