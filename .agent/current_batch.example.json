@@ -1,13 +1,13 @@
 {
   "phase": "B",
-  "batch": "B7",
-  "batch_id": "interpretation-boundary-layer",
-  "title": "加入解释层与边界层",
+  "batch": "B8",
+  "batch_id": "local-asset-entrypoints",
+  "title": "接本地资产生产入口",
   "status": "in_progress",
   "updated_at": "2026-06-16T04:25:25Z",
-  "latest_commit": "0aca6b6",
+  "latest_commit": "9f4fd53",
   "preview_url": "http://127.0.0.1:4173",
   "truth_source": ".agent/current_batch.json",
-  "activation_evidence": "Modified app/src/main.js and app/src/style.css to add boundary copy, real-vs-inferred labeling, and overview-vs-zoom explanation UI.",
-  "notes": "This batch explains which parts are observationally grounded and which parts are product-side cinematic inference."
+  "activation_evidence": "Created pipeline/README.md, docs/gaia-local-asset-workflow.md, and scripts/prepare_runtime_assets.py as the first runtime-facing local asset entrypoints.",
+  "notes": "This batch turns the frontend demo into a product with explicit local asset ingress instead of ad hoc file replacement."
 }

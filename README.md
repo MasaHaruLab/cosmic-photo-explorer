@@ -17,3 +17,4 @@ Repo structure:
 - `data/` manifests and anchor metadata
 - `assets/` local placeholder assets
 - `docs/` architecture and contracts
+- `scripts/prepare_runtime_assets.py` runtime-facing asset scaffold helper
