@@ -96,12 +96,14 @@ def main():
         latest_activity = latest_repo_activity()
         age = int(time.time() - latest_activity) if latest_activity else -1
         status = state.get('status')
+        activation_evidence = state.get('activation_evidence')
         heartbeat = {
             'checked_at': now_iso(),
             'current_batch': state.get('batch_id'),
             'title': state.get('title'),
             'status': status,
             'reason': state.get('reason'),
+            'activation_evidence': activation_evidence,
             'latest_commit': head,
             'dirty_count': dirty,
             'preview_ok': preview,
@@ -115,6 +117,8 @@ def main():
             heartbeat['health'] = 'paused'
         elif status == 'blocked':
             heartbeat['health'] = 'blocked'
+        elif status == 'in_progress' and not activation_evidence:
+            heartbeat['health'] = 'invalid_state'
         elif age >= STALL_SECONDS and status == 'in_progress':
             heartbeat['health'] = 'possible_stall'
 

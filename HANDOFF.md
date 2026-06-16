@@ -4,7 +4,7 @@ Updated: 2026-06-16T04:04:33Z
 
 Current status
 - Product Batch 5 completed.
-- Control Phase A / Batch A2 is now in progress.
+- Control Phase A / Batch A3 is now in progress.
 - Active truth source: `.agent/current_batch.json`
 - Watchdog is monitoring system health, not scheduling work.
 
@@ -27,11 +27,11 @@ Truth model
 - chat claims must never outrun repo truth
 
 Current control objective
-- Formalize `paused` / `blocked` states so `pending` no longer hides every stop condition
-- Require explicit `reason` when execution is paused or blocked
+- Enforce first-work-before-in-progress as a machine-visible rule
+- Treat missing activation evidence as `invalid_state`
 - Keep Product Batch 6 paused until control Batch A1-A4 are complete
 
 Next single action
-1. Verify watchdog heartbeat reflects the new status model.
-2. Commit Batch A2 state-model changes.
-3. Move to Batch A3: enforce first-work-before-in-progress rule.
+1. Restart watchdog so the new activation rule is live.
+2. Verify heartbeat exposes `activation_evidence` and never marks bare `in_progress` as valid.
+3. Commit Batch A3 activation-rule changes.
