@@ -1,0 +1,25 @@
+[
+  {
+    "id": "milky-way-overview-real",
+    "title": "Milky Way Overview",
+    "mode": "real",
+    "source": "gaia-derived",
+    "image": {
+      "type": "single-image",
+      "path": "/assets/generated/hero/milky-way-overview-real.jpg",
+      "width": 12000,
+      "height": 6000
+    },
+    "tiles": {
+      "enabled": false,
+      "root": null,
+      "tileSize": null,
+      "minLevel": null,
+      "maxLevel": null
+    },
+    "initialView": {
+      "center": [0.5, 0.5],
+      "zoom": 1.0
+    }
+  }
+]

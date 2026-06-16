@@ -1,0 +1,10 @@
+[
+  {
+    "id": "scene-milky-way-overview-real",
+    "scopeType": "scene",
+    "scopeId": "milky-way-overview-real",
+    "mode": "real",
+    "summary": "A photoreal overview scene derived from Gaia-based rendering assets.",
+    "boundaryNote": "This scene is built from star-catalog-derived rendering and does not imply complete observational coverage of every Galactic structure."
+  }
+]

@@ -1,0 +1,32 @@
+[
+  {
+    "id": "galactic-center",
+    "sceneId": "milky-way-overview-real",
+    "label": "Galactic Center",
+    "kind": "region",
+    "mode": "real",
+    "position": {
+      "x": 0.61,
+      "y": 0.54,
+      "space": "normalized-image"
+    },
+    "summary": "Bright central region of the Milky Way with dense stellar structure.",
+    "details": "This anchor marks the brightest dense zone in the current overview scene.",
+    "zoomPresetId": "zoom-galactic-center"
+  },
+  {
+    "id": "solar-system-anchor",
+    "sceneId": "milky-way-overview-real",
+    "label": "Solar System",
+    "kind": "anchor",
+    "mode": "real",
+    "position": {
+      "x": 0.74,
+      "y": 0.57,
+      "space": "normalized-image"
+    },
+    "summary": "A placeholder anchor representing our local position for phase 1 UI work.",
+    "details": "This is a product anchor first; scientific placement can be refined as asset precision improves.",
+    "zoomPresetId": null
+  }
+]
