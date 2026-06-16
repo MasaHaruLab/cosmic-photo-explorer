@@ -3,9 +3,9 @@
 Updated: 2026-06-16T04:04:33Z
 
 Current status
-- Product Batch 6 is now in progress.
+- Product Batch 7 is now in progress.
 - Active truth source: `.agent/current_batch.json`
-- Recovery gate passed before product work resumed.
+- Batch B6 landed; B7 started only after the first tracked repo change existed.
 - Watchdog is monitoring system health, not scheduling work.
 
 Completed product commits
@@ -28,10 +28,10 @@ Truth model
 
 Current control objective
 - Control phase completed; product work has resumed under the new execution contract
-- Keep activation evidence and status truth aligned while B6 is active
-- Next governed stop is Batch B6 completion or a real paused/blocked condition
+- Keep activation evidence and status truth aligned while B7 is active
+- Next governed stop is Batch B7 completion or a real paused/blocked condition
 
 Next single action
-1. Build and verify the first-pass cinematic zoom implementation.
-2. Commit Batch B6 if the interaction holds together visually.
-3. Then move to Batch B7: interpretation and boundary layer.
+1. Build and verify the interpretation / boundary layer.
+2. Commit Batch B7 if the explanatory UI reads cleanly.
+3. Then move to Batch B8: local asset pipeline entrypoints.

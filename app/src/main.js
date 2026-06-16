@@ -66,6 +66,11 @@ app.innerHTML = `
           </div>
         </div>
         <div class="panel-section">
+          <div class="panel-label">Boundary</div>
+          <div class="panel-value panel-boundary-title" data-panel-boundary-title>Loading boundary…</div>
+          <div class="panel-copy" data-panel-boundary-copy></div>
+        </div>
+        <div class="panel-section">
           <div class="panel-label">Next</div>
           <div class="panel-value" data-panel-next>Click a target to begin the first cinematic zoom pass.</div>
           <div class="panel-actions">
@@ -83,6 +88,8 @@ const panelStatus = document.querySelector('[data-panel-status]')
 const panelTitle = document.querySelector('[data-panel-title]')
 const panelSummary = document.querySelector('[data-panel-summary]')
 const panelDetails = document.querySelector('[data-panel-details]')
+const panelBoundaryTitle = document.querySelector('[data-panel-boundary-title]')
+const panelBoundaryCopy = document.querySelector('[data-panel-boundary-copy]')
 const panelNext = document.querySelector('[data-panel-next]')
 const resetButton = document.querySelector('[data-reset-view]')
 
@@ -118,10 +125,19 @@ function applyZoom(anchor) {
     : 'Using a first-pass inferred zoom preset from anchor position.'
 }
 
+function renderBoundary(anchor) {
+  const usesPreset = Boolean(anchor.zoomPresetId)
+  panelBoundaryTitle.textContent = usesPreset ? 'Real image / inferred camera move' : 'Real image / provisional camera move'
+  panelBoundaryCopy.textContent = usesPreset
+    ? `Anchor position is placed on the real overview image, but the current zoom path (${anchor.zoomPresetId}) is still a product-side cinematic inference rather than a scientific reconstruction.`
+    : 'Anchor position is placed on the real overview image, but the current zoom path is only inferred from anchor position because no dedicated preset exists yet.'
+}
+
 function renderPanel(anchor) {
   panelTitle.textContent = anchor.label
   panelSummary.textContent = anchor.summary
   panelDetails.textContent = anchor.details
+  renderBoundary(anchor)
 }
 
 function selectAnchor(anchorId, options = { applyCinematicZoom: true }) {
@@ -137,6 +153,8 @@ function selectAnchor(anchorId, options = { applyCinematicZoom: true }) {
 
   if (options.applyCinematicZoom) {
     applyZoom(anchor)
+  } else {
+    renderBoundary(anchor)
   }
 }
 
@@ -181,7 +199,10 @@ resetButton.addEventListener('click', () => {
   applyOverview()
   if (selectedId) {
     const anchor = anchors.find((item) => item.id === selectedId)
-    if (anchor) renderPanel(anchor)
+    if (anchor) {
+      renderPanel(anchor)
+      panelBoundaryCopy.textContent += ' You are now back at the overview scale.'
+    }
   }
 })
 

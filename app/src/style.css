@@ -286,6 +286,11 @@ h2 {
   line-height: 1.25;
 }
 
+.panel-boundary-title {
+  font-size: 15px;
+  font-weight: 600;
+}
+
 .panel-copy {
   color: rgba(233, 241, 255, 0.75);
 }
