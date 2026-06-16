@@ -1,13 +1,14 @@
 # HANDOFF
 
-Updated: 2026-06-16T03:25:36Z
+Updated: 2026-06-16T04:04:33Z
 
 Current status
-- Phase 1 / Batch 5 completed.
-- Batch 6 `zoom-transition` is NOT started yet.
-- Watchdog is running and healthy, but watchdog does not mean feature work is advancing.
+- Product Batch 5 completed.
+- Control Phase A / Batch A1 is now in progress.
+- Active truth source: `.agent/current_batch.json`
+- Watchdog is monitoring system health, not scheduling work.
 
-Completed commits
+Completed product commits
 - `00cf6cd` chore: initialize cosmic photo explorer repo
 - `84a45f1` docs: define asset contract and runtime modes
 - `3c91ef2` feat: scaffold web explorer shell
@@ -16,17 +17,20 @@ Completed commits
 - `a9272c3` docs: correct batch state tracking
 - `e215a0f` feat: add target anchor overlay
 
-Live runtime
-- Preview URL: http://127.0.0.1:4173
-- Watchdog state file: `.agent/current_batch.json`
-- Watchdog heartbeat: `.agent/heartbeat.json`
+Completed control commits
+- `e5ff32c` docs: update handoff after anchor overlay
 
-Truth rule
-- `pending` means the next batch is identified but untouched.
-- `in_progress` may only be written after real repo work for that batch begins.
-- Do not report a batch as advancing based only on watchdog/process existence.
+Truth model
+- `.agent/current_batch.json` = single source of truth for active batch state
+- `HANDOFF.md` = human-readable derivative
+- knowledge-base plans = planning layer, must be synchronized from the truth source
+- chat claims must never outrun repo truth
+
+Current control objective
+- Remove state drift between repo state, handoff, and knowledge-base plans
+- Keep Product Batch 6 paused until control Batch A1-A4 are complete
 
 Next single action
-1. Implement a restrained camera move that responds to anchor selection.
-2. Keep the photoreal image as the substrate; do not collapse into a toy map feel.
-3. Verify in preview, then commit as `feat: add cinematic target zoom transition`.
+1. Synchronize the knowledge-base execution plan to the new control-first route.
+2. Commit the A1 state convergence changes.
+3. Move to Batch A2: add paused / blocked execution states.
