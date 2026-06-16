@@ -1,11 +1,12 @@
 {
-  "phase": 1,
-  "batch": 5,
-  "batch_id": "anchor-layer",
-  "title": "加入目标锚点层",
-  "status": "pending",
-  "updated_at": "2026-06-16T03:19:59Z",
-  "latest_commit": "d3c5083",
+  "phase": "A",
+  "batch": "A2",
+  "batch_id": "execution-states",
+  "title": "建立 paused/blocked 状态模型与停机许可门",
+  "status": "in_progress",
+  "updated_at": "2026-06-16T04:04:33Z",
+  "latest_commit": "d824128",
   "preview_url": "http://127.0.0.1:4173",
-  "notes": "Batch 4 completed. Batch 5 has not started yet. Next action: create anchor metadata and overlay UI in the web app."
+  "truth_source": ".agent/current_batch.json",
+  "notes": "Control-layer work is active. This batch formalizes paused/blocked execution states so pending no longer carries every kind of stop condition."
 }

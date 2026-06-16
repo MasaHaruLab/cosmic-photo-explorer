@@ -19,11 +19,18 @@ This project includes an independent watchdog process so execution health is not
 - `ok`
 - `preview_down`
 - `possible_stall`
+- `paused`
+- `blocked`
 
 ## Status semantics
 - `pending` = next batch is known but not started yet
 - `in_progress` = actual implementation work for this batch has started
 - `completed` = batch landed and the next batch should be written separately
+- `paused` = execution is intentionally paused; do not present this as forward motion
+- `blocked` = execution cannot continue until an explicit blocker is resolved
+
+When status is `paused` or `blocked`, `.agent/current_batch.json` must include a human-readable `reason` field.
+No silent pauses.
 
 Do not mark a batch `in_progress` just because it is next in line.
 Only flip to `in_progress` after real repo work for that batch begins.

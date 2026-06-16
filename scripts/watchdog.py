@@ -95,11 +95,13 @@ def main():
         dirty = git_dirty_count()
         latest_activity = latest_repo_activity()
         age = int(time.time() - latest_activity) if latest_activity else -1
+        status = state.get('status')
         heartbeat = {
             'checked_at': now_iso(),
             'current_batch': state.get('batch_id'),
             'title': state.get('title'),
-            'status': state.get('status'),
+            'status': status,
+            'reason': state.get('reason'),
             'latest_commit': head,
             'dirty_count': dirty,
             'preview_ok': preview,
@@ -109,7 +111,11 @@ def main():
         }
         if not preview:
             heartbeat['health'] = 'preview_down'
-        elif age >= STALL_SECONDS and state.get('status') == 'in_progress':
+        elif status == 'paused':
+            heartbeat['health'] = 'paused'
+        elif status == 'blocked':
+            heartbeat['health'] = 'blocked'
+        elif age >= STALL_SECONDS and status == 'in_progress':
             heartbeat['health'] = 'possible_stall'
 
         HEARTBEAT.write_text(json.dumps(heartbeat, ensure_ascii=False, indent=2) + '\n')

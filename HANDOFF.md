@@ -4,7 +4,7 @@ Updated: 2026-06-16T04:04:33Z
 
 Current status
 - Product Batch 5 completed.
-- Control Phase A / Batch A1 is now in progress.
+- Control Phase A / Batch A2 is now in progress.
 - Active truth source: `.agent/current_batch.json`
 - Watchdog is monitoring system health, not scheduling work.
 
@@ -27,10 +27,11 @@ Truth model
 - chat claims must never outrun repo truth
 
 Current control objective
-- Remove state drift between repo state, handoff, and knowledge-base plans
+- Formalize `paused` / `blocked` states so `pending` no longer hides every stop condition
+- Require explicit `reason` when execution is paused or blocked
 - Keep Product Batch 6 paused until control Batch A1-A4 are complete
 
 Next single action
-1. Synchronize the knowledge-base execution plan to the new control-first route.
-2. Commit the A1 state convergence changes.
-3. Move to Batch A2: add paused / blocked execution states.
+1. Verify watchdog heartbeat reflects the new status model.
+2. Commit Batch A2 state-model changes.
+3. Move to Batch A3: enforce first-work-before-in-progress rule.
