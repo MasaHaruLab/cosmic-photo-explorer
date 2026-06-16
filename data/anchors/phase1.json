@@ -1,0 +1,46 @@
+[
+  {
+    "id": "galactic-center",
+    "sceneId": "milky-way-overview-real",
+    "label": "银心",
+    "kind": "region",
+    "mode": "real",
+    "position": { "x": 0.61, "y": 0.54, "space": "normalized-image" },
+    "summary": "银河最亮、恒星最密集的方向。",
+    "details": "第一阶段先把它作为最重要的区域锚点。后续可接入更精确的 zoom preset 与边界说明。",
+    "zoomPresetId": "zoom-galactic-center"
+  },
+  {
+    "id": "summer-triangle",
+    "sceneId": "milky-way-overview-real",
+    "label": "夏季大三角",
+    "kind": "region",
+    "mode": "real",
+    "position": { "x": 0.51, "y": 0.37, "space": "normalized-image" },
+    "summary": "牛郎、织女、天津四构成的高辨识度导航区域。",
+    "details": "这是第一批最适合作为“从照片进入探索”的用户锚点之一，因为非天文用户也容易建立方位感。",
+    "zoomPresetId": "zoom-summer-triangle"
+  },
+  {
+    "id": "solar-system-anchor",
+    "sceneId": "milky-way-overview-real",
+    "label": "太阳系锚点",
+    "kind": "anchor",
+    "mode": "real",
+    "position": { "x": 0.74, "y": 0.57, "space": "normalized-image" },
+    "summary": "代表我们在银河盘内的本地观察位置。",
+    "details": "当前仍是产品级锚点，主要用于建立“我们从哪里看出去”的叙事入口；科学位置可在更高精度资产接入后继续校准。",
+    "zoomPresetId": null
+  },
+  {
+    "id": "antares-region",
+    "sceneId": "milky-way-overview-real",
+    "label": "心宿二附近",
+    "kind": "star-region",
+    "mode": "real",
+    "position": { "x": 0.69, "y": 0.49, "space": "normalized-image" },
+    "summary": "低纬夏季银河中极具识别度的亮星区域。",
+    "details": "这类亮星锚点能帮用户把“漂亮但陌生”的银河图，转换成“我知道自己看到了哪里”的体验。",
+    "zoomPresetId": null
+  }
+]

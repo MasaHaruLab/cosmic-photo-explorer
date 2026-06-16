@@ -24,6 +24,13 @@ body {
     linear-gradient(180deg, #040812 0%, #020409 100%);
 }
 
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
 .shell {
   min-height: 100vh;
   display: flex;
@@ -117,12 +124,76 @@ h1 {
     radial-gradient(circle at 50% 78%, rgba(2, 4, 9, 0.08), rgba(2, 4, 9, 0.58) 72%);
 }
 
+.anchor-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.anchor-hotspot {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  border: none;
+  background: transparent;
+  color: rgba(244, 247, 255, 0.96);
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  padding: 0;
+}
+
+.anchor-hotspot::before {
+  content: '';
+  position: absolute;
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.12), transparent 68%);
+  transform: translate(-10px, 0);
+  opacity: 0;
+  transition: opacity 180ms ease;
+}
+
+.anchor-hotspot:hover::before,
+.anchor-hotspot.is-selected::before {
+  opacity: 1;
+}
+
+.anchor-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow:
+    0 0 0 4px rgba(255, 255, 255, 0.1),
+    0 0 20px rgba(160, 192, 255, 0.3);
+  flex: none;
+}
+
+.anchor-label {
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(5, 8, 16, 0.32);
+  backdrop-filter: blur(10px);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.anchor-hotspot:hover .anchor-label,
+.anchor-hotspot.is-selected .anchor-label {
+  background: rgba(12, 18, 32, 0.6);
+  border-color: rgba(196, 219, 255, 0.32);
+}
+
 .hero-caption {
   position: absolute;
   left: 32px;
   right: 32px;
   bottom: 28px;
-  z-index: 1;
+  z-index: 2;
   max-width: 760px;
   padding: 18px 20px;
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -145,8 +216,8 @@ h2 {
   line-height: 1.15;
 }
 
-.hero-text p {
-  margin: 0 auto;
+.hero-caption p {
+  margin: 0;
   max-width: 620px;
   color: rgba(239, 244, 255, 0.74);
   line-height: 1.7;
@@ -169,10 +240,21 @@ h2 {
   padding-bottom: 0;
 }
 
-.panel-value {
+.panel-value,
+.panel-copy {
   margin-top: 8px;
   color: rgba(245, 248, 255, 0.9);
-  line-height: 1.5;
+  line-height: 1.6;
+}
+
+.panel-title {
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.panel-copy {
+  color: rgba(233, 241, 255, 0.75);
 }
 
 @media (max-width: 960px) {
@@ -186,5 +268,26 @@ h2 {
 
   h2 {
     font-size: 30px;
+  }
+
+  .hero-caption {
+    left: 20px;
+    right: 20px;
+    bottom: 20px;
+  }
+}
+
+@media (max-width: 640px) {
+  .shell {
+    padding: 16px;
+  }
+
+  .topbar {
+    flex-direction: column;
+  }
+
+  .anchor-label {
+    font-size: 11px;
+    padding-inline: 8px;
   }
 }
