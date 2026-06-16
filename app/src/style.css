@@ -91,34 +91,44 @@ h1 {
   position: relative;
 }
 
-.hero-placeholder {
+.hero-view {
   position: absolute;
   inset: 0;
-  display: grid;
-  place-items: center;
-  padding: 48px;
-  background:
-    radial-gradient(circle at 48% 50%, rgba(229, 219, 191, 0.13), transparent 14%),
-    radial-gradient(circle at 55% 47%, rgba(164, 183, 255, 0.09), transparent 22%),
-    radial-gradient(circle at 52% 52%, rgba(255, 255, 255, 0.04), transparent 35%),
-    linear-gradient(135deg, rgba(6, 9, 18, 1) 0%, rgba(3, 5, 10, 1) 100%);
+  overflow: hidden;
+  background: #020409;
 }
 
-.hero-glow {
+.hero-image {
   position: absolute;
-  width: 68%;
-  height: 24%;
-  border-radius: 999px;
-  filter: blur(44px);
-  background: linear-gradient(90deg, rgba(78, 103, 176, 0.1), rgba(250, 229, 171, 0.18), rgba(84, 107, 178, 0.1));
-  opacity: 0.95;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  filter: saturate(0.98) contrast(1.02) brightness(0.92);
+  transform: scale(1.015);
 }
 
-.hero-text {
-  position: relative;
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(3, 5, 10, 0.18) 0%, rgba(3, 5, 10, 0.28) 100%),
+    radial-gradient(circle at 50% 78%, rgba(2, 4, 9, 0.08), rgba(2, 4, 9, 0.58) 72%);
+}
+
+.hero-caption {
+  position: absolute;
+  left: 32px;
+  right: 32px;
+  bottom: 28px;
   z-index: 1;
-  max-width: 720px;
-  text-align: center;
+  max-width: 760px;
+  padding: 18px 20px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  background: rgba(5, 8, 16, 0.4);
+  backdrop-filter: blur(10px);
 }
 
 .hero-kicker,

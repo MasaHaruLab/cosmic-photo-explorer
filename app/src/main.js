@@ -13,14 +13,19 @@ document.querySelector('#app').innerHTML = `
 
     <main class="stage-wrap">
       <section class="stage">
-        <div class="hero-placeholder">
-          <div class="hero-glow"></div>
-          <div class="hero-text">
-            <div class="hero-kicker">Photoreal stage placeholder</div>
-            <h2>Milky Way overview will land here</h2>
+        <div class="hero-view">
+          <img
+            class="hero-image"
+            src="/hero/reference-superlinear-gaia.jpg"
+            alt="Photoreal Milky Way overview reference"
+          />
+          <div class="hero-overlay"></div>
+          <div class="hero-caption">
+            <div class="hero-kicker">Photoreal hero view / reference-backed</div>
+            <h2>Milky Way overview</h2>
             <p>
-              This shell is intentionally image-first. Next batches will replace this placeholder
-              with real photoreal scene assets, anchor overlays, and cinematic zoom transitions.
+              The stage now uses a real reference image as the first hero asset instead of a fake placeholder.
+              Next batches will add anchor overlays, cinematic zoom transitions, and boundary-aware explanation.
             </p>
           </div>
         </div>
@@ -33,11 +38,11 @@ document.querySelector('#app').innerHTML = `
         </div>
         <div class="panel-section">
           <div class="panel-label">Status</div>
-          <div class="panel-value">Web shell online</div>
+          <div class="panel-value">Photoreal hero view wired into the shell</div>
         </div>
         <div class="panel-section">
           <div class="panel-label">Next</div>
-          <div class="panel-value">Replace placeholder with photoreal hero asset</div>
+          <div class="panel-value">Add low-noise target anchors over the hero image</div>
         </div>
       </aside>
     </main>
