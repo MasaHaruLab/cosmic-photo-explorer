@@ -1,16 +1,21 @@
 # HANDOFF
 
-Updated: 2026-07-02（Phase 3 已落地，只剩部署等 CEO 确认）
+Updated: 2026-07-02（Phase 3 全部落地，已公开上线）
+
+## 🌐 线上地址（已部署并真浏览器实测）
+
+**https://masaharulab.github.io/cosmic-photo-explorer/**
+
+- CEO 2026-07-02 口头批准公开（"好的 放吧"）。repo 转公开（原为旧冲刺私有备份，
+  快进推送无历史丢失），dist 推 `gh-pages` 分支，Pages 已启用。
+- 线上实测：Gaia 底图加载、10 锚点热点、列表点仙女座 → tween 到位
+  (ra 10.68/dec 41.27/fov 3.5) + 自动切 DSS2、观星台页 200。
+- **更新部署**：`cd app && npm run build` → 把 `dist/` 内容 commit 到 `gh-pages`
+  分支 force push（scratchpad ghp 目录一次性 git init 的做法即可）。
 
 ## ▶ 继续
 
-1. **部署 GitHub Pages（唯一待办）**：CEO 已批 Phase 3，但「建公开 repo」被
-   auto-classifier 拦（公开发布要人当场确认）。CEO 确认后执行：
-   `gh repo create MasaHaruLab/cosmic-photo-explorer --public --source . --push`
-   → 构建 dist 推 `gh-pages` 分支 → `gh api .../pages` 开 Pages
-   → 目标 URL https://masaharulab.github.io/cosmic-photo-explorer/
-   （vite base './' 已配好，子路径直接可用。）
-2. Phase 3 第 4 项「自动漫游可配置（站点勾选/停留时长/背景乐）」已批未做，可选。
+- Phase 3 第 4 项「自动漫游可配置（站点勾选/停留时长/背景乐）」已批未做，可选。
 
 ## Phase 3 已完成（2026-07-02，真浏览器实测）
 
