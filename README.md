@@ -38,3 +38,8 @@ npm run dev
 - **图片**：NASA/JPL-Caltech（公有领域）、ESO / NOIRLab / Gemini（CC BY 4.0）、
   Wikimedia Commons 摄影师 SCJiang、Acabashi（CC BY-SA 4.0）——详细署名见观星台页脚
 - 介绍文字为本项目原创整理
+
+## 关于本项目
+
+由鱼头与 Claude 协作完成：方向、品味与产品判断来自鱼头（观星台页面、
+应用内看大图、字幕自动隐藏都是她的主意），工程实现由 Claude 承担。
