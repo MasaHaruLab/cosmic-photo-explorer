@@ -1,6 +1,7 @@
 import './style.css'
 
 const anchorsUrl = 'data/anchors/phase1.json'
+const probesUrl = 'data/probes.json'
 const overviewSurvey = 'CDS/P/DM/flux-color-Rp-G-Bp/I/355/gaiadr3'
 const closeUpSurvey = 'P/DSS2/color'
 const overviewView = { ra: 266.4168, dec: -29.0078, fov: 150 }
@@ -28,6 +29,36 @@ const nasaImageQueries = {
   tarantula: 'tarantula nebula',
   'alpha-centauri': 'alpha centauri',
   'vela-snr': 'vela supernova remnant',
+  'voyager-1': 'voyager spacecraft',
+  'voyager-2': 'voyager 2',
+  'pioneer-10': 'pioneer 10',
+  'pioneer-11': 'pioneer 11 saturn',
+  'new-horizons': 'new horizons pluto',
+}
+
+// Deep-space probe narratives; distance line is appended at load time from
+// the baked Horizons data.
+const probeCopy = {
+  'voyager-1': {
+    summary: '人类飞得最远的造物。1977 年出发，现在在 255 亿公里外，仍在用微弱的信号回话。',
+    details: '1990 年它回头拍了那张《暗淡蓝点》——地球只是一粒悬浮在阳光里的尘埃。2012 年它穿出日球层，成为第一个进入星际空间的人造物。丝带上的年度小波浪不是它在抖，是地球带着我们绕太阳转圈的视差——证据就画在天上。',
+  },
+  'voyager-2': {
+    summary: '唯一近距离看过天王星和海王星的探测器，比 1 号还早出发两周。',
+    details: '它走了一条更贪心的路线：木星、土星、天王星、海王星四连访，至今无人重复。2018 年它也进入了星际空间。现在朝着南天的孔雀座方向飞去。',
+  },
+  'pioneer-10': {
+    summary: '第一个穿过小行星带、第一个近距离看木星的探测器，1972 年出发。',
+    details: '2003 年地球最后一次收到它的信号，之后它安静地继续飞，方向正对金牛座的毕宿五。它带着一块刻着人类男女形象和太阳系位置的金属板——如果有谁捡到它，那是我们的自我介绍。',
+  },
+  'pioneer-11': {
+    summary: '第一个近距离看土星的探测器，也带着那块著名的人类名片金属板。',
+    details: '1979 年它替人类第一次撩开土星的面纱，为后来的旅行者和卡西尼探路。1995 年失联。它现在朝着天鹰座方向漂流，大约几百万年后会路过那里的一颗恒星。',
+  },
+  'new-horizons': {
+    summary: '2015 年飞掠冥王星，把一颗模糊的光点变成了有冰川和心形平原的世界。',
+    details: '它是这五位信使里最年轻的，还在柯伊伯带工作，仍定期回传数据。它出发那年冥王星还是"第九大行星"，飞到一半冥王星被除名——它不在乎，照飞。',
+  },
 }
 
 const surveyBoundary = {
@@ -779,10 +810,52 @@ async function initAladin() {
   requestAnimationFrame(() => applySkyView(overviewView))
 }
 
+let probePaths = []
+
+function probesToAnchors(probes) {
+  return probes.map((probe) => {
+    const copy = probeCopy[probe.id] ?? { summary: '', details: '' }
+    const launchYear = probe.start.slice(0, 4)
+    return {
+      id: probe.id,
+      label: probe.label,
+      kind: 'probe',
+      mode: 'real',
+      group: '深空信使',
+      tour: false,
+      sky: { ra: probe.current[0], dec: probe.current[1] },
+      fov: 12,
+      summary: copy.summary,
+      details: `${copy.details} 银色丝带是它 ${launchYear} 年出发以来在天幕上划过的真实轨迹（JPL Horizons 数据），此刻距离约 ${probe.dist_au} AU（1 AU = 日地距离）。`,
+    }
+  })
+}
+
+function addProbeRibbons() {
+  for (const probe of probePaths) {
+    try {
+      const overlay = window.A.graphicOverlay({ color: 'rgba(214, 226, 255, 0.34)', lineWidth: 1 })
+      aladin.addOverlay(overlay)
+      if (typeof window.A.polyline === 'function') {
+        overlay.add(window.A.polyline(probe.path))
+      }
+    } catch {
+      // Ribbons are decoration; anchors still work without the overlay API.
+    }
+  }
+}
+
 async function init() {
   renderBoundary()
   const response = await fetch(anchorsUrl)
   anchors = await response.json()
+  try {
+    const probes = await (await fetch(probesUrl)).json()
+    probePaths = probes
+    anchors.push(...probesToAnchors(probes))
+  } catch {
+    // Probe layer is optional; the sky anchors must never depend on it.
+  }
   selectedId = anchors[0]?.id ?? null
   renderAnchors()
   renderTargetList()
@@ -790,6 +863,7 @@ async function init() {
     selectAnchor(selectedId, { moveSky: false })
   }
   await initAladin()
+  addProbeRibbons()
 }
 
 resetButton.addEventListener('click', resetView)
