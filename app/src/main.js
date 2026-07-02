@@ -133,6 +133,31 @@ app.innerHTML = `
             <div class="panel-label">时间机器</div>
             <input type="range" class="timeline-range" data-timeline-range min="0" max="1000" value="1000" aria-label="轨迹时间轴" />
             <div class="panel-copy timeline-label" data-timeline-label></div>
+            <div class="panel-actions timeline-actions">
+              <button class="primary-button" type="button" data-probe-play>▶ 从头播放</button>
+              <button class="ghost-button" type="button" data-probe-parallax aria-expanded="false">为什么是弹簧形？</button>
+            </div>
+            <div class="explainer-card parallax-card" data-parallax-card hidden>
+              <svg class="parallax-diagram" viewBox="0 0 320 132" role="img" aria-label="视差示意图：地球绕太阳运动造成探测器在天上的表观弹簧轨迹">
+                <line x1="52" y1="66" x2="300" y2="66" stroke="rgba(255,255,255,0.16)" stroke-dasharray="2 4" />
+                <ellipse cx="52" cy="66" rx="26" ry="40" fill="none" stroke="rgba(157,184,255,0.4)" stroke-width="1" />
+                <circle cx="52" cy="66" r="7" fill="#ffd479" />
+                <text x="52" y="70" text-anchor="middle" font-size="8" fill="#3a2c00">☀</text>
+                <line x1="52" y1="26" x2="286" y2="60" stroke="rgba(214,226,255,0.45)" stroke-dasharray="3 3" />
+                <line x1="52" y1="106" x2="286" y2="72" stroke="rgba(214,226,255,0.45)" stroke-dasharray="3 3" />
+                <circle cx="52" cy="26" r="4" fill="#9db8ff" />
+                <text x="42" y="22" text-anchor="end" font-size="9" fill="rgba(198,216,255,0.85)">1月</text>
+                <circle cx="52" cy="106" r="4" fill="#9db8ff" />
+                <text x="42" y="110" text-anchor="end" font-size="9" fill="rgba(198,216,255,0.85)">7月</text>
+                <path d="M232 66 q10 -9 20 0 q10 9 20 0 q10 -9 20 0" fill="none" stroke="#d6e2ff" stroke-width="1.6" />
+                <circle cx="292" cy="66" r="3.5" fill="#d6e2ff" />
+                <text x="256" y="94" text-anchor="middle" font-size="9" fill="rgba(214,226,255,0.85)">表观：弹簧</text>
+                <text x="150" y="120" text-anchor="middle" font-size="9" fill="rgba(198,216,255,0.6)">探测器实际沿直线飞离太阳 →</text>
+              </svg>
+              <p><strong>探测器几乎是沿直线飞离太阳的——它没有在天上画弹簧。</strong>弹簧是我们自己「画」上去的。</p>
+              <p>地球每年带着我们绕太阳转一整圈，观测点来回摆动约 3 亿公里（±1 个日地距离）。从这个来回移动的位置看同一个探测器，它相对遥远背景星空的方向就每年左右摆一次——这叫<strong>视差</strong>。把探测器缓慢的真实漂移，叠上这一年一次的摆动，画在天上就成了弹簧／螺旋。</p>
+              <p>离得越近（出发早期）视差环越大，越飞越远环越缩越小。这正是天文学测量恒星距离用的同一招。</p>
+            </div>
           </div>
         </div>
         <div class="panel-section">
@@ -237,6 +262,9 @@ const tourDwellSelect = document.querySelector('[data-tour-dwell]')
 const probeTimeline = document.querySelector('[data-probe-timeline]')
 const timelineRange = document.querySelector('[data-timeline-range]')
 const timelineLabel = document.querySelector('[data-timeline-label]')
+const probePlayButton = document.querySelector('[data-probe-play]')
+const parallaxButton = document.querySelector('[data-probe-parallax]')
+const parallaxCard = document.querySelector('[data-parallax-card]')
 const targetList = document.querySelector('[data-target-list]')
 const surveyChip = document.querySelector('[data-survey-chip]')
 const nasaOpenButton = document.querySelector('[data-nasa-open]')
@@ -279,6 +307,70 @@ function interpolateRa(startRa, endRa, progress) {
 
 function interpolateLog(start, end, progress) {
   return Math.exp(Math.log(start) + (Math.log(end) - Math.log(start)) * progress)
+}
+
+function catmullRom(p0, p1, p2, p3, t) {
+  const t2 = t * t
+  const t3 = t2 * t
+  return 0.5 * (2 * p1 + (-p0 + p2) * t + (2 * p0 - 5 * p1 + 4 * p2 - p3) * t2 + (-p0 + 3 * p1 - 3 * p2 + p3) * t3)
+}
+
+// RA wraps at 360°; unwrap into a continuous run before spline interpolation so
+// a probe crossing 0h doesn't smear a horizontal streak across the sky.
+function unwrapRaPath(points) {
+  const out = []
+  let prev = null
+  for (const [ra, dec] of points) {
+    let r = ra
+    if (prev !== null) {
+      while (r - prev > 180) r -= 360
+      while (r - prev < -180) r += 360
+    }
+    out.push([r, dec])
+    prev = r
+  }
+  return out
+}
+
+function segmentTurnDeg(a, b, c) {
+  const v1x = b[0] - a[0]
+  const v1y = b[1] - a[1]
+  const v2x = c[0] - b[0]
+  const v2y = c[1] - b[1]
+  const d1 = Math.hypot(v1x, v1y)
+  const d2 = Math.hypot(v2x, v2y)
+  if (d1 === 0 || d2 === 0) return 0
+  const cos = (v1x * v2x + v1y * v2y) / (d1 * d2)
+  return (Math.acos(Math.max(-1, Math.min(1, cos))) * 180) / Math.PI
+}
+
+// The baked Horizons paths are dense on the near-straight outbound drift but
+// still show facets at the tight parallax loops (biggest early, when the probe
+// is close). Catmull-Rom passes through the real samples; we only subdivide
+// where the track actually bends, so smoothing the loops costs few extra points.
+function smoothProbePath(points) {
+  if (!Array.isArray(points) || points.length < 4) return points
+  const p = unwrapRaPath(points)
+  const out = [[normalizeRa(p[0][0]), p[0][1]]]
+  for (let i = 0; i < p.length - 1; i += 1) {
+    const p0 = p[i - 1] ?? p[i]
+    const p1 = p[i]
+    const p2 = p[i + 1]
+    const p3 = p[i + 2] ?? p[i + 1]
+    const turnBefore = i > 0 ? segmentTurnDeg(p[i - 1], p1, p2) : 0
+    const turnAfter = i < p.length - 2 ? segmentTurnDeg(p1, p2, p[i + 2]) : 0
+    const turn = Math.max(turnBefore, turnAfter)
+    const segLen = Math.hypot(p2[0] - p1[0], p2[1] - p1[1])
+    let steps = 1
+    if (turn > 4 && segLen > 0.02) steps = Math.min(10, Math.ceil(turn / 2.5))
+    for (let s = 1; s <= steps; s += 1) {
+      const t = s / steps
+      const ra = catmullRom(p0[0], p1[0], p2[0], p3[0], t)
+      const dec = catmullRom(p0[1], p1[1], p2[1], p3[1], t)
+      out.push([normalizeRa(ra), dec])
+    }
+  }
+  return out
 }
 
 function getAladinCenter() {
@@ -916,13 +1008,18 @@ const probeOverlays = new Map()
 const truncatedProbes = new Set()
 const PROBE_STEP_DAYS = 5
 
+// Render from the smoothed spline; keep the raw path for date math.
+function ribbonOf(probe) {
+  return probe.smoothPath ?? probe.path
+}
+
 function addProbeRibbons() {
   for (const probe of probePaths) {
     try {
       const overlay = window.A.graphicOverlay({ color: 'rgba(214, 226, 255, 0.34)', lineWidth: 1 })
       aladin.addOverlay(overlay)
       if (typeof window.A.polyline === 'function') {
-        overlay.add(window.A.polyline(probe.path, { ...overlayHighlight }))
+        overlay.add(window.A.polyline(ribbonOf(probe), { ...overlayHighlight }))
         probeOverlays.set(probe.id, overlay)
       }
     } catch {
@@ -931,15 +1028,19 @@ function addProbeRibbons() {
   }
 }
 
-function redrawProbeRibbon(probe, index) {
+// fraction is 0..1 along the whole track; the ribbon is drawn from launch up to
+// that point, with a marker at the leading edge.
+function drawProbeRibbon(probe, fraction) {
   const overlay = probeOverlays.get(probe.id)
   if (!overlay) return
   try {
+    const ribbon = ribbonOf(probe)
+    const index = Math.max(1, Math.round(fraction * (ribbon.length - 1)))
     overlay.removeAll()
-    overlay.add(window.A.polyline(probe.path.slice(0, index + 1), { ...overlayHighlight }))
-    const atEnd = index >= probe.path.length - 1
+    overlay.add(window.A.polyline(ribbon.slice(0, index + 1), { ...overlayHighlight }))
+    const atEnd = index >= ribbon.length - 1
     if (!atEnd && typeof window.A.circle === 'function') {
-      const [ra, dec] = probe.path[index]
+      const [ra, dec] = ribbon[index]
       overlay.add(window.A.circle(ra, dec, 0.5, { color: 'rgba(157, 184, 255, 0.9)', ...overlayHighlight }))
     }
     if (atEnd) {
@@ -952,9 +1053,10 @@ function redrawProbeRibbon(probe, index) {
   }
 }
 
-function probeDateAt(probe, index) {
+function probeDateAtFraction(probe, fraction) {
+  const totalDays = (probe.path.length - 1) * PROBE_STEP_DAYS
   const start = new Date(`${probe.start}T00:00:00Z`)
-  const date = new Date(start.getTime() + index * PROBE_STEP_DAYS * 86400000)
+  const date = new Date(start.getTime() + fraction * totalDays * 86400000)
   return `${date.getUTCFullYear()} 年 ${date.getUTCMonth() + 1} 月`
 }
 
@@ -962,23 +1064,25 @@ function updateTimeline() {
   const probe = probePaths.find((item) => item.id === selectedId)
   if (!probe) return
   const fraction = Number(timelineRange.value) / Number(timelineRange.max)
-  const index = Math.max(1, Math.round(fraction * (probe.path.length - 1)))
-  redrawProbeRibbon(probe, index)
-  timelineLabel.textContent = index >= probe.path.length - 1
+  drawProbeRibbon(probe, fraction)
+  timelineLabel.textContent = fraction >= 0.999
     ? `今天 · 距离约 ${probe.dist_au} AU`
-    : `${probeDateAt(probe, index)} · 它当时在天上的这个方向`
+    : `${probeDateAtFraction(probe, fraction)} · 它当时在天上的这个方向`
 }
 
 function syncProbeTimeline() {
-  // Restore any ribbon left truncated by a previous drag.
+  stopProbePlay()
+  // Restore any ribbon left truncated by a previous drag/play.
   for (const id of [...truncatedProbes]) {
     if (id === selectedId) continue
     const probe = probePaths.find((item) => item.id === id)
-    if (probe) redrawProbeRibbon(probe, probe.path.length - 1)
+    if (probe) drawProbeRibbon(probe, 1)
   }
   const probe = probePaths.find((item) => item.id === selectedId)
   if (!probe) {
     probeTimeline.hidden = true
+    parallaxCard.hidden = true
+    parallaxButton.setAttribute('aria-expanded', 'false')
     return
   }
   probeTimeline.hidden = false
@@ -988,6 +1092,7 @@ function syncProbeTimeline() {
 
 let timelineFramePending = false
 timelineRange.addEventListener('input', () => {
+  stopProbePlay()
   if (timelineFramePending) return
   timelineFramePending = true
   requestAnimationFrame(() => {
@@ -996,12 +1101,72 @@ timelineRange.addEventListener('input', () => {
   })
 })
 
+// Play simulator: sweep the whole track from launch to today so the trajectory
+// draws itself out, then settle at the present position.
+const PROBE_PLAY_DURATION = 9000
+let probePlaying = false
+let probePlayToken = 0
+
+function setProbePlayLabel() {
+  probePlayButton.textContent = probePlaying ? '⏸ 暂停' : '▶ 从头播放'
+}
+
+function stopProbePlay() {
+  if (!probePlaying) return
+  probePlaying = false
+  probePlayToken += 1
+  setProbePlayLabel()
+}
+
+function startProbePlay() {
+  const probe = probePaths.find((item) => item.id === selectedId)
+  if (!probe) return
+  probePlaying = true
+  setProbePlayLabel()
+  const token = (probePlayToken += 1)
+  const max = Number(timelineRange.max)
+  const atEnd = Number(timelineRange.value) >= max
+  const startFraction = atEnd ? 0 : Number(timelineRange.value) / max
+  const startedAt = performance.now()
+  function step(now) {
+    if (token !== probePlayToken) return
+    const progress = Math.min((now - startedAt) / PROBE_PLAY_DURATION, 1)
+    const fraction = startFraction + (1 - startFraction) * progress
+    timelineRange.value = String(Math.round(fraction * max))
+    updateTimeline()
+    if (progress < 1) {
+      requestAnimationFrame(step)
+    } else {
+      probePlaying = false
+      setProbePlayLabel()
+    }
+  }
+  requestAnimationFrame(step)
+}
+
+function toggleProbePlay() {
+  if (probePlaying) {
+    stopProbePlay()
+  } else {
+    startProbePlay()
+  }
+}
+
+function toggleParallaxCard() {
+  const nextOpen = parallaxCard.hidden
+  parallaxCard.hidden = !nextOpen
+  parallaxButton.setAttribute('aria-expanded', String(nextOpen))
+}
+
 async function init() {
   renderBoundary()
   const response = await fetch(anchorsUrl)
   anchors = await response.json()
   try {
     const probes = await (await fetch(probesUrl)).json()
+    for (const probe of probes) {
+      probe.smoothPath = smoothProbePath(probe.path)
+    }
     probePaths = probes
     anchors.push(...probesToAnchors(probes))
   } catch {
@@ -1019,6 +1184,8 @@ async function init() {
 
 resetButton.addEventListener('click', resetView)
 tourButton.addEventListener('click', toggleTour)
+probePlayButton.addEventListener('click', toggleProbePlay)
+parallaxButton.addEventListener('click', toggleParallaxCard)
 bortleButton.addEventListener('click', toggleBortleCard)
 galaxyButton.addEventListener('click', toggleGalaxyCard)
 apodButton.addEventListener('click', toggleApodCard)

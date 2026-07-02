@@ -428,6 +428,23 @@ h2 {
   color: rgba(198, 216, 255, 0.72);
 }
 
+.timeline-actions {
+  margin-top: 12px;
+}
+
+.parallax-card .parallax-diagram {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(4, 7, 14, 0.6);
+}
+
+.parallax-card p:first-of-type {
+  margin-top: 12px;
+}
+
 .explainer-card img {
   display: block;
   width: 100%;
