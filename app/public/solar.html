@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>太阳系 · 星空照片探索器</title>
+<style>
+  :root {
+    --bg: #04060c;
+    --panel: #0b101c;
+    --line: rgba(148, 170, 220, 0.16);
+    --text: #d8e0f0;
+    --dim: #8fa0be;
+    --accent: #9db8ff;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font: 15px/1.75 -apple-system, "PingFang SC", "Hiragino Sans GB", sans-serif;
+  }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 40px 24px 80px; }
+  .eyebrow { font-size: 12px; letter-spacing: 0.18em; color: var(--dim); }
+  h1 { margin: 6px 0 10px; font-size: 30px; letter-spacing: 0.02em; }
+  h2 { margin: 40px 0 4px; font-size: 22px; }
+  .lede { color: var(--dim); max-width: 640px; margin: 0 0 14px; }
+  .back {
+    display: inline-block; margin: 10px 12px 24px 0; color: var(--accent);
+    text-decoration: none; border: 1px solid var(--line); border-radius: 999px;
+    padding: 6px 16px; font-size: 13px;
+  }
+  .back:hover { border-color: var(--accent); }
+  .viewer-card {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 14px;
+    overflow: hidden; margin: 14px 0 8px;
+  }
+  .viewer { width: 100%; height: 480px; background: #000; }
+  .controls { padding: 12px 16px 16px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .controls .label { font-size: 12px; color: var(--dim); letter-spacing: 0.1em; margin-right: 4px; }
+  .spot, .layer {
+    border: 1px solid var(--line); background: rgba(255,255,255,0.035); color: var(--text);
+    border-radius: 999px; padding: 6px 14px; font-size: 13px; cursor: pointer;
+  }
+  .spot:hover, .layer:hover { border-color: var(--accent); }
+  .layer.is-active { background: var(--accent); color: var(--bg); font-weight: 600; }
+  .note { font-size: 12.5px; color: var(--dim); margin: 6px 2px 0; }
+  .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; margin-top: 16px; }
+  .gallery figure {
+    margin: 0; background: var(--panel); border: 1px solid var(--line); border-radius: 12px;
+    overflow: hidden; cursor: zoom-in;
+  }
+  .gallery img { display: block; width: 100%; aspect-ratio: 1; object-fit: cover; }
+  .gallery figcaption { padding: 8px 12px 10px; font-size: 13px; }
+  .gallery .sub { color: var(--dim); font-size: 11.5px; display: block; }
+  .lightbox {
+    position: fixed; inset: 0; background: rgba(2,4,10,0.92); display: flex;
+    align-items: center; justify-content: center; flex-direction: column; gap: 10px;
+    z-index: 50; cursor: zoom-out;
+  }
+  .lightbox[hidden] { display: none; }
+  .lightbox img { max-width: 92vw; max-height: 80vh; border-radius: 8px; }
+  .lightbox .cap { color: var(--dim); font-size: 13px; }
+  footer { color: var(--dim); font-size: 12px; margin-top: 44px; border-top: 1px solid var(--line); padding-top: 16px; }
+  @media (max-width: 900px) { .viewer { height: 340px; } }
+</style>
+<script src="https://aladin.cds.unistra.fr/AladinLite/api/v3/latest/aladin.js" charset="utf-8"></script>
+</head>
+<body>
+<div class="wrap">
+  <div class="eyebrow">解释层 / 我们自己的后院</div>
+  <h1>太阳系：从别人的星光回到自己的行星</h1>
+  <p class="lede">银河看久了，别忘了我们自己也住在一颗行星上。月球和火星的表面是真实探测器测绘的全图——可以一路拉近到山和陨石坑；其余行星是各任务拍下的原版照片。</p>
+  <a class="back" href="./">← 回到星空探索器</a>
+  <a class="back" href="observatories.html">观星台 →</a>
+
+  <h2>月球</h2>
+  <p class="note">默认底图：NASA 月球勘测轨道器全图（每像素 100 米）。可切换成嫦娥二号 7 米分辨率图——中国探月工程的官方测绘。</p>
+  <div class="viewer-card">
+    <div id="moon-view" class="viewer"></div>
+    <div class="controls">
+      <span class="label">飞到</span>
+      <button class="spot" data-body="moon" data-lon="-11.36" data-lat="-43.31" data-fov="8">第谷环形山</button>
+      <button class="spot" data-body="moon" data-lon="-20.08" data-lat="9.62" data-fov="8">哥白尼环形山</button>
+      <button class="spot" data-body="moon" data-lon="23.47" data-lat="0.67" data-fov="6">静海 · 阿波罗 11 号</button>
+      <button class="spot" data-body="moon" data-lon="-51.92" data-lat="43.06" data-fov="8">风暴洋 · 嫦娥五号</button>
+      <span class="label" style="margin-left:auto">底图</span>
+      <button class="layer is-active" data-body="moon" data-survey="https://alasky.cds.unistra.fr/Planets/CDS_P_Moon_LROC-WAC-100m">NASA LROC</button>
+      <button class="layer" data-body="moon" data-survey="https://hips.china-vo.org/change2-moon-7m-dom">嫦娥二号</button>
+    </div>
+  </div>
+
+  <h2>火星</h2>
+  <p class="note">默认底图：Viking 彩色全图（真实颜色感的锈红火星）。切换 MOLA 彩色高程能看出山有多高、谷有多深——蓝色低、红色高。</p>
+  <div class="viewer-card">
+    <div id="mars-view" class="viewer"></div>
+    <div class="controls">
+      <span class="label">飞到</span>
+      <button class="spot" data-body="mars" data-lon="-133.8" data-lat="18.65" data-fov="14">奥林帕斯山</button>
+      <button class="spot" data-body="mars" data-lon="-72.5" data-lat="-9.8" data-fov="24">水手号峡谷</button>
+      <button class="spot" data-body="mars" data-lon="137.8" data-lat="-5.4" data-fov="6">盖尔坑 · 好奇号</button>
+      <button class="spot" data-body="mars" data-lon="109.93" data-lat="25.07" data-fov="10">乌托邦平原 · 祝融号</button>
+      <span class="label" style="margin-left:auto">底图</span>
+      <button class="layer is-active" data-body="mars" data-survey="https://alasky.cds.unistra.fr/Planets/Mars_Viking_MDIM21">Viking 彩色</button>
+      <button class="layer" data-body="mars" data-survey="https://alasky.cds.unistra.fr/Planets/Mars_MOLA">MOLA 高程</button>
+    </div>
+  </div>
+
+  <h2>行星画廊</h2>
+  <p class="note">每张都是任务原片，点开看大图。奥林帕斯山比珠峰高两倍半；土星那张是卡西尼躲进土星影子里回望拍下的。</p>
+  <div class="gallery" data-gallery>
+    <figure data-id="PIA15162"><img loading="lazy" src="https://images-assets.nasa.gov/image/PIA15162/PIA15162~medium.jpg" alt="水星"><figcaption>水星<span class="sub">信使号全球拼图</span></figcaption></figure>
+    <figure data-id="PIA00104"><img loading="lazy" src="https://images-assets.nasa.gov/image/PIA00104/PIA00104~medium.jpg" alt="金星"><figcaption>金星<span class="sub">麦哲伦号雷达成像</span></figcaption></figure>
+    <figure data-id="PIA22946"><img loading="lazy" src="https://images-assets.nasa.gov/image/PIA22946/PIA22946~medium.jpg" alt="木星"><figcaption>木星<span class="sub">朱诺号「大理石木星」</span></figcaption></figure>
+    <figure data-id="PIA08329"><img loading="lazy" src="https://images-assets.nasa.gov/image/PIA08329/PIA08329~medium.jpg" alt="土星"><figcaption>土星<span class="sub">卡西尼号 · 在土星的阴影里</span></figcaption></figure>
+    <figure data-id="PIA18182"><img loading="lazy" src="https://images-assets.nasa.gov/image/PIA18182/PIA18182~medium.jpg" alt="天王星"><figcaption>天王星<span class="sub">旅行者 2 号 · 唯一到访者</span></figcaption></figure>
+    <figure data-id="PIA01492"><img loading="lazy" src="https://images-assets.nasa.gov/image/PIA01492/PIA01492~medium.jpg" alt="海王星"><figcaption>海王星<span class="sub">旅行者 2 号最后的全貌照</span></figcaption></figure>
+    <figure data-id="PIA19952"><img loading="lazy" src="https://images-assets.nasa.gov/image/PIA19952/PIA19952~medium.jpg" alt="冥王星"><figcaption>冥王星<span class="sub">新视野号 · 心形平原</span></figcaption></figure>
+  </div>
+
+  <div class="lightbox" data-lightbox hidden>
+    <img data-lightbox-img alt="行星大图">
+    <div class="cap" data-lightbox-cap></div>
+  </div>
+
+  <footer>
+    月球底图：NASA LROC WAC（CDS HiPS）、嫦娥二号 7 米 DOM（中国国家天文台 / China-VO）。
+    火星底图：Viking MDIM21、MGS MOLA（NASA / USGS，经 CDS HiPS）。行星照片：NASA/JPL-Caltech 等任务原片（公有领域），点击大图可见任务信息。
+  </footer>
+</div>
+
+<script>
+  const viewers = {}
+
+  function makeViewer(id, survey, fov) {
+    return A.aladin(id, {
+      survey,
+      fov,
+      showFullscreenControl: false, showLayersControl: false,
+      showGotoControl: false, showZoomControl: false, showFrame: false,
+      showCooGrid: false, showProjectionControl: false,
+    })
+  }
+
+  A.init.then(() => {
+    viewers.moon = makeViewer('#moon-view', 'https://alasky.cds.unistra.fr/Planets/CDS_P_Moon_LROC-WAC-100m', 90)
+    viewers.mars = makeViewer('#mars-view', 'https://alasky.cds.unistra.fr/Planets/Mars_Viking_MDIM21', 90)
+
+    for (const btn of document.querySelectorAll('.spot')) {
+      btn.addEventListener('click', () => {
+        const v = viewers[btn.dataset.body]
+        if (!v) return
+        v.gotoRaDec(Number(btn.dataset.lon), Number(btn.dataset.lat))
+        v.setFoV(Number(btn.dataset.fov))
+      })
+    }
+
+    for (const btn of document.querySelectorAll('.layer')) {
+      btn.addEventListener('click', () => {
+        const v = viewers[btn.dataset.body]
+        if (!v) return
+        v.setImageSurvey(btn.dataset.survey)
+        for (const other of document.querySelectorAll(`.layer[data-body="${btn.dataset.body}"]`)) {
+          other.classList.toggle('is-active', other === btn)
+        }
+      })
+    }
+  })
+
+  const lightbox = document.querySelector('[data-lightbox]')
+  const lightboxImg = document.querySelector('[data-lightbox-img]')
+  const lightboxCap = document.querySelector('[data-lightbox-cap]')
+  for (const fig of document.querySelectorAll('[data-gallery] figure')) {
+    fig.addEventListener('click', () => {
+      const id = fig.dataset.id
+      lightboxImg.src = `https://images-assets.nasa.gov/image/${id}/${id}~large.jpg`
+      lightboxImg.onerror = () => { lightboxImg.onerror = null; lightboxImg.src = `https://images-assets.nasa.gov/image/${id}/${id}~medium.jpg` }
+      lightboxCap.textContent = fig.querySelector('figcaption').textContent + '　·　NASA/JPL-Caltech'
+      lightbox.hidden = false
+    })
+  }
+  lightbox.addEventListener('click', () => { lightbox.hidden = true; lightboxImg.src = '' })
+  window.addEventListener('keydown', (e) => { if (e.key === 'Escape') { lightbox.hidden = true; lightboxImg.src = '' } })
+</script>
+</body>
+</html>

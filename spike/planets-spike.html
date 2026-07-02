@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<title>Planetary HiPS spike</title>
+<style>
+  body { margin: 0; background: #04060c; color: #d8e0f0; font: 14px/1.6 sans-serif; }
+  .row { display: flex; gap: 8px; padding: 8px; }
+  .cell { flex: 1; }
+  .cell h3 { margin: 4px 0; font-size: 14px; }
+  .viewer { width: 100%; height: 420px; background: #000; }
+</style>
+<script src="https://aladin.cds.unistra.fr/AladinLite/api/v3/latest/aladin.js" charset="utf-8"></script>
+</head>
+<body>
+<div class="row">
+  <div class="cell"><h3 id="t1">Moon LROC WAC 100m</h3><div id="v1" class="viewer"></div></div>
+  <div class="cell"><h3 id="t2">Moon Chang'e-2 7m (China-VO)</h3><div id="v2" class="viewer"></div></div>
+</div>
+<div class="row">
+  <div class="cell"><h3 id="t3">Mars Express color</h3><div id="v3" class="viewer"></div></div>
+  <div class="cell"><h3 id="t4">Mars MOLA color relief</h3><div id="v4" class="viewer"></div></div>
+</div>
+<script>
+  window.__spike = { ready: [], errors: [] }
+  A.init.then(() => {
+    const make = (div, url, fov) => {
+      try {
+        const a = A.aladin(div, {
+          survey: url,
+          fov: fov,
+          showFullscreenControl: false, showLayersControl: false,
+          showGotoControl: false, showZoomControl: false, showFrame: false,
+          showCooGrid: false, showProjectionControl: false,
+        })
+        window.__spike.ready.push(div)
+        return a
+      } catch (e) { window.__spike.errors.push(div + ': ' + e.message) }
+    }
+    make('#v1', 'https://alasky.cds.unistra.fr/Planets/CDS_P_Moon_LROC-WAC-100m', 60)
+    make('#v2', 'https://hips.china-vo.org/change2-moon-7m-dom', 60)
+    make('#v3', 'https://alasky.cds.unistra.fr/Planets/CDS_P_Mars_Express286545', 60)
+    make('#v4', 'https://alasky.cds.unistra.fr/Planets/Mars_MOLA', 60)
+  }).catch((e) => { window.__spike.errors.push('init: ' + e.message) })
+</script>
+</body>
+</html>

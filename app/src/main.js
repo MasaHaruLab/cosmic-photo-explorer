@@ -84,6 +84,7 @@ app.innerHTML = `
       </div>
       <div class="topbar-actions">
         <div class="badge">银河总览</div>
+        <a class="badge badge-link" href="solar.html">太阳系 →</a>
         <a class="badge badge-link" href="observatories.html">观星台 →</a>
       </div>
     </header>
@@ -745,19 +746,26 @@ function toggleGalaxyCard() {
   galaxyButton.setAttribute('aria-expanded', String(nextOpen))
 }
 
+// Aladin's default hover/selection highlight is #00ff00; match the app
+// accent instead.
+const overlayHighlight = {
+  hoverColor: 'rgba(157, 184, 255, 0.85)',
+  selectionColor: 'rgba(157, 184, 255, 0.85)',
+}
+
 function addTriangleOverlay(points) {
   try {
     const overlay = window.A.graphicOverlay({ color: 'rgba(255,255,255,0.3)', lineWidth: 1 })
     aladin.addOverlay(overlay)
 
     if (typeof window.A.polyline === 'function') {
-      overlay.add(window.A.polyline(points))
+      overlay.add(window.A.polyline(points, { ...overlayHighlight }))
       return
     }
 
     if (typeof window.A.line !== 'function') return
     for (let index = 0; index < points.length - 1; index += 1) {
-      overlay.add(window.A.line(points[index], points[index + 1]))
+      overlay.add(window.A.line(points[index], points[index + 1], { ...overlayHighlight }))
     }
   } catch {
     // The narrative anchors still work if the optional overlay API is unavailable.
@@ -837,7 +845,7 @@ function addProbeRibbons() {
       const overlay = window.A.graphicOverlay({ color: 'rgba(214, 226, 255, 0.34)', lineWidth: 1 })
       aladin.addOverlay(overlay)
       if (typeof window.A.polyline === 'function') {
-        overlay.add(window.A.polyline(probe.path))
+        overlay.add(window.A.polyline(probe.path, { ...overlayHighlight }))
       }
     } catch {
       // Ribbons are decoration; anchors still work without the overlay API.
