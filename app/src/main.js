@@ -85,6 +85,7 @@ app.innerHTML = `
       <div class="topbar-actions">
         <div class="badge">银河总览</div>
         <a class="badge badge-link" href="solar.html">太阳系 →</a>
+        <a class="badge badge-link" href="stations.html">空间站 →</a>
         <a class="badge badge-link" href="observatories.html">观星台 →</a>
       </div>
     </header>
