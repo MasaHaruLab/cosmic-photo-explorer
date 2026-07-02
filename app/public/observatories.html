@@ -43,6 +43,12 @@
     text-decoration: none; border-radius: 999px; padding: 6px 18px; font-size: 13px; font-weight: 600;
   }
   .visit:hover { filter: brightness(1.1); }
+  .visit2 {
+    display: inline-block; margin-top: 12px; margin-left: 10px; color: var(--accent);
+    text-decoration: none; border: 1px solid var(--line); border-radius: 999px;
+    padding: 6px 18px; font-size: 13px;
+  }
+  .visit2:hover { border-color: var(--accent); }
   p { margin: 0.4em 0; }
   footer { color: var(--dim); font-size: 12px; margin-top: 40px; border-top: 1px solid var(--line); padding-top: 16px; }
 </style>
@@ -52,10 +58,10 @@
   <div class="eyebrow">解释层 / 地面上的眼睛</div>
   <h1>观星台：那些正在替我们看宇宙的地方</h1>
   <p class="lede">你在探索器里看到的每一张照片、每一颗被测量的星，背后都有一座真实存在的天文台。它们大多有非常好的官网——只是我们从来不知道它们的存在。</p>
-  <a class="back" href="/">← 回到星空探索器</a>
+  <a class="back" href="./">← 回到星空探索器</a>
 
   <div class="card">
-    <img src="/observatories/rubin.jpg" alt="Vera C. Rubin 天文台">
+    <img src="observatories/rubin.jpg" alt="Vera C. Rubin 天文台">
     <div class="credit">图：NSF–DOE Vera C. Rubin Observatory / NOIRLab（CC BY 4.0）</div>
     <div class="body">
       <h2>薇拉·鲁宾天文台 Vera C. Rubin Observatory</h2>
@@ -63,11 +69,12 @@
       <p>就在 2026 年 6 月 30 日——两天前——它正式启动了为期十年的 LSST 巡天：用全世界最大的数码相机（32 亿像素）每隔约 40 秒拍一张深空照片，十年内把整个南天扫描数百遍，等于给宇宙拍一部超长电影。</p>
       <p class="hook">为什么值得盯着它：未来十年天文学的大新闻，很大概率从这里出来。</p>
       <a class="visit" href="https://rubinobservatory.org/" target="_blank" rel="noopener">打开官网 →</a>
+      <a class="visit2" href="https://rubinobservatory.org/news" target="_blank" rel="noopener">最新动态</a>
     </div>
   </div>
 
   <div class="card">
-    <img src="/observatories/vlt.jpg" alt="ESO 甚大望远镜">
+    <img src="observatories/vlt.jpg" alt="ESO 甚大望远镜">
     <div class="credit">图：ESO（CC BY 4.0）</div>
     <div class="body">
       <h2>甚大望远镜 VLT · 帕瑞纳天文台</h2>
@@ -75,11 +82,12 @@
       <p>四台 8.2 米望远镜并排立在沙漠山顶，可以各自观测，也可以联合成干涉仪。照片里射向天空的橙色激光是人造导星——在高层大气里点一颗“假星”，用来实时校正大气抖动，让地面望远镜拍出接近太空的清晰度。</p>
       <p class="hook">为什么值得知道：人类第一张系外行星的直接影像、银心黑洞周围恒星的轨道测量，都有它的份。ESO 官网的图片库是天文摄影的宝库，绝大多数图都可以自由使用。</p>
       <a class="visit" href="https://www.eso.org/public/" target="_blank" rel="noopener">打开官网 →</a>
+      <a class="visit2" href="https://www.eso.org/public/news/" target="_blank" rel="noopener">最新动态</a>
     </div>
   </div>
 
   <div class="card">
-    <img src="/observatories/alma.jpg" alt="ALMA 天线阵与银河">
+    <img src="observatories/alma.jpg" alt="ALMA 天线阵与银河">
     <div class="credit">图：ESO / B. Tafreshi（CC BY 4.0）</div>
     <div class="body">
       <h2>阿塔卡马大型毫米波阵 ALMA</h2>
@@ -87,10 +95,13 @@
       <p>66 面天线在世界上最干燥的高原上组成一台“化整为零”的望远镜。它看的不是可见光，而是毫米波——尘埃云挡得住星光，挡不住毫米波，所以它专门负责看恒星和行星正在诞生的地方。</p>
       <p class="hook">为什么值得知道：那张著名的“原行星盘同心圆沟槽”照片（正在成形的太阳系）就是它拍的。</p>
       <a class="visit" href="https://www.almaobservatory.org/" target="_blank" rel="noopener">打开官网 →</a>
+      <a class="visit2" href="https://www.almaobservatory.org/en/news/" target="_blank" rel="noopener">最新动态</a>
     </div>
   </div>
 
   <div class="card">
+    <img src="observatories/fast.jpg" alt="FAST 500 米口径球面射电望远镜航拍">
+    <div class="credit">图：SCJiang，Wikimedia Commons（CC BY-SA 4.0）</div>
     <div class="body">
       <h2>中国天眼 FAST</h2>
       <div class="meta">中国 · 贵州平塘 · 中国科学院国家天文台</div>
@@ -101,26 +112,34 @@
   </div>
 
   <div class="card">
+    <img src="observatories/keck.jpg" alt="凯克天文台双圆顶">
+    <div class="credit">图：NASA/JPL-Caltech（公有领域）</div>
     <div class="body">
       <h2>凯克天文台 W. M. Keck Observatory</h2>
       <div class="meta">美国 · 夏威夷冒纳凯亚火山（海拔约 4200 米）</div>
       <p>两台 10 米望远镜，主镜由 36 块六边形镜片拼成——这个“分段镜”方案当年是豪赌，如今成了所有超大望远镜（包括韦布空间望远镜）的标准做法。</p>
       <p class="hook">为什么值得知道：银河系中心黑洞的诺贝尔奖级观测，一半功劳在这里。</p>
       <a class="visit" href="https://www.keckobservatory.org/" target="_blank" rel="noopener">打开官网 →</a>
+      <a class="visit2" href="https://www.keckobservatory.org/news/" target="_blank" rel="noopener">最新动态</a>
     </div>
   </div>
 
   <div class="card">
+    <img src="observatories/subaru.jpg" alt="昴星团望远镜圆顶">
+    <div class="credit">图：International Gemini Observatory / NOIRLab / NSF / AURA（CC BY 4.0）</div>
     <div class="body">
       <h2>昴星团望远镜 Subaru Telescope</h2>
       <div class="meta">美国 · 夏威夷冒纳凯亚 · 日本国立天文台</div>
       <p>8.2 米的单块主镜，名字就来自你在探索器里能拉近的昴星团（M45）。它的超广视场相机特别擅长一次拍下大片天区，是研究宇宙大尺度结构的主力。</p>
       <p class="hook">为什么值得知道：官网有中文之外少见的细致科普（日/英双语），器材控会看得很开心。</p>
       <a class="visit" href="https://subarutelescope.org/en/" target="_blank" rel="noopener">打开官网 →</a>
+      <a class="visit2" href="https://subarutelescope.org/en/news/" target="_blank" rel="noopener">最新动态</a>
     </div>
   </div>
 
   <div class="card">
+    <img src="observatories/palomar.jpg" alt="帕洛马天文台海尔望远镜圆顶">
+    <div class="credit">图：NASA/JPL-Caltech（公有领域）</div>
     <div class="body">
       <h2>帕洛马天文台 Palomar Observatory</h2>
       <div class="meta">美国 · 加州 · 加州理工学院</div>
@@ -131,17 +150,20 @@
   </div>
 
   <div class="card">
+    <img src="observatories/greenwich.jpg" alt="弗拉姆斯蒂德宫与格林威治报时球">
+    <div class="credit">图：Acabashi，Wikimedia Commons（CC BY-SA 4.0）</div>
     <div class="body">
       <h2>格林威治皇家天文台 Royal Observatory Greenwich</h2>
       <div class="meta">英国 · 伦敦 · 1675 年创立</div>
       <p>本初子午线（经度 0°）就从它的院子里穿过。它早已不做前沿观测，但全世界的时间和经度都曾以它为准——今天你手机里的时区系统，源头就在这座小山上。</p>
       <p class="hook">为什么值得知道：每年的“年度天文摄影师”大赛由它主办，获奖图库美得惊人。</p>
       <a class="visit" href="https://www.rmg.co.uk/royal-observatory" target="_blank" rel="noopener">打开官网 →</a>
+      <a class="visit2" href="https://www.rmg.co.uk/whats-on/astronomy-photographer-year" target="_blank" rel="noopener">摄影大赛</a>
     </div>
   </div>
 
   <footer>
-    图片来源：ESO、NSF–DOE Vera C. Rubin Observatory / NOIRLab，均为 CC BY 4.0 授权，已按要求署名。介绍文字为本项目原创整理。
+    图片来源：ESO、NSF–DOE Vera C. Rubin Observatory / NOIRLab、International Gemini Observatory / NOIRLab / NSF / AURA（CC BY 4.0）；SCJiang、Acabashi 摄，来自 Wikimedia Commons（CC BY-SA 4.0）；NASA/JPL-Caltech（公有领域）。均已按授权要求署名。介绍文字为本项目原创整理。
   </footer>
 </div>
 </body>
