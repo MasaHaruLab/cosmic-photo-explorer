@@ -96,6 +96,30 @@ h1 {
   transform: translateY(-1px);
 }
 
+.badge-toggle {
+  cursor: pointer;
+  font: inherit;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  min-width: 52px;
+  text-align: center;
+  color: #9db8ff;
+  border-color: rgba(157, 184, 255, 0.4);
+  background: rgba(157, 184, 255, 0.08);
+  transition: background 180ms ease, border-color 180ms ease, transform 180ms ease;
+}
+
+.badge-toggle:hover {
+  background: rgba(157, 184, 255, 0.16);
+  border-color: rgba(157, 184, 255, 0.65);
+  transform: translateY(-1px);
+}
+
+.badge-toggle:focus-visible {
+  outline: 2px solid rgba(157, 184, 255, 0.7);
+  outline-offset: 2px;
+}
+
 .stage-wrap {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 320px;

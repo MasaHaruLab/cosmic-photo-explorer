@@ -1,4 +1,40 @@
 import './style.css'
+import { UI } from './content.js'
+
+const I18N = window.I18N
+I18N.register(UI)
+
+// Resolve a bilingual data field ({ zh, en }) to the active language.
+const L = (field) =>
+  field && typeof field === 'object' && !Array.isArray(field)
+    ? field[I18N.getLang()] ?? field.zh
+    : field
+
+function fillTemplate(template, params) {
+  let out = template
+  for (const name in params) out = out.split('{' + name + '}').join(String(params[name]))
+  return out
+}
+
+// data.group is a stable Chinese key shared between the anchors, the tour
+// checkboxes and getTourStops(); only its display label is localized.
+const GROUP_KEYS = {
+  '夏季银河': 'tour.group.summer',
+  '秋冬星空': 'tour.group.autumn',
+  '南天深空': 'tour.group.south',
+  '深空信使': 'tour.group.probes',
+}
+function groupLabel(group) {
+  return GROUP_KEYS[group] ? I18N.t(GROUP_KEYS[group]) : group
+}
+
+const PROBE_LABELS = {
+  'voyager-1': { zh: '旅行者 1 号', en: 'Voyager 1' },
+  'voyager-2': { zh: '旅行者 2 号', en: 'Voyager 2' },
+  'pioneer-10': { zh: '先驱者 10 号', en: 'Pioneer 10' },
+  'pioneer-11': { zh: '先驱者 11 号', en: 'Pioneer 11' },
+  'new-horizons': { zh: '新视野号', en: 'New Horizons' },
+}
 
 const anchorsUrl = 'data/anchors/phase1.json'
 const probesUrl = 'data/probes.json'
@@ -40,36 +76,60 @@ const nasaImageQueries = {
 // the baked Horizons data.
 const probeCopy = {
   'voyager-1': {
-    summary: '人类飞得最远的造物。1977 年出发，现在在 255 亿公里外，仍在用微弱的信号回话。',
-    details: '1990 年它回头拍了那张《暗淡蓝点》——地球只是一粒悬浮在阳光里的尘埃。2012 年它穿出日球层，成为第一个进入星际空间的人造物。丝带上的年度小波浪不是它在抖，是地球带着我们绕太阳转圈的视差——证据就画在天上。',
+    summary: {
+      zh: '人类飞得最远的造物。1977 年出发，现在在 255 亿公里外，仍在用微弱的信号回话。',
+      en: 'The most distant object humanity has ever built. Launched in 1977, it is now 25.5 billion kilometres away and still answering with a faint signal.',
+    },
+    details: {
+      zh: '1990 年它回头拍了那张《暗淡蓝点》——地球只是一粒悬浮在阳光里的尘埃。2012 年它穿出日球层，成为第一个进入星际空间的人造物。丝带上的年度小波浪不是它在抖，是地球带着我们绕太阳转圈的视差——证据就画在天上。',
+      en: 'In 1990 it turned back to take the “Pale Blue Dot” — Earth reduced to a mote suspended in a sunbeam. In 2012 it crossed the heliopause to become the first human-made object in interstellar space. The small yearly waves along its ribbon aren’t the probe trembling; they are the parallax of Earth carrying us around the Sun — the proof written across the sky.',
+    },
   },
   'voyager-2': {
-    summary: '唯一近距离看过天王星和海王星的探测器，比 1 号还早出发两周。',
-    details: '它走了一条更贪心的路线：木星、土星、天王星、海王星四连访，至今无人重复。2018 年它也进入了星际空间。现在朝着南天的孔雀座方向飞去。',
+    summary: {
+      zh: '唯一近距离看过天王星和海王星的探测器，比 1 号还早出发两周。',
+      en: 'The only probe ever to see Uranus and Neptune up close — and it launched two weeks before Voyager 1.',
+    },
+    details: {
+      zh: '它走了一条更贪心的路线：木星、土星、天王星、海王星四连访，至今无人重复。2018 年它也进入了星际空间。现在朝着南天的孔雀座方向飞去。',
+      en: 'It took the greedier route: a grand tour of Jupiter, Saturn, Uranus and Neptune that no craft has repeated since. In 2018 it too entered interstellar space. It is now heading toward Pavo, the Peacock, in the southern sky.',
+    },
   },
   'pioneer-10': {
-    summary: '第一个穿过小行星带、第一个近距离看木星的探测器，1972 年出发。',
-    details: '2003 年地球最后一次收到它的信号，之后它安静地继续飞，方向正对金牛座的毕宿五。它带着一块刻着人类男女形象和太阳系位置的金属板——如果有谁捡到它，那是我们的自我介绍。',
+    summary: {
+      zh: '第一个穿过小行星带、第一个近距离看木星的探测器，1972 年出发。',
+      en: 'The first probe to cross the asteroid belt and the first to see Jupiter up close, launched in 1972.',
+    },
+    details: {
+      zh: '2003 年地球最后一次收到它的信号，之后它安静地继续飞，方向正对金牛座的毕宿五。它带着一块刻着人类男女形象和太阳系位置的金属板——如果有谁捡到它，那是我们的自我介绍。',
+      en: 'Earth last heard from it in 2003; since then it has flown on in silence, aimed toward Aldebaran in Taurus. It carries a metal plaque engraved with human figures and the location of our Solar System — should anyone ever find it, that is our introduction.',
+    },
   },
   'pioneer-11': {
-    summary: '第一个近距离看土星的探测器，也带着那块著名的人类名片金属板。',
-    details: '1979 年它替人类第一次撩开土星的面纱，为后来的旅行者和卡西尼探路。1995 年失联。它现在朝着天鹰座方向漂流，大约几百万年后会路过那里的一颗恒星。',
+    summary: {
+      zh: '第一个近距离看土星的探测器，也带着那块著名的人类名片金属板。',
+      en: 'The first probe to see Saturn up close, and it carries the same famous plaque — humanity’s calling card.',
+    },
+    details: {
+      zh: '1979 年它替人类第一次撩开土星的面纱，为后来的旅行者和卡西尼探路。1995 年失联。它现在朝着天鹰座方向漂流，大约几百万年后会路过那里的一颗恒星。',
+      en: 'In 1979 it lifted the veil on Saturn for the first time, scouting the way for the Voyagers and Cassini that followed. Contact was lost in 1995. It now drifts toward Aquila, the Eagle, and in a few million years will pass one of its stars.',
+    },
   },
   'new-horizons': {
-    summary: '2015 年飞掠冥王星，把一颗模糊的光点变成了有冰川和心形平原的世界。',
-    details: '它是这五位信使里最年轻的，还在柯伊伯带工作，仍定期回传数据。它出发那年冥王星还是"第九大行星"，飞到一半冥王星被除名——它不在乎，照飞。',
+    summary: {
+      zh: '2015 年飞掠冥王星，把一颗模糊的光点变成了有冰川和心形平原的世界。',
+      en: 'In 2015 it flew past Pluto, turning a blurry speck of light into a world of glaciers and a heart-shaped plain.',
+    },
+    details: {
+      zh: '它是这五位信使里最年轻的，还在柯伊伯带工作，仍定期回传数据。它出发那年冥王星还是"第九大行星"，飞到一半冥王星被除名——它不在乎，照飞。',
+      en: 'It is the youngest of these five messengers, still at work in the Kuiper Belt and still sending data home. Pluto was the “ninth planet” the year it launched; midway through the journey Pluto was reclassified — the probe didn’t care, and flew on.',
+    },
   },
 }
 
-const surveyBoundary = {
-  [overviewSurvey]: {
-    title: '真实数据 · Gaia DR3 官方全天图',
-    copy: '这层底图来自 ESA Gaia DR3 的官方全天渲染，基于约 18 亿颗被实际测量的恒星位置与亮度。它适合做银河的大尺度总览，而不是深空长曝光照片。近距离下它会显出颗粒感——每个亮点都是一颗被单独测量的恒星，这正是“测量图”和“照片”的区别。',
-  },
-  [closeUpSurvey]: {
-    title: '真实数据 · DSS2 巡天照片',
-    copy: '这层底图来自 DSS2 数字化巡天照片，放大到具体天区时能看到真实照相底片记录下的星场。它更适合近距离查看星云、暗云和密集星区。',
-  },
+const surveyBoundaryKeys = {
+  [overviewSurvey]: { title: 'boundary.gaiaTitle', copy: 'boundary.gaiaCopy' },
+  [closeUpSurvey]: { title: 'boundary.dss2Title', copy: 'boundary.dss2Copy' },
 }
 
 const app = document.querySelector('#app')
@@ -78,15 +138,17 @@ app.innerHTML = `
   <div class="shell">
     <header class="topbar">
       <div>
-        <div class="eyebrow">第一阶段 / 真实数据模式</div>
-        <h1>星空照片探索器</h1>
-        <p class="subtitle">从真实巡天数据进入银河：先看整片天空，再拉近到可以辨认的天区。</p>
+        <div class="eyebrow" data-i18n="topbar.eyebrow">第一阶段 / 真实数据模式</div>
+        <h1 data-i18n="topbar.title">星空照片探索器</h1>
+        <p class="subtitle" data-i18n="topbar.subtitle">从真实巡天数据进入银河：先看整片天空，再拉近到可以辨认的天区。</p>
       </div>
       <div class="topbar-actions">
-        <div class="badge">银河总览</div>
-        <a class="badge badge-link" href="solar.html">太阳系 →</a>
-        <a class="badge badge-link" href="stations.html">空间站 →</a>
-        <a class="badge badge-link" href="observatories.html">观星台 →</a>
+        <div class="badge" data-i18n="nav.overview">银河总览</div>
+        <a class="badge badge-link" href="solar.html" data-i18n="nav.solar">太阳系 →</a>
+        <a class="badge badge-link" href="stations.html" data-i18n="nav.stations">空间站 →</a>
+        <a class="badge badge-link" href="observatories.html" data-i18n="nav.observatories">观星台 →</a>
+        <a class="badge badge-link" href="reference.html" data-i18n="nav.reference">来源 →</a>
+        <button class="badge badge-toggle" type="button" data-lang-toggle>EN</button>
       </div>
     </header>
 
@@ -94,51 +156,51 @@ app.innerHTML = `
       <section class="stage">
         <div class="hero-view">
           <div class="hero-scene" data-hero-scene>
-            <div id="sky-view" aria-label="可交互星空视图"></div>
+            <div id="sky-view" data-i18n-attr="aria-label:aria.skyView" aria-label="可交互星空视图"></div>
             <div class="hero-overlay"></div>
             <div class="anchor-layer" data-anchor-layer></div>
             <div class="survey-chip" data-survey-chip hidden>
-              <button class="survey-option" type="button" data-survey-choice="dss2">DSS2 照片</button>
-              <button class="survey-option" type="button" data-survey-choice="gaia">Gaia 测量图</button>
+              <button class="survey-option" type="button" data-survey-choice="dss2" data-i18n="survey.dss2">DSS2 照片</button>
+              <button class="survey-option" type="button" data-survey-choice="gaia" data-i18n="survey.gaia">Gaia 测量图</button>
             </div>
           </div>
           <div class="hero-caption" data-hero-caption>
-            <div class="hero-kicker">真实天空 / 可交互巡天底图</div>
-            <h2>把银河拉近</h2>
-            <p>拖动天空可以自由探索，点击标记会把视野平滑带到对应天区。总览使用 Gaia DR3，近距离自动切到 DSS2。</p>
+            <div class="hero-kicker" data-i18n="hero.kicker">真实天空 / 可交互巡天底图</div>
+            <h2 data-i18n="hero.title">把银河拉近</h2>
+            <p data-i18n="hero.text">拖动天空可以自由探索，点击标记会把视野平滑带到对应天区。总览使用 Gaia DR3，近距离自动切到 DSS2。</p>
           </div>
         </div>
       </section>
 
       <aside class="panel">
         <div class="panel-section">
-          <div class="panel-label">模式</div>
-          <div class="panel-value">真实数据底图</div>
+          <div class="panel-label" data-i18n="panel.mode">模式</div>
+          <div class="panel-value" data-i18n="panel.modeValue">真实数据底图</div>
         </div>
         <div class="panel-section">
-          <div class="panel-label">状态</div>
+          <div class="panel-label" data-i18n="panel.status">状态</div>
           <div class="panel-value" data-panel-status>总览模式</div>
         </div>
         <div class="panel-section">
-          <div class="panel-label">当前目标</div>
+          <div class="panel-label" data-i18n="panel.target">当前目标</div>
           <div class="panel-value panel-title" data-panel-title>正在加载锚点…</div>
           <div class="panel-copy" data-panel-summary></div>
           <div class="panel-copy" data-panel-details>
             这里不再只是静态背景，而是可以从真实天空数据进入的探索界面。
           </div>
           <div class="panel-actions">
-            <button class="ghost-button" type="button" data-nasa-open hidden>在 NASA 图库看这里</button>
+            <button class="ghost-button" type="button" data-nasa-open data-i18n="btn.nasaOpen" hidden>在 NASA 图库看这里</button>
           </div>
           <div class="probe-timeline" data-probe-timeline hidden>
-            <div class="panel-label">时间机器</div>
-            <input type="range" class="timeline-range" data-timeline-range min="0" max="1000" value="1000" aria-label="轨迹时间轴" />
+            <div class="panel-label" data-i18n="panel.timeMachine">时间机器</div>
+            <input type="range" class="timeline-range" data-timeline-range min="0" max="1000" value="1000" data-i18n-attr="aria-label:aria.timeline" aria-label="轨迹时间轴" />
             <div class="panel-copy timeline-label" data-timeline-label></div>
             <div class="panel-actions timeline-actions">
               <button class="primary-button" type="button" data-probe-play>▶ 从头播放</button>
-              <button class="ghost-button" type="button" data-probe-parallax aria-expanded="false">为什么是弹簧形？</button>
+              <button class="ghost-button" type="button" data-probe-parallax data-i18n="probe.parallaxBtn" aria-expanded="false">为什么是弹簧形？</button>
             </div>
             <div class="explainer-card parallax-card" data-parallax-card hidden>
-              <svg class="parallax-diagram" viewBox="0 0 320 132" role="img" aria-label="视差示意图：地球绕太阳运动造成探测器在天上的表观弹簧轨迹">
+              <svg class="parallax-diagram" viewBox="0 0 320 132" role="img" aria-label="Parallax diagram">
                 <line x1="52" y1="66" x2="300" y2="66" stroke="rgba(255,255,255,0.16)" stroke-dasharray="2 4" />
                 <ellipse cx="52" cy="66" rx="26" ry="40" fill="none" stroke="rgba(157,184,255,0.4)" stroke-width="1" />
                 <circle cx="52" cy="66" r="7" fill="#ffd479" />
@@ -146,68 +208,68 @@ app.innerHTML = `
                 <line x1="52" y1="26" x2="286" y2="60" stroke="rgba(214,226,255,0.45)" stroke-dasharray="3 3" />
                 <line x1="52" y1="106" x2="286" y2="72" stroke="rgba(214,226,255,0.45)" stroke-dasharray="3 3" />
                 <circle cx="52" cy="26" r="4" fill="#9db8ff" />
-                <text x="42" y="22" text-anchor="end" font-size="9" fill="rgba(198,216,255,0.85)">1月</text>
+                <text x="42" y="22" text-anchor="end" font-size="9" fill="rgba(198,216,255,0.85)" data-i18n="parallax.jan">1月</text>
                 <circle cx="52" cy="106" r="4" fill="#9db8ff" />
-                <text x="42" y="110" text-anchor="end" font-size="9" fill="rgba(198,216,255,0.85)">7月</text>
+                <text x="42" y="110" text-anchor="end" font-size="9" fill="rgba(198,216,255,0.85)" data-i18n="parallax.jul">7月</text>
                 <path d="M232 66 q10 -9 20 0 q10 9 20 0 q10 -9 20 0" fill="none" stroke="#d6e2ff" stroke-width="1.6" />
                 <circle cx="292" cy="66" r="3.5" fill="#d6e2ff" />
-                <text x="256" y="94" text-anchor="middle" font-size="9" fill="rgba(214,226,255,0.85)">表观：弹簧</text>
-                <text x="150" y="120" text-anchor="middle" font-size="9" fill="rgba(198,216,255,0.6)">探测器实际沿直线飞离太阳 →</text>
+                <text x="256" y="94" text-anchor="middle" font-size="9" fill="rgba(214,226,255,0.85)" data-i18n="parallax.apparent">表观：弹簧</text>
+                <text x="150" y="120" text-anchor="middle" font-size="9" fill="rgba(198,216,255,0.6)" data-i18n="parallax.straight">探测器实际沿直线飞离太阳 →</text>
               </svg>
-              <p><strong>探测器几乎是沿直线飞离太阳的——它没有在天上画弹簧。</strong>弹簧是我们自己「画」上去的。</p>
-              <p>地球每年带着我们绕太阳转一整圈，观测点来回摆动约 3 亿公里（±1 个日地距离）。从这个来回移动的位置看同一个探测器，它相对遥远背景星空的方向就每年左右摆一次——这叫<strong>视差</strong>。把探测器缓慢的真实漂移，叠上这一年一次的摆动，画在天上就成了弹簧／螺旋。</p>
-              <p>离得越近（出发早期）视差环越大，越飞越远环越缩越小。这正是天文学测量恒星距离用的同一招。</p>
+              <p data-i18n-html="parallax.p1"><strong>探测器几乎是沿直线飞离太阳的——它没有在天上画弹簧。</strong>弹簧是我们自己「画」上去的。</p>
+              <p data-i18n-html="parallax.p2">地球每年带着我们绕太阳转一整圈，观测点来回摆动约 3 亿公里（±1 个日地距离）。从这个来回移动的位置看同一个探测器，它相对遥远背景星空的方向就每年左右摆一次——这叫<strong>视差</strong>。把探测器缓慢的真实漂移，叠上这一年一次的摆动，画在天上就成了弹簧／螺旋。</p>
+              <p data-i18n-html="parallax.p3">离得越近（出发早期）视差环越大，越飞越远环越缩越小。这正是天文学测量恒星距离用的同一招。</p>
             </div>
           </div>
         </div>
         <div class="panel-section">
-          <div class="panel-label">边界</div>
+          <div class="panel-label" data-i18n="panel.boundary">边界</div>
           <div class="panel-value panel-boundary-title" data-panel-boundary-title>真实数据 · Gaia DR3 官方全天图</div>
           <div class="panel-copy" data-panel-boundary-copy></div>
         </div>
         <div class="panel-section">
-          <div class="panel-label">天区</div>
+          <div class="panel-label" data-i18n="panel.regions">天区</div>
           <div class="target-list" data-target-list></div>
         </div>
         <div class="panel-section">
-          <div class="panel-label">解释层</div>
+          <div class="panel-label" data-i18n="panel.explain">解释层</div>
           <div class="panel-actions">
-            <button class="ghost-button" type="button" data-toggle-bortle aria-expanded="false">光污染阶梯</button>
-            <button class="ghost-button" type="button" data-toggle-galaxy aria-expanded="false">跳出银河系</button>
-            <button class="ghost-button" type="button" data-toggle-apod aria-expanded="false">NASA 今天看什么</button>
+            <button class="ghost-button" type="button" data-toggle-bortle data-i18n="btn.bortle" aria-expanded="false">光污染阶梯</button>
+            <button class="ghost-button" type="button" data-toggle-galaxy data-i18n="btn.galaxy" aria-expanded="false">跳出银河系</button>
+            <button class="ghost-button" type="button" data-toggle-apod data-i18n="btn.apod" aria-expanded="false">NASA 今天看什么</button>
           </div>
           <div class="explainer-card" data-apod-card hidden>
             <div class="panel-copy" data-apod-content>正在向 NASA 查询今天的天文图…</div>
           </div>
           <div class="explainer-card" data-bortle-card hidden>
-            <img src="explainers/bortle_scale.png" alt="Bortle 光污染等级示意图" />
-            <p>Bortle 标尺用 1 到 9 级描述夜空黑暗程度，级别越高，城市灯光对星空的遮蔽越明显。今天许多人看不到照片里的银河，主要不是银河消失了，而是城市光污染把它淹没在夜空背景里。</p>
+            <img src="explainers/bortle_scale.png" data-i18n-attr="alt:img.bortleAlt" alt="Bortle 光污染等级示意图" />
+            <p data-i18n="bortle.text">Bortle 标尺用 1 到 9 级描述夜空黑暗程度，级别越高，城市灯光对星空的遮蔽越明显。今天许多人看不到照片里的银河，主要不是银河消失了，而是城市光污染把它淹没在夜空背景里。</p>
           </div>
           <div class="explainer-card" data-galaxy-card hidden>
-            <img src="explainers/milky_way_topdown.jpg" alt="银河系俯视示意图（艺术想象，基于真实测量）" />
-            <p>这是银河系的俯视示意图（NASA/JPL-Caltech/R. Hurt，基于真实测量绘制）。注意"示意"两个字：人类没有任何一张从外面拍的银河系照片——飞得最远的旅行者 1 号走了近 50 年，也才离家 0.003 光年，而想拍到全貌得飞出去几万光年。所有"银河系全景"都是根据真实测量画出来的。</p>
-            <p>但我们有一面真实的镜子：仙女座星系。它在 254 万光年外，和银河系是同类型的旋涡星系——在锚点列表里点开它，看到的那团旋涡，差不多就是别人眼中的我们。这是人类唯一能"看见自己"的方式，而且那是货真价实的照片。</p>
-            <p>Gaia 精确测量的恒星，大多在太阳周围几千光年的范围内。这已经是人类历史上最大的三维星图，但放到直径约十万光年的整个银河系里，仍然只是家门口的一小片。宇宙地图，才刚刚开始画。</p>
+            <img src="explainers/milky_way_topdown.jpg" data-i18n-attr="alt:img.galaxyAlt" alt="银河系俯视示意图（艺术想象，基于真实测量）" />
+            <p data-i18n="galaxy.p1">这是银河系的俯视示意图（NASA/JPL-Caltech/R. Hurt，基于真实测量绘制）。注意"示意"两个字：人类没有任何一张从外面拍的银河系照片——飞得最远的旅行者 1 号走了近 50 年，也才离家 0.003 光年，而想拍到全貌得飞出去几万光年。所有"银河系全景"都是根据真实测量画出来的。</p>
+            <p data-i18n="galaxy.p2">但我们有一面真实的镜子：仙女座星系。它在 254 万光年外，和银河系是同类型的旋涡星系——在锚点列表里点开它，看到的那团旋涡，差不多就是别人眼中的我们。这是人类唯一能"看见自己"的方式，而且那是货真价实的照片。</p>
+            <p data-i18n="galaxy.p3">Gaia 精确测量的恒星，大多在太阳周围几千光年的范围内。这已经是人类历史上最大的三维星图，但放到直径约十万光年的整个银河系里，仍然只是家门口的一小片。宇宙地图，才刚刚开始画。</p>
           </div>
-          <div class="panel-copy boundary-note">底图边界说明：Gaia 测量的是恒星位置与亮度，不是深空长曝光照片；DSS2 来自上世纪照相底片数字化，近看会保留底片和拼接痕迹。</div>
+          <div class="panel-copy boundary-note" data-i18n="boundary.note">底图边界说明：Gaia 测量的是恒星位置与亮度，不是深空长曝光照片；DSS2 来自上世纪照相底片数字化，近看会保留底片和拼接痕迹。</div>
         </div>
         <div class="panel-section">
-          <div class="panel-label">下一步</div>
+          <div class="panel-label" data-i18n="panel.next">下一步</div>
           <div class="panel-value" data-panel-next>点击一个天区开始拉近。</div>
           <div class="panel-actions">
             <button class="primary-button" type="button" data-tour-toggle>自动漫游</button>
-            <button class="ghost-button" type="button" data-reset-view>重置视野</button>
+            <button class="ghost-button" type="button" data-reset-view data-i18n="btn.reset">重置视野</button>
           </div>
           <div class="tour-config" data-tour-config>
-            <label><input type="checkbox" data-tour-group="夏季银河" checked /> 夏季银河</label>
-            <label><input type="checkbox" data-tour-group="秋冬星空" checked /> 秋冬星空</label>
-            <label><input type="checkbox" data-tour-group="南天深空" checked /> 南天深空</label>
-            <label><input type="checkbox" data-tour-group="深空信使" /> 深空信使</label>
-            <label class="tour-dwell">每站停留
+            <label><input type="checkbox" data-tour-group="夏季银河" checked /> <span data-i18n="tour.group.summer">夏季银河</span></label>
+            <label><input type="checkbox" data-tour-group="秋冬星空" checked /> <span data-i18n="tour.group.autumn">秋冬星空</span></label>
+            <label><input type="checkbox" data-tour-group="南天深空" checked /> <span data-i18n="tour.group.south">南天深空</span></label>
+            <label><input type="checkbox" data-tour-group="深空信使" /> <span data-i18n="tour.group.probes">深空信使</span></label>
+            <label class="tour-dwell"><span data-i18n="tour.dwell">每站停留</span>
               <select data-tour-dwell>
-                <option value="4000">4 秒</option>
-                <option value="6000" selected>6 秒</option>
-                <option value="10000">10 秒</option>
+                <option value="4000" data-i18n="tour.dwell4">4 秒</option>
+                <option value="6000" selected data-i18n="tour.dwell6">6 秒</option>
+                <option value="10000" data-i18n="tour.dwell10">10 秒</option>
               </select>
             </label>
           </div>
@@ -216,25 +278,25 @@ app.innerHTML = `
     </main>
   </div>
   <div class="modal-backdrop" data-nasa-modal hidden>
-    <section class="nasa-modal" role="dialog" aria-label="NASA 图库">
+    <section class="nasa-modal" role="dialog" data-i18n-attr="aria-label:nasa.modalTitle" aria-label="NASA 图库">
       <div class="nasa-modal-header">
         <h3 data-nasa-title>NASA 图库</h3>
-        <button class="modal-close" type="button" data-nasa-close aria-label="关闭 NASA 图库">×</button>
+        <button class="modal-close" type="button" data-nasa-close data-i18n-attr="aria-label:nasa.close" aria-label="关闭 NASA 图库">×</button>
       </div>
       <div class="nasa-modal-body" data-nasa-content></div>
-      <p class="nasa-modal-footer">图片版权归 NASA 及其合作机构所有，点击缩略图直接看大图。</p>
+      <p class="nasa-modal-footer" data-i18n="nasa.footer">图片版权归 NASA 及其合作机构所有，点击缩略图直接看大图。</p>
     </section>
   </div>
   <div class="lightbox-backdrop" data-nasa-lightbox hidden>
-    <figure class="nasa-lightbox" role="dialog" aria-label="NASA 大图">
-      <button class="modal-close lightbox-close" type="button" data-lightbox-close aria-label="关闭大图">×</button>
+    <figure class="nasa-lightbox" role="dialog" data-i18n-attr="aria-label:aria.lightbox" aria-label="NASA full-size image">
+      <button class="modal-close lightbox-close" type="button" data-lightbox-close data-i18n-attr="aria-label:lightbox.close" aria-label="关闭大图">×</button>
       <div class="lightbox-stage">
         <div class="nasa-state" data-lightbox-state>正在加载大图…</div>
         <img data-lightbox-img alt="" hidden />
       </div>
       <figcaption class="lightbox-caption">
         <span data-lightbox-title></span>
-        <a data-lightbox-nasa-link href="#" target="_blank" rel="noreferrer">在 NASA 页面打开 ↗</a>
+        <a data-lightbox-nasa-link href="#" target="_blank" rel="noreferrer" data-i18n="lightbox.open">在 NASA 页面打开 ↗</a>
       </figcaption>
     </figure>
   </div>
@@ -291,6 +353,19 @@ let tourTimeoutId = null
 let tourToken = 0
 const nasaCache = new Map()
 let nasaRequestToken = 0
+
+// Status / next-step lines are set from JS, so remember the current key+params
+// to re-render them when the language flips.
+let statusState = { key: 'status.overview', params: {} }
+let nextState = { key: 'next.clickRegion', params: {} }
+function setStatus(key, params = {}) {
+  statusState = { key, params }
+  panelStatus.textContent = I18N.t(key, params)
+}
+function setNext(key, params = {}) {
+  nextState = { key, params }
+  panelNext.textContent = I18N.t(key, params)
+}
 
 function easeInOutCubic(t) {
   return t < 0.5 ? 4 * t * t * t : 1 - ((-2 * t + 2) ** 3) / 2
@@ -407,9 +482,9 @@ function syncCurrentView() {
 }
 
 function renderBoundary() {
-  const boundary = surveyBoundary[activeSurvey] ?? surveyBoundary[overviewSurvey]
-  panelBoundaryTitle.textContent = boundary.title
-  panelBoundaryCopy.textContent = boundary.copy
+  const keys = surveyBoundaryKeys[activeSurvey] ?? surveyBoundaryKeys[overviewSurvey]
+  panelBoundaryTitle.textContent = I18N.t(keys.title)
+  panelBoundaryCopy.textContent = I18N.t(keys.copy)
 }
 
 function escapeHtml(value) {
@@ -482,9 +557,9 @@ function refreshSkyState() {
 }
 
 function renderPanel(anchor) {
-  panelTitle.textContent = anchor.label
-  panelSummary.textContent = anchor.summary
-  panelDetails.textContent = anchor.details
+  panelTitle.textContent = L(anchor.label)
+  panelSummary.textContent = L(anchor.summary)
+  panelDetails.textContent = L(anchor.details)
   nasaOpenButton.hidden = !anchor
   renderBoundary()
 }
@@ -495,7 +570,7 @@ function renderNasaState(message) {
 
 function renderNasaImages(images) {
   if (!images.length) {
-    renderNasaState('这个天区在 NASA 图库里没有直接匹配的照片。')
+    renderNasaState(I18N.t('nasa.none'))
     return
   }
 
@@ -536,7 +611,7 @@ function openNasaLightbox(image) {
   nasaLightboxTitle.textContent = image.title
   nasaLightboxLink.href = `https://images.nasa.gov/details/${encodeURIComponent(image.nasaId)}`
   nasaLightboxState.hidden = false
-  nasaLightboxState.textContent = '正在加载大图…'
+  nasaLightboxState.textContent = I18N.t('lightbox.loading')
   nasaLightboxImg.hidden = true
   nasaLightboxImg.onload = () => {
     nasaLightboxState.hidden = true
@@ -547,7 +622,7 @@ function openNasaLightbox(image) {
     if (attempt < candidates.length) {
       nasaLightboxImg.src = candidates[attempt]
     } else {
-      nasaLightboxState.textContent = '大图加载失败，可以去 NASA 页面查看。'
+      nasaLightboxState.textContent = I18N.t('lightbox.fail')
     }
   }
   nasaLightboxImg.src = candidates[0]
@@ -570,7 +645,7 @@ function normalizeNasaItems(items) {
 
       return {
         nasaId: data.nasa_id,
-        title: data.title || 'NASA 图像',
+        title: data.title || I18N.t('nasa.defaultTitle'),
         thumbnail,
       }
     })
@@ -584,13 +659,13 @@ async function loadNasaImages(anchor, token) {
     return
   }
 
-  const query = nasaImageQueries[anchor.id] ?? anchor.label
+  const query = nasaImageQueries[anchor.id] ?? L(anchor.label)
   const url = new URL('https://images-api.nasa.gov/search')
   url.searchParams.set('q', query)
   url.searchParams.set('media_type', 'image')
   url.searchParams.set('page_size', '6')
 
-  renderNasaState('正在向 NASA 查询…')
+  renderNasaState(I18N.t('nasa.querying'))
 
   try {
     const response = await fetch(url)
@@ -600,7 +675,7 @@ async function loadNasaImages(anchor, token) {
     nasaCache.set(anchor.id, images)
     if (token === nasaRequestToken) renderNasaImages(images)
   } catch {
-    if (token === nasaRequestToken) renderNasaState('查询失败，可能是网络问题。')
+    if (token === nasaRequestToken) renderNasaState(I18N.t('nasa.failed'))
   }
 }
 
@@ -615,7 +690,7 @@ function openNasaModal() {
 
   const token = nasaRequestToken + 1
   nasaRequestToken = token
-  nasaTitle.textContent = `NASA 图库 · ${anchor.label}`
+  nasaTitle.textContent = I18N.t('nasa.modalTitleFor', { name: L(anchor.label) })
   nasaModal.hidden = false
   loadNasaImages(anchor, token)
 }
@@ -649,7 +724,7 @@ function stopTour(options = {}) {
   isTouring = false
   clearTourTimeout()
   if (cancelTween) cancelActiveTween()
-  tourButton.textContent = '自动漫游'
+  tourButton.textContent = I18N.t('btn.tour')
 }
 
 function applySkyView(view) {
@@ -714,8 +789,8 @@ function selectAnchor(anchorId, options = {}) {
 
   if (moveSky) {
     surveyMode = 'auto'
-    panelStatus.textContent = `已拉近：${anchor.label}`
-    panelNext.textContent = '可以继续拖动天空，或切换到另一个天区。'
+    setStatus('status.zoomedTo', { name: L(anchor.label) })
+    setNext('next.dragOrSwitch')
     tweenToView({ ...anchor.sky, fov: anchor.fov }, updateHotspotPositions)
   }
 }
@@ -727,11 +802,11 @@ function renderAnchors() {
         class="anchor-hotspot${anchor.id === selectedId ? ' is-selected' : ''}"
         type="button"
         data-anchor-id="${anchor.id}"
-        aria-label="${anchor.label}"
-        title="${anchor.label}"
+        aria-label="${escapeHtml(L(anchor.label))}"
+        title="${escapeHtml(L(anchor.label))}"
       >
         <span class="anchor-dot"></span>
-        <span class="anchor-label">${anchor.label}</span>
+        <span class="anchor-label">${escapeHtml(L(anchor.label))}</span>
       </button>
     `)
     .join('')
@@ -757,7 +832,7 @@ function renderTargetList() {
   for (const anchor of anchors) {
     if (anchor.group !== currentGroup) {
       currentGroup = anchor.group
-      parts.push(`<div class="target-group-label">${currentGroup}</div>`)
+      parts.push(`<div class="target-group-label">${escapeHtml(groupLabel(currentGroup))}</div>`)
     }
     parts.push(`
       <button
@@ -765,7 +840,7 @@ function renderTargetList() {
         type="button"
         data-anchor-id="${anchor.id}"
       >
-        ${anchor.label}
+        ${escapeHtml(L(anchor.label))}
       </button>
     `)
   }
@@ -778,15 +853,15 @@ function renderTargetList() {
 
 function finishTour(token) {
   surveyMode = 'auto'
-  panelStatus.textContent = '返回总览'
-  panelNext.textContent = '漫游结束后可以重新选择任意天区。'
+  setStatus('status.backToOverview')
+  setNext('next.tourEnded')
   tweenToView(overviewView, () => {
     if (token !== tourToken) return
     isTouring = false
     clearTourTimeout()
-    tourButton.textContent = '自动漫游'
-    panelStatus.textContent = '总览模式'
-    panelNext.textContent = '点击一个天区开始拉近。'
+    tourButton.textContent = I18N.t('btn.tour')
+    setStatus('status.overview')
+    setNext('next.clickRegion')
     setActiveSurvey(overviewSurvey)
     updateHotspotPositions()
   })
@@ -810,8 +885,8 @@ function visitTourStop(index, token) {
   const anchor = stops[index]
   surveyMode = 'auto'
   selectAnchor(anchor.id, { moveSky: false, fromTour: true })
-  panelStatus.textContent = `漫游中 (${index + 1}/${stops.length})：${anchor.label}`
-  panelNext.textContent = '自动漫游会停留片刻，然后前往下一站。'
+  setStatus('status.touring', { i: index + 1, n: stops.length, name: L(anchor.label) })
+  setNext('next.tourDwell')
 
   tweenToView({ ...anchor.sky, fov: anchor.fov }, () => {
     if (token !== tourToken || !isTouring) return
@@ -824,14 +899,14 @@ function visitTourStop(index, token) {
 
 function startTour() {
   if (!getTourStops().length) {
-    panelNext.textContent = '先在下面勾选至少一组天区，再开始漫游。'
+    setNext('next.pickGroup')
     return
   }
 
   stopTour({ cancelTween: true })
   isTouring = true
   tourToken += 1
-  tourButton.textContent = '停止漫游'
+  tourButton.textContent = I18N.t('btn.tourStop')
   visitTourStop(0, tourToken)
 }
 
@@ -839,8 +914,9 @@ function toggleTour() {
   if (isTouring) {
     stopTour({ cancelTween: true })
     const selected = anchors.find((item) => item.id === selectedId)
-    panelStatus.textContent = selected ? `已停止：${selected.label}` : '已停止漫游'
-    panelNext.textContent = '可以继续拖动天空，或重新开始自动漫游。'
+    if (selected) setStatus('status.stopped', { name: L(selected.label) })
+    else setStatus('status.stoppedTour')
+    setNext('next.dragOrRestart')
     return
   }
 
@@ -850,8 +926,8 @@ function toggleTour() {
 function resetView() {
   stopTour({ cancelTween: true })
   surveyMode = 'auto'
-  panelStatus.textContent = '总览模式'
-  panelNext.textContent = '点击一个天区开始拉近。'
+  setStatus('status.overview')
+  setNext('next.clickRegion')
   tweenToView(overviewView, () => {
     setActiveSurvey(overviewSurvey)
     updateHotspotPositions()
@@ -890,14 +966,14 @@ async function loadApod() {
     const apod = await response.json()
     const imageUrl = apod.media_type === 'video' ? apod.thumbnail_url : apod.url
     apodContent.innerHTML = `
-      ${imageUrl ? `<img src="${imageUrl}" alt="NASA 每日一图" />` : ''}
-      <p><strong>${apod.title ?? ''}</strong>（${apod.date ?? ''}）</p>
-      ${apod.media_type === 'video' ? `<p><a href="${apod.url}" target="_blank" rel="noreferrer">今天是段视频，去看 ↗</a></p>` : ''}
-      <p>${(apod.explanation ?? '').slice(0, 300)}…（英文原文，<a href="https://apod.nasa.gov/apod/astropix.html" target="_blank" rel="noreferrer">APOD 官网 ↗</a>）</p>
+      ${imageUrl ? `<img src="${imageUrl}" alt="${escapeHtml(I18N.t('apod.imgAlt'))}" />` : ''}
+      <p>${I18N.t('apod.titleLine', { title: escapeHtml(apod.title ?? ''), date: escapeHtml(apod.date ?? '') })}</p>
+      ${apod.media_type === 'video' ? `<p><a href="${apod.url}" target="_blank" rel="noreferrer">${I18N.t('apod.videoLink')}</a></p>` : ''}
+      <p>${I18N.t('apod.explainZh', { text: escapeHtml((apod.explanation ?? '').slice(0, 300)) })}</p>
     `
   } catch {
     apodLoaded = false
-    apodContent.textContent = '查询失败——NASA 的免费接口偶尔限流，过一会儿再点一次。'
+    apodContent.textContent = I18N.t('apod.failed')
   }
 }
 
@@ -957,7 +1033,7 @@ function addWinterTriangleOverlay() {
 
 async function initAladin() {
   if (!window.A?.init) {
-    throw new Error('Aladin Lite 没有加载成功。')
+    throw new Error(I18N.t('error.aladin'))
   }
 
   await window.A.init
@@ -986,12 +1062,13 @@ async function initAladin() {
 let probePaths = []
 
 function probesToAnchors(probes) {
+  const suffix = UI['probe.detailsSuffix']
   return probes.map((probe) => {
-    const copy = probeCopy[probe.id] ?? { summary: '', details: '' }
-    const launchYear = probe.start.slice(0, 4)
+    const copy = probeCopy[probe.id] ?? { summary: { zh: '', en: '' }, details: { zh: '', en: '' } }
+    const year = probe.start.slice(0, 4)
     return {
       id: probe.id,
-      label: probe.label,
+      label: PROBE_LABELS[probe.id] ?? { zh: probe.label, en: probe.label },
       kind: 'probe',
       mode: 'real',
       group: '深空信使',
@@ -999,7 +1076,10 @@ function probesToAnchors(probes) {
       sky: { ra: probe.current[0], dec: probe.current[1] },
       fov: 12,
       summary: copy.summary,
-      details: `${copy.details} 银色丝带是它 ${launchYear} 年出发以来在天幕上划过的真实轨迹（JPL Horizons 数据），此刻距离约 ${probe.dist_au} AU（1 AU = 日地距离）。`,
+      details: {
+        zh: `${copy.details.zh} ${fillTemplate(suffix.zh, { year, dist: probe.dist_au })}`,
+        en: `${copy.details.en} ${fillTemplate(suffix.en, { year, dist: probe.dist_au })}`,
+      },
     }
   })
 }
@@ -1057,7 +1137,8 @@ function probeDateAtFraction(probe, fraction) {
   const totalDays = (probe.path.length - 1) * PROBE_STEP_DAYS
   const start = new Date(`${probe.start}T00:00:00Z`)
   const date = new Date(start.getTime() + fraction * totalDays * 86400000)
-  return `${date.getUTCFullYear()} 年 ${date.getUTCMonth() + 1} 月`
+  const month = I18N.t('month.' + (date.getUTCMonth() + 1))
+  return I18N.t('date.format', { year: date.getUTCFullYear(), month })
 }
 
 function updateTimeline() {
@@ -1066,8 +1147,8 @@ function updateTimeline() {
   const fraction = Number(timelineRange.value) / Number(timelineRange.max)
   drawProbeRibbon(probe, fraction)
   timelineLabel.textContent = fraction >= 0.999
-    ? `今天 · 距离约 ${probe.dist_au} AU`
-    : `${probeDateAtFraction(probe, fraction)} · 它当时在天上的这个方向`
+    ? I18N.t('probe.todayLabel', { dist: probe.dist_au })
+    : I18N.t('probe.dateLabel', { date: probeDateAtFraction(probe, fraction) })
 }
 
 function syncProbeTimeline() {
@@ -1108,7 +1189,7 @@ let probePlaying = false
 let probePlayToken = 0
 
 function setProbePlayLabel() {
-  probePlayButton.textContent = probePlaying ? '⏸ 暂停' : '▶ 从头播放'
+  probePlayButton.textContent = I18N.t(probePlaying ? 'probe.playing' : 'probe.play')
 }
 
 function stopProbePlay() {
@@ -1178,6 +1259,10 @@ async function init() {
   if (selectedId) {
     selectAnchor(selectedId, { moveSky: false })
   }
+  // selectAnchor with moveSky:false doesn't touch the status/next lines, so
+  // localize their initial values explicitly (matters when loading in English).
+  setStatus('status.overview')
+  setNext('next.clickRegion')
   await initAladin()
   addProbeRibbons()
 }
@@ -1245,18 +1330,40 @@ heroSceneEl.addEventListener('mouseleave', () => {
 })
 showCaption(6000)
 
+// Re-render everything that JS controls when the language flips. Static
+// [data-i18n] nodes are handled by I18N.apply(); this covers the dynamic parts.
+function renderLang() {
+  renderBoundary()
+  renderAnchors()
+  renderTargetList()
+  updateSelectedButton()
+  const selected = anchors.find((item) => item.id === selectedId)
+  if (selected) renderPanel(selected)
+  tourButton.textContent = I18N.t(isTouring ? 'btn.tourStop' : 'btn.tour')
+  setProbePlayLabel()
+  setStatus(statusState.key, statusState.params)
+  setNext(nextState.key, nextState.params)
+  if (!probeTimeline.hidden) updateTimeline()
+  if (apodLoaded) loadApod()
+}
+
+I18N.mountToggles()
+I18N.apply()
+I18N.onChange(renderLang)
+
 // debug handle for headless QA (read-only introspection)
 window.__cosmicDebug = {
   get aladin() { return aladin },
   get currentView() { return currentView },
   get activeSurvey() { return activeSurvey },
   get surveyMode() { return surveyMode },
+  get lang() { return I18N.getLang() },
 }
 
 init().catch((error) => {
-  panelStatus.textContent = '出错'
-  panelTitle.textContent = '锚点或星图加载失败'
-  panelSummary.textContent = '无法加载第一阶段的天区数据。'
+  setStatus('status.error')
+  panelTitle.textContent = I18N.t('error.title')
+  panelSummary.textContent = I18N.t('error.summary')
   panelDetails.textContent = String(error)
-  panelNext.textContent = '请先修复数据或 Aladin Lite 加载问题。'
+  setNext('error.next')
 })
