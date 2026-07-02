@@ -57,7 +57,7 @@ app.innerHTML = `
               <button class="survey-option" type="button" data-survey-choice="gaia">Gaia 测量图</button>
             </div>
           </div>
-          <div class="hero-caption">
+          <div class="hero-caption" data-hero-caption>
             <div class="hero-kicker">真实天空 / 可交互巡天底图</div>
             <h2>把银河拉近</h2>
             <p>拖动天空可以自由探索，点击标记会把视野平滑带到对应天区。总览使用 Gaia DR3，近距离自动切到 DSS2。</p>
@@ -697,6 +697,41 @@ window.addEventListener('keydown', (event) => {
 for (const button of surveyChip.querySelectorAll('.survey-option')) {
   button.addEventListener('click', () => setManualSurvey(button.dataset.surveyChoice))
 }
+
+// Hero caption auto-hide: the intro text should never sit on top of the sky
+// once the user is exploring. Hide on first interaction or after an idle
+// delay; hovering the bottom of the stage brings it back.
+const heroCaption = document.querySelector('[data-hero-caption]')
+const heroSceneEl = document.querySelector('[data-hero-scene]')
+let captionTimer = 0
+
+function hideCaption() {
+  heroCaption.classList.add('is-hidden')
+}
+
+function showCaption(autoHideAfter) {
+  heroCaption.classList.remove('is-hidden')
+  clearTimeout(captionTimer)
+  if (autoHideAfter) captionTimer = setTimeout(hideCaption, autoHideAfter)
+}
+
+heroSceneEl.addEventListener('pointerdown', hideCaption, true)
+heroSceneEl.addEventListener('mousemove', (event) => {
+  const rect = heroSceneEl.getBoundingClientRect()
+  if (event.clientY > rect.top + rect.height * 0.8) {
+    showCaption(0)
+  } else if (!heroCaption.classList.contains('is-hidden')) {
+    clearTimeout(captionTimer)
+    captionTimer = setTimeout(hideCaption, 1200)
+  }
+})
+heroSceneEl.addEventListener('mouseleave', () => {
+  if (!heroCaption.classList.contains('is-hidden')) {
+    clearTimeout(captionTimer)
+    captionTimer = setTimeout(hideCaption, 1200)
+  }
+})
+showCaption(6000)
 
 // debug handle for headless QA (read-only introspection)
 window.__cosmicDebug = {
