@@ -542,9 +542,32 @@ h2 {
   line-height: 1.6;
 }
 
-@media (max-width: 960px) {
+@media (max-width: 900px) {
+  .shell {
+    padding: 18px;
+    gap: 18px;
+  }
+
+  .topbar {
+    flex-wrap: wrap;
+  }
+
+  h1 {
+    font-size: 28px;
+  }
+
+  .subtitle {
+    font-size: 14px;
+  }
+
   .stage-wrap {
     grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .stage {
+    min-height: 0;
+    height: 62vh;
   }
 
   .topbar-actions .badge:not(.badge-link) {
@@ -556,14 +579,49 @@ h2 {
   }
 
   .hero-caption {
-    left: 20px;
-    right: 20px;
-    bottom: 20px;
+    left: 16px;
+    right: 16px;
+    bottom: 14px;
+    max-width: 560px;
+    padding: 14px 16px;
+    font-size: 14px;
+  }
+
+  .hero-caption p {
+    line-height: 1.55;
   }
 
   .panel {
     max-height: none;
   }
+
+  .survey-chip {
+    right: 16px;
+    bottom: 164px;
+  }
+
+  .survey-option {
+    padding: 7px 9px;
+    font-size: 12px;
+  }
+
+  .anchor-hotspot {
+    gap: 7px;
+  }
+
+  .anchor-label {
+    max-width: 42vw;
+    padding: 3px 8px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 11px;
+    letter-spacing: 0.02em;
+  }
+
+  .nasa-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
 }
 
 @media (max-width: 640px) {
@@ -673,4 +731,18 @@ h2 {
 
 .lightbox-caption a:hover {
   text-decoration: underline;
+}
+
+@media (max-width: 900px) {
+  .lightbox-backdrop {
+    padding: 16px;
+  }
+
+  .lightbox-stage {
+    min-width: min(320px, calc(100vw - 32px));
+  }
+
+  .nasa-lightbox img {
+    max-height: 70vh;
+  }
 }
