@@ -22,6 +22,12 @@ const nasaImageQueries = {
   rosette: 'rosette nebula',
   hyades: 'hyades',
   m35: 'Messier 35',
+  'crux-coalsack': 'coalsack nebula',
+  'omega-centauri': 'omega centauri',
+  '47-tucanae': '47 tucanae',
+  tarantula: 'tarantula nebula',
+  'alpha-centauri': 'alpha centauri',
+  'vela-snr': 'vela supernova remnant',
 }
 
 const surveyBoundary = {
