@@ -98,10 +98,16 @@ app.innerHTML = `
           <div class="panel-label">解释层</div>
           <div class="panel-actions">
             <button class="ghost-button" type="button" data-toggle-bortle aria-expanded="false">光污染阶梯</button>
+            <button class="ghost-button" type="button" data-toggle-galaxy aria-expanded="false">跳出银河系</button>
           </div>
           <div class="explainer-card" data-bortle-card hidden>
             <img src="explainers/bortle_scale.png" alt="Bortle 光污染等级示意图" />
             <p>Bortle 标尺用 1 到 9 级描述夜空黑暗程度，级别越高，城市灯光对星空的遮蔽越明显。今天许多人看不到照片里的银河，主要不是银河消失了，而是城市光污染把它淹没在夜空背景里。</p>
+          </div>
+          <div class="explainer-card" data-galaxy-card hidden>
+            <img src="explainers/milky_way_topdown.jpg" alt="银河系俯视示意图（艺术想象，基于真实测量）" />
+            <p>这是银河系的俯视示意图（NASA/JPL-Caltech/R. Hurt，基于真实测量绘制）。我们就住在其中一条旋臂里，所以抬头看到的"银河"是一条横贯夜空的光带——那是从盘的内部侧着看盘面的样子。</p>
+            <p>Gaia 精确测量的恒星，大多在太阳周围几千光年的范围内。这已经是人类历史上最大的三维星图，但放到直径约十万光年的整个银河系里，仍然只是家门口的一小片。宇宙地图，才刚刚开始画。</p>
           </div>
           <div class="panel-copy boundary-note">底图边界说明：Gaia 测量的是恒星位置与亮度，不是深空长曝光照片；DSS2 来自上世纪照相底片数字化，近看会保留底片和拼接痕迹。</div>
         </div>
@@ -153,6 +159,8 @@ const resetButton = document.querySelector('[data-reset-view]')
 const tourButton = document.querySelector('[data-tour-toggle]')
 const bortleButton = document.querySelector('[data-toggle-bortle]')
 const bortleCard = document.querySelector('[data-bortle-card]')
+const galaxyButton = document.querySelector('[data-toggle-galaxy]')
+const galaxyCard = document.querySelector('[data-galaxy-card]')
 const targetList = document.querySelector('[data-target-list]')
 const surveyChip = document.querySelector('[data-survey-chip]')
 const nasaOpenButton = document.querySelector('[data-nasa-open]')
@@ -680,6 +688,12 @@ function toggleBortleCard() {
   bortleButton.setAttribute('aria-expanded', String(nextOpen))
 }
 
+function toggleGalaxyCard() {
+  const nextOpen = galaxyCard.hidden
+  galaxyCard.hidden = !nextOpen
+  galaxyButton.setAttribute('aria-expanded', String(nextOpen))
+}
+
 function addSummerTriangleOverlay() {
   try {
     const points = [
@@ -748,6 +762,7 @@ async function init() {
 resetButton.addEventListener('click', resetView)
 tourButton.addEventListener('click', toggleTour)
 bortleButton.addEventListener('click', toggleBortleCard)
+galaxyButton.addEventListener('click', toggleGalaxyCard)
 nasaOpenButton.addEventListener('click', openNasaModal)
 nasaCloseButton.addEventListener('click', closeNasaModal)
 nasaModal.addEventListener('click', (event) => {
