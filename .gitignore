@@ -14,3 +14,4 @@ data/generated/
 .agent/heartbeat.json
 .agent/watchdog.log
 .agent/current_batch.json
+.omc/
