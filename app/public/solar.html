@@ -3,7 +3,62 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>太阳系 · 星空照片探索器</title>
+<title data-i18n="solar.pageTitle">太阳系 · 星空照片探索器</title>
+<script src="/i18n.js"></script>
+<script>
+// Page dictionary — { zh, en } pairs, human-written English. Registered during
+// head parse, applied by i18n.js on DOMContentLoaded. See TRANSLATION-GUIDE.md.
+window.I18N.register({
+  'solar.pageTitle': { zh: '太阳系 · 星空照片探索器', en: 'Solar System · Cosmic Photo Explorer' },
+  'solar.eyebrow': { zh: '解释层 / 我们自己的后院', en: 'Explainer / Our own backyard' },
+  'solar.title': { zh: '太阳系：从别人的星光回到自己的行星', en: 'The Solar System: from distant starlight back to our own planets' },
+  'solar.lede': { zh: '银河看久了，别忘了我们自己也住在一颗行星上。月球和火星的表面是真实探测器测绘的全图——可以一路拉近到山和陨石坑；其余行星是各任务拍下的原版照片。', en: "After all that Milky Way, don't forget we live on a planet too. The surfaces of the Moon and Mars here are full maps built by real spacecraft — you can zoom all the way in to mountains and craters; the other planets are original photos taken by individual missions." },
+  'nav.home': { zh: '← 回到星空探索器', en: '← Back to the Explorer' },
+  'nav.stations': { zh: '空间站 →', en: 'Space Stations →' },
+  'nav.observatories': { zh: '观星台 →', en: 'Observatories →' },
+  'nav.reference': { zh: '来源 →', en: 'Sources →' },
+  'solar.flyto': { zh: '飞到', en: 'Fly to' },
+  'solar.basemap': { zh: '底图', en: 'Base map' },
+
+  'solar.moon.h2': { zh: '月球', en: 'The Moon' },
+  'solar.moon.note': { zh: '默认底图：NASA 月球勘测轨道器全图（每像素 100 米）。可切换成嫦娥二号 7 米分辨率图——中国探月工程的官方测绘。', en: "Default base map: NASA Lunar Reconnaissance Orbiter global mosaic (100 m per pixel). Switch to the Chang'e-2 7-metre map — the official survey of China's lunar program." },
+  'solar.moon.tycho': { zh: '第谷环形山', en: 'Tycho Crater' },
+  'solar.moon.copernicus': { zh: '哥白尼环形山', en: 'Copernicus Crater' },
+  'solar.moon.tranquility': { zh: '静海 · 阿波罗 11 号', en: 'Sea of Tranquility · Apollo 11' },
+  'solar.moon.procellarum': { zh: '风暴洋 · 嫦娥五号', en: "Oceanus Procellarum · Chang'e-5" },
+  'solar.moon.lroc': { zh: 'NASA LROC', en: 'NASA LROC' },
+  'solar.moon.change2': { zh: '嫦娥二号', en: "Chang'e-2" },
+
+  'solar.mars.h2': { zh: '火星', en: 'Mars' },
+  'solar.mars.note': { zh: '默认底图：Viking 彩色全图（真实颜色感的锈红火星）。切换 MOLA 彩色高程能看出山有多高、谷有多深——蓝色低、红色高。', en: 'Default base map: the Viking color mosaic (rust-red Mars in near-true color). Switch to MOLA color elevation to see how high the mountains and how deep the valleys run — blue is low, red is high.' },
+  'solar.mars.olympus': { zh: '奥林帕斯山', en: 'Olympus Mons' },
+  'solar.mars.marineris': { zh: '水手号峡谷', en: 'Valles Marineris' },
+  'solar.mars.gale': { zh: '盖尔坑 · 好奇号', en: 'Gale Crater · Curiosity' },
+  'solar.mars.utopia': { zh: '乌托邦平原 · 祝融号', en: 'Utopia Planitia · Zhurong' },
+  'solar.mars.viking': { zh: 'Viking 彩色', en: 'Viking color' },
+  'solar.mars.mola': { zh: 'MOLA 高程', en: 'MOLA elevation' },
+
+  'solar.gallery.h2': { zh: '行星画廊', en: 'Planet gallery' },
+  'solar.gallery.note': { zh: '每张都是任务原片，点开看大图。奥林帕斯山比珠峰高两倍半；土星那张是卡西尼躲进土星影子里回望拍下的。', en: "Every image is an original mission photo — click to enlarge. Olympus Mons is two and a half times the height of Everest; the Saturn shot was taken by Cassini looking back from inside Saturn's shadow." },
+  'solar.mercury.name': { zh: '水星', en: 'Mercury' },
+  'solar.mercury.sub': { zh: '信使号全球拼图', en: 'MESSENGER global mosaic' },
+  'solar.venus.name': { zh: '金星', en: 'Venus' },
+  'solar.venus.sub': { zh: '麦哲伦号雷达成像', en: 'Magellan radar imaging' },
+  'solar.jupiter.name': { zh: '木星', en: 'Jupiter' },
+  'solar.jupiter.sub': { zh: '朱诺号「大理石木星」', en: "Juno 'Marble Jupiter'" },
+  'solar.saturn.name': { zh: '土星', en: 'Saturn' },
+  'solar.saturn.sub': { zh: '卡西尼号 · 在土星的阴影里', en: "Cassini · in Saturn's shadow" },
+  'solar.uranus.name': { zh: '天王星', en: 'Uranus' },
+  'solar.uranus.sub': { zh: '旅行者 2 号 · 唯一到访者', en: 'Voyager 2 · the only visitor' },
+  'solar.neptune.name': { zh: '海王星', en: 'Neptune' },
+  'solar.neptune.sub': { zh: '旅行者 2 号最后的全貌照', en: "Voyager 2's last full portrait" },
+  'solar.pluto.name': { zh: '冥王星', en: 'Pluto' },
+  'solar.pluto.sub': { zh: '新视野号 · 心形平原', en: 'New Horizons · the heart-shaped plain' },
+  'solar.lightboxAlt': { zh: '行星大图', en: 'Planet, enlarged' },
+
+  'solar.footer': { zh: '月球底图：NASA LROC WAC（CDS HiPS）、嫦娥二号 7 米 DOM（中国国家天文台 / China-VO）。火星底图：Viking MDIM21、MGS MOLA（NASA / USGS，经 CDS HiPS）。行星照片：NASA/JPL-Caltech 等任务原片（公有领域），点击大图可见任务信息。', en: 'Moon base maps: NASA LROC WAC (CDS HiPS), Chang’e-2 7 m DOM (National Astronomical Observatories of China / China-VO). Mars base maps: Viking MDIM21, MGS MOLA (NASA / USGS, via CDS HiPS). Planet photos: original mission imagery from NASA/JPL-Caltech and others (public domain); click any image for mission details.' },
+})
+</script>
 <style>
   :root {
     --bg: #04060c;
@@ -23,12 +78,21 @@
   h1 { margin: 6px 0 10px; font-size: 30px; letter-spacing: 0.02em; }
   h2 { margin: 40px 0 4px; font-size: 22px; }
   .lede { color: var(--dim); max-width: 640px; margin: 0 0 14px; }
+  .navbar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 10px 0 24px; }
   .back {
-    display: inline-block; margin: 10px 12px 24px 0; color: var(--accent);
+    display: inline-block; color: var(--accent);
     text-decoration: none; border: 1px solid var(--line); border-radius: 999px;
     padding: 6px 16px; font-size: 13px;
   }
   .back:hover { border-color: var(--accent); }
+  .lang-toggle {
+    margin-left: auto; cursor: pointer; font: inherit; font-size: 13px; font-weight: 600;
+    letter-spacing: 0.04em; min-width: 50px; text-align: center;
+    color: var(--accent); background: rgba(157, 184, 255, 0.08);
+    border: 1px solid rgba(157, 184, 255, 0.4); border-radius: 999px; padding: 6px 16px;
+    transition: background 180ms ease, border-color 180ms ease;
+  }
+  .lang-toggle:hover { background: rgba(157, 184, 255, 0.16); border-color: rgba(157, 184, 255, 0.65); }
   .viewer-card {
     background: var(--panel); border: 1px solid var(--line); border-radius: 14px;
     overflow: hidden; margin: 14px 0 8px;
@@ -66,63 +130,67 @@
 </head>
 <body>
 <div class="wrap">
-  <div class="eyebrow">解释层 / 我们自己的后院</div>
-  <h1>太阳系：从别人的星光回到自己的行星</h1>
-  <p class="lede">银河看久了，别忘了我们自己也住在一颗行星上。月球和火星的表面是真实探测器测绘的全图——可以一路拉近到山和陨石坑；其余行星是各任务拍下的原版照片。</p>
-  <a class="back" href="./">← 回到星空探索器</a>
-  <a class="back" href="stations.html">空间站 →</a>
-  <a class="back" href="observatories.html">观星台 →</a>
+  <div class="eyebrow" data-i18n="solar.eyebrow">解释层 / 我们自己的后院</div>
+  <h1 data-i18n="solar.title">太阳系：从别人的星光回到自己的行星</h1>
+  <p class="lede" data-i18n="solar.lede">银河看久了，别忘了我们自己也住在一颗行星上。月球和火星的表面是真实探测器测绘的全图——可以一路拉近到山和陨石坑；其余行星是各任务拍下的原版照片。</p>
+  <nav class="navbar">
+    <a class="back" href="./" data-i18n="nav.home">← 回到星空探索器</a>
+    <a class="back" href="stations.html" data-i18n="nav.stations">空间站 →</a>
+    <a class="back" href="observatories.html" data-i18n="nav.observatories">观星台 →</a>
+    <a class="back" href="reference.html" data-i18n="nav.reference">来源 →</a>
+    <button class="lang-toggle" type="button" data-lang-toggle>EN</button>
+  </nav>
 
-  <h2>月球</h2>
-  <p class="note">默认底图：NASA 月球勘测轨道器全图（每像素 100 米）。可切换成嫦娥二号 7 米分辨率图——中国探月工程的官方测绘。</p>
+  <h2 data-i18n="solar.moon.h2">月球</h2>
+  <p class="note" data-i18n="solar.moon.note">默认底图：NASA 月球勘测轨道器全图（每像素 100 米）。可切换成嫦娥二号 7 米分辨率图——中国探月工程的官方测绘。</p>
   <div class="viewer-card">
     <div id="moon-view" class="viewer"></div>
     <div class="controls">
-      <span class="label">飞到</span>
-      <button class="spot" data-body="moon" data-lon="-11.36" data-lat="-43.31" data-fov="8">第谷环形山</button>
-      <button class="spot" data-body="moon" data-lon="-20.08" data-lat="9.62" data-fov="8">哥白尼环形山</button>
-      <button class="spot" data-body="moon" data-lon="23.47" data-lat="0.67" data-fov="6">静海 · 阿波罗 11 号</button>
-      <button class="spot" data-body="moon" data-lon="-51.92" data-lat="43.06" data-fov="8">风暴洋 · 嫦娥五号</button>
-      <span class="label" style="margin-left:auto">底图</span>
-      <button class="layer is-active" data-body="moon" data-survey="https://alasky.cds.unistra.fr/Planets/CDS_P_Moon_LROC-WAC-100m">NASA LROC</button>
-      <button class="layer" data-body="moon" data-survey="https://hips.china-vo.org/change2-moon-7m-dom">嫦娥二号</button>
+      <span class="label" data-i18n="solar.flyto">飞到</span>
+      <button class="spot" data-body="moon" data-lon="-11.36" data-lat="-43.31" data-fov="8" data-i18n="solar.moon.tycho">第谷环形山</button>
+      <button class="spot" data-body="moon" data-lon="-20.08" data-lat="9.62" data-fov="8" data-i18n="solar.moon.copernicus">哥白尼环形山</button>
+      <button class="spot" data-body="moon" data-lon="23.47" data-lat="0.67" data-fov="6" data-i18n="solar.moon.tranquility">静海 · 阿波罗 11 号</button>
+      <button class="spot" data-body="moon" data-lon="-51.92" data-lat="43.06" data-fov="8" data-i18n="solar.moon.procellarum">风暴洋 · 嫦娥五号</button>
+      <span class="label" style="margin-left:auto" data-i18n="solar.basemap">底图</span>
+      <button class="layer is-active" data-body="moon" data-survey="https://alasky.cds.unistra.fr/Planets/CDS_P_Moon_LROC-WAC-100m" data-i18n="solar.moon.lroc">NASA LROC</button>
+      <button class="layer" data-body="moon" data-survey="https://hips.china-vo.org/change2-moon-7m-dom" data-i18n="solar.moon.change2">嫦娥二号</button>
     </div>
   </div>
 
-  <h2>火星</h2>
-  <p class="note">默认底图：Viking 彩色全图（真实颜色感的锈红火星）。切换 MOLA 彩色高程能看出山有多高、谷有多深——蓝色低、红色高。</p>
+  <h2 data-i18n="solar.mars.h2">火星</h2>
+  <p class="note" data-i18n="solar.mars.note">默认底图：Viking 彩色全图（真实颜色感的锈红火星）。切换 MOLA 彩色高程能看出山有多高、谷有多深——蓝色低、红色高。</p>
   <div class="viewer-card">
     <div id="mars-view" class="viewer"></div>
     <div class="controls">
-      <span class="label">飞到</span>
-      <button class="spot" data-body="mars" data-lon="-133.8" data-lat="18.65" data-fov="14">奥林帕斯山</button>
-      <button class="spot" data-body="mars" data-lon="-72.5" data-lat="-9.8" data-fov="24">水手号峡谷</button>
-      <button class="spot" data-body="mars" data-lon="137.8" data-lat="-5.4" data-fov="6">盖尔坑 · 好奇号</button>
-      <button class="spot" data-body="mars" data-lon="109.93" data-lat="25.07" data-fov="10">乌托邦平原 · 祝融号</button>
-      <span class="label" style="margin-left:auto">底图</span>
-      <button class="layer is-active" data-body="mars" data-survey="https://alasky.cds.unistra.fr/Planets/Mars_Viking_MDIM21">Viking 彩色</button>
-      <button class="layer" data-body="mars" data-survey="https://alasky.cds.unistra.fr/Planets/Mars_MOLA">MOLA 高程</button>
+      <span class="label" data-i18n="solar.flyto">飞到</span>
+      <button class="spot" data-body="mars" data-lon="-133.8" data-lat="18.65" data-fov="14" data-i18n="solar.mars.olympus">奥林帕斯山</button>
+      <button class="spot" data-body="mars" data-lon="-72.5" data-lat="-9.8" data-fov="24" data-i18n="solar.mars.marineris">水手号峡谷</button>
+      <button class="spot" data-body="mars" data-lon="137.8" data-lat="-5.4" data-fov="6" data-i18n="solar.mars.gale">盖尔坑 · 好奇号</button>
+      <button class="spot" data-body="mars" data-lon="109.93" data-lat="25.07" data-fov="10" data-i18n="solar.mars.utopia">乌托邦平原 · 祝融号</button>
+      <span class="label" style="margin-left:auto" data-i18n="solar.basemap">底图</span>
+      <button class="layer is-active" data-body="mars" data-survey="https://alasky.cds.unistra.fr/Planets/Mars_Viking_MDIM21" data-i18n="solar.mars.viking">Viking 彩色</button>
+      <button class="layer" data-body="mars" data-survey="https://alasky.cds.unistra.fr/Planets/Mars_MOLA" data-i18n="solar.mars.mola">MOLA 高程</button>
     </div>
   </div>
 
-  <h2>行星画廊</h2>
-  <p class="note">每张都是任务原片，点开看大图。奥林帕斯山比珠峰高两倍半；土星那张是卡西尼躲进土星影子里回望拍下的。</p>
+  <h2 data-i18n="solar.gallery.h2">行星画廊</h2>
+  <p class="note" data-i18n="solar.gallery.note">每张都是任务原片，点开看大图。奥林帕斯山比珠峰高两倍半；土星那张是卡西尼躲进土星影子里回望拍下的。</p>
   <div class="gallery" data-gallery>
-    <figure data-id="PIA15162"><img loading="lazy" src="https://images-assets.nasa.gov/image/PIA15162/PIA15162~medium.jpg" alt="水星"><figcaption>水星<span class="sub">信使号全球拼图</span></figcaption></figure>
-    <figure data-id="PIA00104"><img loading="lazy" src="https://images-assets.nasa.gov/image/PIA00104/PIA00104~medium.jpg" alt="金星"><figcaption>金星<span class="sub">麦哲伦号雷达成像</span></figcaption></figure>
-    <figure data-id="PIA22946"><img loading="lazy" src="https://images-assets.nasa.gov/image/PIA22946/PIA22946~medium.jpg" alt="木星"><figcaption>木星<span class="sub">朱诺号「大理石木星」</span></figcaption></figure>
-    <figure data-id="PIA08329"><img loading="lazy" src="https://images-assets.nasa.gov/image/PIA08329/PIA08329~medium.jpg" alt="土星"><figcaption>土星<span class="sub">卡西尼号 · 在土星的阴影里</span></figcaption></figure>
-    <figure data-id="PIA18182"><img loading="lazy" src="https://images-assets.nasa.gov/image/PIA18182/PIA18182~medium.jpg" alt="天王星"><figcaption>天王星<span class="sub">旅行者 2 号 · 唯一到访者</span></figcaption></figure>
-    <figure data-id="PIA01492"><img loading="lazy" src="https://images-assets.nasa.gov/image/PIA01492/PIA01492~medium.jpg" alt="海王星"><figcaption>海王星<span class="sub">旅行者 2 号最后的全貌照</span></figcaption></figure>
-    <figure data-id="PIA19952"><img loading="lazy" src="https://images-assets.nasa.gov/image/PIA19952/PIA19952~medium.jpg" alt="冥王星"><figcaption>冥王星<span class="sub">新视野号 · 心形平原</span></figcaption></figure>
+    <figure data-id="PIA15162"><img loading="lazy" src="https://images-assets.nasa.gov/image/PIA15162/PIA15162~medium.jpg" data-i18n-attr="alt:solar.mercury.name" alt="水星"><figcaption><span data-i18n="solar.mercury.name">水星</span><span class="sub" data-i18n="solar.mercury.sub">信使号全球拼图</span></figcaption></figure>
+    <figure data-id="PIA00104"><img loading="lazy" src="https://images-assets.nasa.gov/image/PIA00104/PIA00104~medium.jpg" data-i18n-attr="alt:solar.venus.name" alt="金星"><figcaption><span data-i18n="solar.venus.name">金星</span><span class="sub" data-i18n="solar.venus.sub">麦哲伦号雷达成像</span></figcaption></figure>
+    <figure data-id="PIA22946"><img loading="lazy" src="https://images-assets.nasa.gov/image/PIA22946/PIA22946~medium.jpg" data-i18n-attr="alt:solar.jupiter.name" alt="木星"><figcaption><span data-i18n="solar.jupiter.name">木星</span><span class="sub" data-i18n="solar.jupiter.sub">朱诺号「大理石木星」</span></figcaption></figure>
+    <figure data-id="PIA08329"><img loading="lazy" src="https://images-assets.nasa.gov/image/PIA08329/PIA08329~medium.jpg" data-i18n-attr="alt:solar.saturn.name" alt="土星"><figcaption><span data-i18n="solar.saturn.name">土星</span><span class="sub" data-i18n="solar.saturn.sub">卡西尼号 · 在土星的阴影里</span></figcaption></figure>
+    <figure data-id="PIA18182"><img loading="lazy" src="https://images-assets.nasa.gov/image/PIA18182/PIA18182~medium.jpg" data-i18n-attr="alt:solar.uranus.name" alt="天王星"><figcaption><span data-i18n="solar.uranus.name">天王星</span><span class="sub" data-i18n="solar.uranus.sub">旅行者 2 号 · 唯一到访者</span></figcaption></figure>
+    <figure data-id="PIA01492"><img loading="lazy" src="https://images-assets.nasa.gov/image/PIA01492/PIA01492~medium.jpg" data-i18n-attr="alt:solar.neptune.name" alt="海王星"><figcaption><span data-i18n="solar.neptune.name">海王星</span><span class="sub" data-i18n="solar.neptune.sub">旅行者 2 号最后的全貌照</span></figcaption></figure>
+    <figure data-id="PIA19952"><img loading="lazy" src="https://images-assets.nasa.gov/image/PIA19952/PIA19952~medium.jpg" data-i18n-attr="alt:solar.pluto.name" alt="冥王星"><figcaption><span data-i18n="solar.pluto.name">冥王星</span><span class="sub" data-i18n="solar.pluto.sub">新视野号 · 心形平原</span></figcaption></figure>
   </div>
 
   <div class="lightbox" data-lightbox hidden>
-    <img data-lightbox-img alt="行星大图">
+    <img data-lightbox-img data-i18n-attr="alt:solar.lightboxAlt" alt="行星大图">
     <div class="cap" data-lightbox-cap></div>
   </div>
 
-  <footer>
+  <footer data-i18n="solar.footer">
     月球底图：NASA LROC WAC（CDS HiPS）、嫦娥二号 7 米 DOM（中国国家天文台 / China-VO）。
     火星底图：Viking MDIM21、MGS MOLA（NASA / USGS，经 CDS HiPS）。行星照片：NASA/JPL-Caltech 等任务原片（公有领域），点击大图可见任务信息。
   </footer>
@@ -174,7 +242,9 @@
       const id = fig.dataset.id
       lightboxImg.src = `https://images-assets.nasa.gov/image/${id}/${id}~large.jpg`
       lightboxImg.onerror = () => { lightboxImg.onerror = null; lightboxImg.src = `https://images-assets.nasa.gov/image/${id}/${id}~medium.jpg` }
-      lightboxCap.textContent = fig.querySelector('figcaption').textContent + '　·　NASA/JPL-Caltech'
+      const name = fig.querySelector('figcaption span').textContent
+      const sub = fig.querySelector('figcaption .sub').textContent
+      lightboxCap.textContent = `${name} · ${sub} · NASA/JPL-Caltech`
       lightbox.hidden = false
     })
   }

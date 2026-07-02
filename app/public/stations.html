@@ -3,7 +3,67 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>空间站 · 星空照片探索器</title>
+<title data-i18n="st.pageTitle">空间站 · 星空照片探索器</title>
+<script src="/i18n.js"></script>
+<script>
+// Page dictionary — { zh, en } pairs, human-written English. Entries with inline
+// <strong> markup are applied via data-i18n-html. See TRANSLATION-GUIDE.md.
+window.I18N.register({
+  'st.pageTitle': { zh: '空间站 · 星空照片探索器', en: 'Space Stations · Cosmic Photo Explorer' },
+  'st.eyebrow': { zh: '解释层 / 头顶的家', en: 'Explainer / A home overhead' },
+  'st.title': { zh: '空间站：一直有人住在天上', en: 'Space Stations: someone has always been living up there' },
+  'st.lede': { zh: '空间站离地只有约 400 公里，90 分钟绕地球一圈——一晚上就把整个天空扫一遍，所以钉不到天图的某个点上。但它们值得单独一页：此时此刻，就有人在你头顶生活和做实验。', en: "Space stations orbit just ~400 km up, circling Earth every 90 minutes — they sweep the whole sky in a single night, so they can't be pinned to any one point on a star map. But they earn a page of their own: right now, someone is living and running experiments over your head." },
+  'nav.home': { zh: '← 回到星空探索器', en: '← Back to the Explorer' },
+  'nav.solar': { zh: '太阳系 →', en: 'Solar System →' },
+  'nav.observatories': { zh: '观星台 →', en: 'Observatories →' },
+  'nav.reference': { zh: '来源 →', en: 'Sources →' },
+
+  'st.motion.h2': { zh: '它到底怎么动的？——不静止，也不跟着地球自转', en: 'So how does it actually move? — not stationary, and not turning with Earth' },
+  'st.motion.lead': { zh: '最常见的误会：以为空间站像挂在天上一样不动，或者跟着地面一起转。都不是。它在约 400 公里高处<strong>独立绕地球飞</strong>，地球在它底下自转，两件事互不同步。', en: 'The most common misconception: that the station hangs motionless in the sky, or turns along with the ground. Neither is true. At about 400 km up it <strong>orbits Earth on its own</strong>, while the Earth rotates beneath it — the two are not in sync.' },
+  'st.motion.li1': { zh: '<strong>飞得极快，一刻不停。</strong>速度约每秒 7.7 公里（时速 2.8 万公里），大约 <strong>92 分钟绕地球整整一圈</strong>，一天转 15～16 圈。相对地面它永远在高速移动，从来停不下来。', en: '<strong>It moves extremely fast, without pause.</strong> At about 7.7 km per second (28,000 km/h), it completes <strong>one full orbit roughly every 92 minutes</strong> — 15 to 16 laps a day. Relative to the ground it is always racing along, never at rest.' },
+  'st.motion.li2': { zh: '<strong>每圈都换一条地面轨迹。</strong>它自己在飞、地球在下面转，两者错开：每绕一圈，脚下扫过的地带就向西挪约 22.5°。所以它很少连着两圈经过同一个城市——这也是为什么它钉不到星图的某个固定点上。', en: '<strong>A different ground track every lap.</strong> It flies while Earth turns below, and the two drift apart: each orbit, the strip it passes over shifts about 22.5° west. So it rarely crosses the same city on two consecutive laps — which is also why it can\'t be fixed to any one point on a star map.' },
+  'st.motion.li3': { zh: '<strong>和「静止卫星」正相反。</strong>天气、电视那类卫星要飞到约 <strong>3.6 万公里</strong>高、<strong>24 小时</strong>转一圈，才能刚好跟上地球自转、悬在同一个地方。空间站只有它们约九十分之一的高度、快得多，根本悬不住——想看它得用「Spot the Station」查那<strong>三四分钟</strong>的过境窗口。', en: "<strong>The opposite of a 'geostationary' satellite.</strong> Weather and TV satellites climb to about <strong>36,000 km</strong> and take <strong>24 hours</strong> per lap, exactly matching Earth's rotation so they hover over one spot. The station sits at roughly one-ninetieth of that altitude and moves far faster — it simply can't hover. To catch it you use 'Spot the Station' to look up its <strong>three-or-four-minute</strong> pass." },
+  'st.motion.li4': { zh: '<strong>为什么不掉下来？</strong>因为绕圈飞本身就是一直在「自由落体」：它横向飞得太快，每次往下掉都「错过」了地球，于是永远绕着落。那里的重力其实还有地面的九成左右——站上的人会飘，不是因为没重力，而是因为人和站<strong>正一起往下落</strong>。', en: "<strong>Why doesn't it fall?</strong> Because orbiting is really a state of continuous free fall: it flies sideways so fast that each time it drops toward Earth it 'misses,' and so it falls around the planet forever. Gravity up there is still about 90% of what it is on the ground — people float not because gravity is gone, but because they and the station <strong>are falling together</strong>." },
+  'st.motion.li5': { zh: '<strong>一天 16 次日出。</strong>每绕半圈就从地球的影子里钻进钻出一次，所以站上一昼夜能看 16 回日升日落。', en: "<strong>Sixteen sunrises a day.</strong> Every half orbit it slips into and out of Earth's shadow, so a single day-night cycle on the station brings 16 sunrises and sunsets." },
+
+  'st.iss.h2': { zh: '国际空间站', en: 'The International Space Station' },
+  'st.iss.note': { zh: '下面是 NASA 官方的国际空间站三维模型——点一下加载（约 3 MB），然后可以拖动旋转、滚轮缩放，把这座「足球场大小的太空实验室」翻过来看。', en: "Below is NASA's official 3D model of the ISS — click to load (about 3 MB), then drag to rotate and scroll to zoom, turning this football-field-sized space lab over in your hands." },
+  'st.iss.modelAlt': { zh: '国际空间站三维模型（NASA 官方）', en: '3D model of the International Space Station (official NASA)' },
+  'st.iss.lead': { zh: '人类连续在轨生活最久的地方——从 2000 年 11 月至今，站上一天都没有断过人。', en: 'The longest continuously inhabited place off Earth — since November 2000, not a single day has passed without a crew aboard.' },
+  'st.iss.li1': { zh: '1998 年第一个舱段升空，由 15 个国家合作拼装了十几年，总质量约 420 吨。', en: 'The first module launched in 1998; 15 nations assembled it over more than a decade, to a total mass of about 420 tonnes.' },
+  'st.iss.li2': { zh: '轨道高度约 400 公里，时速约 2.8 万公里——站上的宇航员一天能看 16 次日出日落。', en: 'Orbiting about 400 km up at some 28,000 km/h — astronauts aboard see 16 sunrises and sunsets a day.' },
+  'st.iss.li3': { zh: '轨道倾角 51.6°：它的航线在南北纬 51.6° 之间来回摆，几乎覆盖了地球上所有有人住的地方，从赤道一直到北欧南端都会被它飞过。', en: 'Orbital inclination 51.6°: its path swings between 51.6° north and south, covering nearly everywhere people live — from the equator to the southern edge of Scandinavia passes beneath it.' },
+  'st.iss.li4': { zh: '按现行计划 2030 年前后退役：SpaceX 正在造一艘专门的离轨飞船，届时把它受控地带回南太平洋无人海域。想亲眼看它，得趁这几年。', en: 'Under current plans it retires around 2030: SpaceX is building a dedicated deorbit vehicle to bring it down, under control, into an uninhabited stretch of the South Pacific. If you want to see it with your own eyes, do it in these next few years.' },
+  'st.iss.li5': { zh: '它其实肉眼可见：暗天里像一颗不闪烁的亮星安静滑过，几分钟横穿天空。用下面的 NASA「Spot the Station」查它什么时候飞过你头顶。', en: "It's actually visible to the naked eye: on a dark night it glides across as a steady, non-twinkling bright 'star,' crossing the sky in a few minutes. Use NASA's 'Spot the Station' below to find out when it passes over you." },
+  'st.iss.link1': { zh: 'NASA 官方页 ↗', en: 'NASA official page ↗' },
+  'st.iss.link2': { zh: '它何时飞过你头顶 ↗', en: 'When does it pass overhead ↗' },
+
+  'st.iss.fly.cap': { zh: '国际空间站掠过地球云海 · 2021 年 11 月，载人龙飞船绕飞拍摄 · NASA', en: "The ISS skims over Earth's clouds · November 2021, shot during a Crew Dragon fly-around · NASA" },
+  'st.iss.fly.alt': { zh: '国际空间站掠过地球云海', en: "The ISS skimming over Earth's clouds" },
+  'st.iss.fly.name': { zh: '掠过地球云海', en: 'Skimming the cloud sea' },
+  'st.iss.fly.sub': { zh: '载人龙飞船绕飞时拍下的全站正视图', en: 'A full front view captured during the Crew Dragon fly-around' },
+  'st.iss.top.cap': { zh: '以太空为背景的国际空间站 · 2021 年 11 月，载人龙飞船绕飞拍摄 · NASA', en: 'The ISS against the backdrop of space · November 2021, shot during a Crew Dragon fly-around · NASA' },
+  'st.iss.top.alt': { zh: '以黑色太空为背景的国际空间站', en: 'The ISS against black space' },
+  'st.iss.top.name': { zh: '背对深空', en: 'Backed by deep space' },
+  'st.iss.top.sub': { zh: '同一次绕飞，从上方看 T 字桁架与八对太阳翼', en: 'The same fly-around, seen from above — the T-shaped truss and eight pairs of solar wings' },
+
+  'st.tg.h2': { zh: '中国空间站 · 天宫', en: "China's Space Station · Tiangong" },
+  'st.tg.note': { zh: '天宫没有公开的官方三维模型，这张是社区制作的全构型渲染图（CC 授权）——天和核心舱居中，问天、梦天两个实验舱在两侧，组成 T 字构型。', en: "There's no public official 3D model of Tiangong, so this is a community-made render of the full configuration (CC-licensed) — the Tianhe core module in the center, the Wentian and Mengtian labs on either side, forming a T-shape." },
+  'st.tg.render.cap': { zh: '天宫空间站全构型渲染图 · Shujianyang / Wikimedia Commons · CC BY-SA 4.0', en: 'Render of the full Tiangong configuration · Shujianyang / Wikimedia Commons · CC BY-SA 4.0' },
+  'st.tg.render.alt': { zh: '天宫空间站全构型渲染图', en: 'Render of the full Tiangong configuration' },
+  'st.tg.render.name': { zh: '天宫全构型', en: 'Tiangong, fully assembled' },
+  'st.tg.render.sub': { zh: '天和 + 问天 + 梦天，T 字构型渲染图', en: 'Tianhe + Wentian + Mengtian, rendered in the T configuration' },
+  'st.tg.lead': { zh: '2021 年天和核心舱升空，2022 年底搭成 T 字全构型——中国人自己的太空之家，从此常年有人值守。', en: "The Tianhe core module launched in 2021, and by the end of 2022 the full T-shaped station was assembled — China's own home in space, staffed year-round ever since." },
+  'st.tg.li1': { zh: '轨道高度约 390 公里，和国际空间站是「邻居」；但天宫的轨道倾角约 41.5°、国际空间站是 51.6°，两家各走各的路，不会撞上。', en: "Orbiting about 390 km up, it's a 'neighbour' of the ISS; but Tiangong's inclination is about 41.5° versus the ISS's 51.6°, so the two follow separate paths and won't collide." },
+  'st.tg.li2': { zh: '2026 年 5 月神舟二十三号乘组进驻，其中包括首位来自香港的航天员。', en: 'In May 2026 the Shenzhou-23 crew moved in, including the first astronaut from Hong Kong.' },
+  'st.tg.li3': { zh: '本轮任务里有一项大实验：一名航天员将连续驻留一年，为更远的深空飞行积累医学数据。', en: 'One major experiment on this mission: an astronaut will stay for a continuous year, gathering medical data for longer deep-space voyages.' },
+  'st.tg.li4': { zh: '站上已排了两百多个科学项目，从太空水稻到冷原子钟。国际空间站 2030 年退役后，天宫可能一度成为近地轨道上唯一有人的空间站。', en: 'More than 200 scientific projects are already scheduled aboard, from space rice to cold-atom clocks. After the ISS retires in 2030, Tiangong may for a time be the only crewed station in low Earth orbit.' },
+  'st.tg.link': { zh: '中国载人航天官网 ↗', en: 'China Manned Space official site ↗' },
+
+  'st.lightboxAlt': { zh: '空间站大图', en: 'Space station, enlarged' },
+  'st.footer': { zh: '国际空间站三维模型：NASA 官方 glTF（公有领域，本站压缩至 3 MB）。国际空间站照片：NASA（公有领域，2021-11 载人龙飞船绕飞系列）。天宫渲染图：Shujianyang / Wikimedia Commons，CC BY-SA 4.0。事实数据核对于 2026-07：NASA ISS 过渡计划、中国载人航天工程办公室公开信息。', en: "ISS 3D model: NASA's official glTF (public domain, compressed to 3 MB for this site). ISS photos: NASA (public domain, the November 2021 Crew Dragon fly-around series). Tiangong render: Shujianyang / Wikimedia Commons, CC BY-SA 4.0. Facts checked as of July 2026: NASA's ISS transition plan and public information from the China Manned Space Agency." },
+})
+</script>
 <style>
   :root {
     --bg: #04060c;
@@ -23,12 +83,21 @@
   h1 { margin: 6px 0 10px; font-size: 30px; letter-spacing: 0.02em; }
   h2 { margin: 40px 0 4px; font-size: 22px; }
   .lede { color: var(--dim); max-width: 640px; margin: 0 0 14px; }
+  .navbar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 10px 0 24px; }
   .back {
-    display: inline-block; margin: 10px 12px 24px 0; color: var(--accent);
+    display: inline-block; color: var(--accent);
     text-decoration: none; border: 1px solid var(--line); border-radius: 999px;
     padding: 6px 16px; font-size: 13px;
   }
   .back:hover { border-color: var(--accent); }
+  .lang-toggle {
+    margin-left: auto; cursor: pointer; font: inherit; font-size: 13px; font-weight: 600;
+    letter-spacing: 0.04em; min-width: 50px; text-align: center;
+    color: var(--accent); background: rgba(157, 184, 255, 0.08);
+    border: 1px solid rgba(157, 184, 255, 0.4); border-radius: 999px; padding: 6px 16px;
+    transition: background 180ms ease, border-color 180ms ease;
+  }
+  .lang-toggle:hover { background: rgba(157, 184, 255, 0.16); border-color: rgba(157, 184, 255, 0.65); }
   .note { font-size: 12.5px; color: var(--dim); margin: 6px 2px 0; }
   .model-card {
     background: var(--panel); border: 1px solid var(--line); border-radius: 14px;
@@ -74,27 +143,31 @@
 </head>
 <body>
 <div class="wrap">
-  <div class="eyebrow">解释层 / 头顶的家</div>
-  <h1>空间站：一直有人住在天上</h1>
-  <p class="lede">空间站离地只有约 400 公里，90 分钟绕地球一圈——一晚上就把整个天空扫一遍，所以钉不到天图的某个点上。但它们值得单独一页：此时此刻，就有人在你头顶生活和做实验。</p>
-  <a class="back" href="./">← 回到星空探索器</a>
-  <a class="back" href="solar.html">太阳系 →</a>
-  <a class="back" href="observatories.html">观星台 →</a>
+  <div class="eyebrow" data-i18n="st.eyebrow">解释层 / 头顶的家</div>
+  <h1 data-i18n="st.title">空间站：一直有人住在天上</h1>
+  <p class="lede" data-i18n="st.lede">空间站离地只有约 400 公里，90 分钟绕地球一圈——一晚上就把整个天空扫一遍，所以钉不到天图的某个点上。但它们值得单独一页：此时此刻，就有人在你头顶生活和做实验。</p>
+  <nav class="navbar">
+    <a class="back" href="./" data-i18n="nav.home">← 回到星空探索器</a>
+    <a class="back" href="solar.html" data-i18n="nav.solar">太阳系 →</a>
+    <a class="back" href="observatories.html" data-i18n="nav.observatories">观星台 →</a>
+    <a class="back" href="reference.html" data-i18n="nav.reference">来源 →</a>
+    <button class="lang-toggle" type="button" data-lang-toggle>EN</button>
+  </nav>
 
-  <h2>它到底怎么动的？——不静止，也不跟着地球自转</h2>
+  <h2 data-i18n="st.motion.h2">它到底怎么动的？——不静止，也不跟着地球自转</h2>
   <div class="facts">
-    <p class="lead">最常见的误会：以为空间站像挂在天上一样不动，或者跟着地面一起转。都不是。它在约 400 公里高处<strong>独立绕地球飞</strong>，地球在它底下自转，两件事互不同步。</p>
+    <p class="lead" data-i18n-html="st.motion.lead">最常见的误会：以为空间站像挂在天上一样不动，或者跟着地面一起转。都不是。它在约 400 公里高处<strong>独立绕地球飞</strong>，地球在它底下自转，两件事互不同步。</p>
     <ul>
-      <li><strong>飞得极快，一刻不停。</strong>速度约每秒 7.7 公里（时速 2.8 万公里），大约 <strong>92 分钟绕地球整整一圈</strong>，一天转 15～16 圈。相对地面它永远在高速移动，从来停不下来。</li>
-      <li><strong>每圈都换一条地面轨迹。</strong>它自己在飞、地球在下面转，两者错开：每绕一圈，脚下扫过的地带就向西挪约 22.5°。所以它很少连着两圈经过同一个城市——这也是为什么它钉不到星图的某个固定点上。</li>
-      <li><strong>和「静止卫星」正相反。</strong>天气、电视那类卫星要飞到约 <strong>3.6 万公里</strong>高、<strong>24 小时</strong>转一圈，才能刚好跟上地球自转、悬在同一个地方。空间站只有它们约九十分之一的高度、快得多，根本悬不住——想看它得用「Spot the Station」查那<strong>三四分钟</strong>的过境窗口。</li>
-      <li><strong>为什么不掉下来？</strong>因为绕圈飞本身就是一直在「自由落体」：它横向飞得太快，每次往下掉都「错过」了地球，于是永远绕着落。那里的重力其实还有地面的九成左右——站上的人会飘，不是因为没重力，而是因为人和站<strong>正一起往下落</strong>。</li>
-      <li><strong>一天 16 次日出。</strong>每绕半圈就从地球的影子里钻进钻出一次，所以站上一昼夜能看 16 回日升日落。</li>
+      <li data-i18n-html="st.motion.li1"><strong>飞得极快，一刻不停。</strong>速度约每秒 7.7 公里（时速 2.8 万公里），大约 <strong>92 分钟绕地球整整一圈</strong>，一天转 15～16 圈。相对地面它永远在高速移动，从来停不下来。</li>
+      <li data-i18n-html="st.motion.li2"><strong>每圈都换一条地面轨迹。</strong>它自己在飞、地球在下面转，两者错开：每绕一圈，脚下扫过的地带就向西挪约 22.5°。所以它很少连着两圈经过同一个城市——这也是为什么它钉不到星图的某个固定点上。</li>
+      <li data-i18n-html="st.motion.li3"><strong>和「静止卫星」正相反。</strong>天气、电视那类卫星要飞到约 <strong>3.6 万公里</strong>高、<strong>24 小时</strong>转一圈，才能刚好跟上地球自转、悬在同一个地方。空间站只有它们约九十分之一的高度、快得多，根本悬不住——想看它得用「Spot the Station」查那<strong>三四分钟</strong>的过境窗口。</li>
+      <li data-i18n-html="st.motion.li4"><strong>为什么不掉下来？</strong>因为绕圈飞本身就是一直在「自由落体」：它横向飞得太快，每次往下掉都「错过」了地球，于是永远绕着落。那里的重力其实还有地面的九成左右——站上的人会飘，不是因为没重力，而是因为人和站<strong>正一起往下落</strong>。</li>
+      <li data-i18n-html="st.motion.li5"><strong>一天 16 次日出。</strong>每绕半圈就从地球的影子里钻进钻出一次，所以站上一昼夜能看 16 回日升日落。</li>
     </ul>
   </div>
 
-  <h2>国际空间站</h2>
-  <p class="note">下面是 NASA 官方的国际空间站三维模型——点一下加载（约 3 MB），然后可以拖动旋转、滚轮缩放，把这座「足球场大小的太空实验室」翻过来看。</p>
+  <h2 data-i18n="st.iss.h2">国际空间站</h2>
+  <p class="note" data-i18n="st.iss.note">下面是 NASA 官方的国际空间站三维模型——点一下加载（约 3 MB），然后可以拖动旋转、滚轮缩放，把这座「足球场大小的太空实验室」翻过来看。</p>
   <div class="model-card">
     <model-viewer
       src="models/iss.glb"
@@ -103,65 +176,66 @@
       camera-controls
       auto-rotate
       touch-action="pan-y"
+      data-i18n-attr="alt:st.iss.modelAlt"
       alt="国际空间站三维模型（NASA 官方）">
     </model-viewer>
   </div>
 
   <div class="facts">
-    <p class="lead">人类连续在轨生活最久的地方——从 2000 年 11 月至今，站上一天都没有断过人。</p>
+    <p class="lead" data-i18n="st.iss.lead">人类连续在轨生活最久的地方——从 2000 年 11 月至今，站上一天都没有断过人。</p>
     <ul>
-      <li>1998 年第一个舱段升空，由 15 个国家合作拼装了十几年，总质量约 420 吨。</li>
-      <li>轨道高度约 400 公里，时速约 2.8 万公里——站上的宇航员一天能看 16 次日出日落。</li>
-      <li>轨道倾角 51.6°：它的航线在南北纬 51.6° 之间来回摆，几乎覆盖了地球上所有有人住的地方，从赤道一直到北欧南端都会被它飞过。</li>
-      <li>按现行计划 2030 年前后退役：SpaceX 正在造一艘专门的离轨飞船，届时把它受控地带回南太平洋无人海域。想亲眼看它，得趁这几年。</li>
-      <li>它其实肉眼可见：暗天里像一颗不闪烁的亮星安静滑过，几分钟横穿天空。用下面的 NASA「Spot the Station」查它什么时候飞过你头顶。</li>
+      <li data-i18n="st.iss.li1">1998 年第一个舱段升空，由 15 个国家合作拼装了十几年，总质量约 420 吨。</li>
+      <li data-i18n="st.iss.li2">轨道高度约 400 公里，时速约 2.8 万公里——站上的宇航员一天能看 16 次日出日落。</li>
+      <li data-i18n="st.iss.li3">轨道倾角 51.6°：它的航线在南北纬 51.6° 之间来回摆，几乎覆盖了地球上所有有人住的地方，从赤道一直到北欧南端都会被它飞过。</li>
+      <li data-i18n="st.iss.li4">按现行计划 2030 年前后退役：SpaceX 正在造一艘专门的离轨飞船，届时把它受控地带回南太平洋无人海域。想亲眼看它，得趁这几年。</li>
+      <li data-i18n="st.iss.li5">它其实肉眼可见：暗天里像一颗不闪烁的亮星安静滑过，几分钟横穿天空。用下面的 NASA「Spot the Station」查它什么时候飞过你头顶。</li>
     </ul>
     <div class="links">
-      <a href="https://www.nasa.gov/international-space-station/" target="_blank" rel="noopener">NASA 官方页 ↗</a>
-      <a href="https://spotthestation.nasa.gov/" target="_blank" rel="noopener">它何时飞过你头顶 ↗</a>
+      <a href="https://www.nasa.gov/international-space-station/" target="_blank" rel="noopener" data-i18n="st.iss.link1">NASA 官方页 ↗</a>
+      <a href="https://spotthestation.nasa.gov/" target="_blank" rel="noopener" data-i18n="st.iss.link2">它何时飞过你头顶 ↗</a>
     </div>
   </div>
 
   <div class="gallery" data-gallery>
-    <figure data-full="stations/iss-flyaround.jpg" data-cap="国际空间站掠过地球云海 · 2021 年 11 月，载人龙飞船绕飞拍摄 · NASA">
-      <img loading="lazy" src="stations/iss-flyaround.jpg" alt="国际空间站掠过地球云海">
-      <figcaption>掠过地球云海<span class="sub">载人龙飞船绕飞时拍下的全站正视图</span></figcaption>
+    <figure data-full="stations/iss-flyaround.jpg" data-cap="国际空间站掠过地球云海 · 2021 年 11 月，载人龙飞船绕飞拍摄 · NASA" data-i18n-attr="data-cap:st.iss.fly.cap">
+      <img loading="lazy" src="stations/iss-flyaround.jpg" data-i18n-attr="alt:st.iss.fly.alt" alt="国际空间站掠过地球云海">
+      <figcaption><span data-i18n="st.iss.fly.name">掠过地球云海</span><span class="sub" data-i18n="st.iss.fly.sub">载人龙飞船绕飞时拍下的全站正视图</span></figcaption>
     </figure>
-    <figure data-full="stations/iss-topdown.jpg" data-cap="以太空为背景的国际空间站 · 2021 年 11 月，载人龙飞船绕飞拍摄 · NASA">
-      <img loading="lazy" src="stations/iss-topdown.jpg" alt="以黑色太空为背景的国际空间站">
-      <figcaption>背对深空<span class="sub">同一次绕飞，从上方看 T 字桁架与八对太阳翼</span></figcaption>
+    <figure data-full="stations/iss-topdown.jpg" data-cap="以太空为背景的国际空间站 · 2021 年 11 月，载人龙飞船绕飞拍摄 · NASA" data-i18n-attr="data-cap:st.iss.top.cap">
+      <img loading="lazy" src="stations/iss-topdown.jpg" data-i18n-attr="alt:st.iss.top.alt" alt="以黑色太空为背景的国际空间站">
+      <figcaption><span data-i18n="st.iss.top.name">背对深空</span><span class="sub" data-i18n="st.iss.top.sub">同一次绕飞，从上方看 T 字桁架与八对太阳翼</span></figcaption>
     </figure>
   </div>
 
-  <h2>中国空间站 · 天宫</h2>
-  <p class="note">天宫没有公开的官方三维模型，这张是社区制作的全构型渲染图（CC 授权）——天和核心舱居中，问天、梦天两个实验舱在两侧，组成 T 字构型。</p>
+  <h2 data-i18n="st.tg.h2">中国空间站 · 天宫</h2>
+  <p class="note" data-i18n="st.tg.note">天宫没有公开的官方三维模型，这张是社区制作的全构型渲染图（CC 授权）——天和核心舱居中，问天、梦天两个实验舱在两侧，组成 T 字构型。</p>
 
   <div class="gallery" data-gallery>
-    <figure data-full="stations/tiangong-render.jpg" data-cap="天宫空间站全构型渲染图 · Shujianyang / Wikimedia Commons · CC BY-SA 4.0">
-      <img loading="lazy" src="stations/tiangong-render.jpg" alt="天宫空间站全构型渲染图" style="aspect-ratio: 16/9">
-      <figcaption>天宫全构型<span class="sub">天和 + 问天 + 梦天，T 字构型渲染图</span></figcaption>
+    <figure data-full="stations/tiangong-render.jpg" data-cap="天宫空间站全构型渲染图 · Shujianyang / Wikimedia Commons · CC BY-SA 4.0" data-i18n-attr="data-cap:st.tg.render.cap">
+      <img loading="lazy" src="stations/tiangong-render.jpg" data-i18n-attr="alt:st.tg.render.alt" alt="天宫空间站全构型渲染图" style="aspect-ratio: 16/9">
+      <figcaption><span data-i18n="st.tg.render.name">天宫全构型</span><span class="sub" data-i18n="st.tg.render.sub">天和 + 问天 + 梦天，T 字构型渲染图</span></figcaption>
     </figure>
   </div>
 
   <div class="facts">
-    <p class="lead">2021 年天和核心舱升空，2022 年底搭成 T 字全构型——中国人自己的太空之家，从此常年有人值守。</p>
+    <p class="lead" data-i18n="st.tg.lead">2021 年天和核心舱升空，2022 年底搭成 T 字全构型——中国人自己的太空之家，从此常年有人值守。</p>
     <ul>
-      <li>轨道高度约 390 公里，和国际空间站是「邻居」；但天宫的轨道倾角约 41.5°、国际空间站是 51.6°，两家各走各的路，不会撞上。</li>
-      <li>2026 年 5 月神舟二十三号乘组进驻，其中包括首位来自香港的航天员。</li>
-      <li>本轮任务里有一项大实验：一名航天员将连续驻留一年，为更远的深空飞行积累医学数据。</li>
-      <li>站上已排了两百多个科学项目，从太空水稻到冷原子钟。国际空间站 2030 年退役后，天宫可能一度成为近地轨道上唯一有人的空间站。</li>
+      <li data-i18n="st.tg.li1">轨道高度约 390 公里，和国际空间站是「邻居」；但天宫的轨道倾角约 41.5°、国际空间站是 51.6°，两家各走各的路，不会撞上。</li>
+      <li data-i18n="st.tg.li2">2026 年 5 月神舟二十三号乘组进驻，其中包括首位来自香港的航天员。</li>
+      <li data-i18n="st.tg.li3">本轮任务里有一项大实验：一名航天员将连续驻留一年，为更远的深空飞行积累医学数据。</li>
+      <li data-i18n="st.tg.li4">站上已排了两百多个科学项目，从太空水稻到冷原子钟。国际空间站 2030 年退役后，天宫可能一度成为近地轨道上唯一有人的空间站。</li>
     </ul>
     <div class="links">
-      <a href="https://www.cmse.gov.cn/" target="_blank" rel="noopener">中国载人航天官网 ↗</a>
+      <a href="https://www.cmse.gov.cn/" target="_blank" rel="noopener" data-i18n="st.tg.link">中国载人航天官网 ↗</a>
     </div>
   </div>
 
   <div class="lightbox" data-lightbox hidden>
-    <img data-lightbox-img alt="空间站大图">
+    <img data-lightbox-img data-i18n-attr="alt:st.lightboxAlt" alt="空间站大图">
     <div class="cap" data-lightbox-cap></div>
   </div>
 
-  <footer>
+  <footer data-i18n="st.footer">
     国际空间站三维模型：NASA 官方 glTF（公有领域，本站压缩至 3 MB）。国际空间站照片：NASA（公有领域，2021-11 载人龙飞船绕飞系列）。
     天宫渲染图：Shujianyang / Wikimedia Commons，CC BY-SA 4.0。事实数据核对于 2026-07：NASA ISS 过渡计划、中国载人航天工程办公室公开信息。
   </footer>
