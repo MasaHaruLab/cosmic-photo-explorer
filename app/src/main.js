@@ -132,9 +132,11 @@ function interpolateLog(start, end, progress) {
 
 function getAladinCenter() {
   if (!aladin || typeof aladin.getRaDec !== 'function') return null
+  // getRaDec returns an array-like, not an Array — index it directly.
   const value = aladin.getRaDec()
-  if (!Array.isArray(value) || value.length < 2) return null
-  const [ra, dec] = value.map(Number)
+  if (!value) return null
+  const ra = Number(value[0])
+  const dec = Number(value[1])
   return Number.isFinite(ra) && Number.isFinite(dec) ? { ra: normalizeRa(ra), dec } : null
 }
 
@@ -142,8 +144,10 @@ function getAladinFov() {
   if (!aladin) return null
   const getter = typeof aladin.getFoV === 'function' ? aladin.getFoV : aladin.getFov
   if (typeof getter !== 'function') return null
+  // getFov returns [fovX, fovY]; setFoV drives fovX, and fovY saturates at
+  // 180° on portrait stages — track fovX only or wide views read as 180.
   const value = getter.call(aladin)
-  const fov = Array.isArray(value) ? Math.max(...value.map(Number)) : Number(value)
+  const fov = value && typeof value === 'object' ? Number(value[0]) : Number(value)
   return Number.isFinite(fov) && fov > 0 ? fov : null
 }
 
@@ -184,9 +188,11 @@ function updateHotspotPositions() {
     const button = layer.querySelector(`[data-anchor-id="${anchor.id}"]`)
     if (!button || !anchor.sky) continue
 
+    // world2pix returns an array-like (not Array) on hit, undefined when the
+    // point is outside the projection — so index it, don't Array.isArray it.
     const pixel = aladin.world2pix(anchor.sky.ra, anchor.sky.dec)
-    const x = Array.isArray(pixel) ? Number(pixel[0]) : Number.NaN
-    const y = Array.isArray(pixel) ? Number(pixel[1]) : Number.NaN
+    const x = pixel ? Number(pixel[0]) : Number.NaN
+    const y = pixel ? Number(pixel[1]) : Number.NaN
     const isVisible = Number.isFinite(x) && Number.isFinite(y) && x >= 0 && y >= 0 && x <= rect.width && y <= rect.height
 
     button.style.left = `${x}px`
@@ -356,7 +362,9 @@ async function initAladin() {
   })
 
   bindAladinEvents()
-  requestAnimationFrame(refreshSkyState)
+  // The `target` init option is parsed in the active cooFrame (galactic here),
+  // so re-point explicitly: gotoRaDec is always ICRS.
+  requestAnimationFrame(() => applySkyView(overviewView))
 }
 
 async function init() {
@@ -373,6 +381,13 @@ async function init() {
 
 resetButton.addEventListener('click', resetView)
 bortleButton.addEventListener('click', toggleBortleCard)
+
+// debug handle for headless QA (read-only introspection)
+window.__cosmicDebug = {
+  get aladin() { return aladin },
+  get currentView() { return currentView },
+  get activeSurvey() { return activeSurvey },
+}
 
 init().catch((error) => {
   panelStatus.textContent = '出错'
