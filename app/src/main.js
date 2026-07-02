@@ -72,6 +72,17 @@ app.innerHTML = `
           <div class="panel-copy" data-panel-boundary-copy></div>
         </div>
         <div class="panel-section">
+          <div class="panel-label">解释层</div>
+          <div class="panel-actions">
+            <button class="ghost-button" type="button" data-toggle-bortle aria-expanded="false">光污染阶梯</button>
+          </div>
+          <div class="explainer-card" data-bortle-card hidden>
+            <img src="/explainers/bortle_scale.png" alt="Bortle 光污染等级示意图" />
+            <p>Bortle 标尺用 1 到 9 级描述夜空黑暗程度，级别越高，城市灯光对星空的遮蔽越明显。今天许多人看不到照片里的银河，主要不是银河消失了，而是城市光污染把它淹没在夜空背景里。</p>
+          </div>
+          <div class="panel-copy boundary-note">底图边界说明：Gaia 测量的是恒星位置与亮度，不是深空长曝光照片；DSS2 来自上世纪照相底片数字化，近看会保留底片和拼接痕迹。</div>
+        </div>
+        <div class="panel-section">
           <div class="panel-label">下一步</div>
           <div class="panel-value" data-panel-next>点击一个天区开始拉近。</div>
           <div class="panel-actions">
@@ -92,6 +103,8 @@ const panelBoundaryTitle = document.querySelector('[data-panel-boundary-title]')
 const panelBoundaryCopy = document.querySelector('[data-panel-boundary-copy]')
 const panelNext = document.querySelector('[data-panel-next]')
 const resetButton = document.querySelector('[data-reset-view]')
+const bortleButton = document.querySelector('[data-toggle-bortle]')
+const bortleCard = document.querySelector('[data-bortle-card]')
 
 let selectedId = null
 let anchors = []
@@ -316,6 +329,12 @@ function bindAladinEvents() {
   window.addEventListener('resize', updateHotspotPositions)
 }
 
+function toggleBortleCard() {
+  const nextOpen = bortleCard.hidden
+  bortleCard.hidden = !nextOpen
+  bortleButton.setAttribute('aria-expanded', String(nextOpen))
+}
+
 async function initAladin() {
   if (!window.A?.init) {
     throw new Error('Aladin Lite 没有加载成功。')
@@ -353,6 +372,7 @@ async function init() {
 }
 
 resetButton.addEventListener('click', resetView)
+bortleButton.addEventListener('click', toggleBortleCard)
 
 init().catch((error) => {
   panelStatus.textContent = '出错'

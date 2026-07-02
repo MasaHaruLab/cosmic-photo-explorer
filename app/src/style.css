@@ -282,6 +282,33 @@ h2 {
   margin-top: 12px;
 }
 
+.explainer-card {
+  margin-top: 14px;
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  background: rgba(5, 8, 16, 0.46);
+}
+
+.explainer-card img {
+  display: block;
+  width: 100%;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.explainer-card p {
+  margin: 10px 0 0;
+  color: rgba(233, 241, 255, 0.76);
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+.boundary-note {
+  font-size: 13px;
+}
+
 .ghost-button {
   border: 1px solid rgba(255, 255, 255, 0.14);
   background: rgba(255, 255, 255, 0.04);
