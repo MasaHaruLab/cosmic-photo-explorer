@@ -72,6 +72,10 @@ app.innerHTML = `
           <div class="panel-copy" data-panel-boundary-copy></div>
         </div>
         <div class="panel-section">
+          <div class="panel-label">天区</div>
+          <div class="target-list" data-target-list></div>
+        </div>
+        <div class="panel-section">
           <div class="panel-label">解释层</div>
           <div class="panel-actions">
             <button class="ghost-button" type="button" data-toggle-bortle aria-expanded="false">光污染阶梯</button>
@@ -86,6 +90,7 @@ app.innerHTML = `
           <div class="panel-label">下一步</div>
           <div class="panel-value" data-panel-next>点击一个天区开始拉近。</div>
           <div class="panel-actions">
+            <button class="primary-button" type="button" data-tour-toggle>自动漫游</button>
             <button class="ghost-button" type="button" data-reset-view>重置视野</button>
           </div>
         </div>
@@ -103,8 +108,10 @@ const panelBoundaryTitle = document.querySelector('[data-panel-boundary-title]')
 const panelBoundaryCopy = document.querySelector('[data-panel-boundary-copy]')
 const panelNext = document.querySelector('[data-panel-next]')
 const resetButton = document.querySelector('[data-reset-view]')
+const tourButton = document.querySelector('[data-tour-toggle]')
 const bortleButton = document.querySelector('[data-toggle-bortle]')
 const bortleCard = document.querySelector('[data-bortle-card]')
+const targetList = document.querySelector('[data-target-list]')
 
 let selectedId = null
 let anchors = []
@@ -112,6 +119,9 @@ let aladin = null
 let activeSurvey = overviewSurvey
 let currentView = { ...overviewView }
 let activeTween = null
+let isTouring = false
+let tourTimeoutId = null
+let tourToken = 0
 
 function easeInOutCubic(t) {
   return t < 0.5 ? 4 * t * t * t : 1 - ((-2 * t + 2) ** 3) / 2
@@ -218,12 +228,32 @@ function updateSelectedButton() {
   for (const button of layer.querySelectorAll('.anchor-hotspot')) {
     button.classList.toggle('is-selected', button.dataset.anchorId === selectedId)
   }
+  for (const button of targetList.querySelectorAll('.target-button')) {
+    button.classList.toggle('is-selected', button.dataset.anchorId === selectedId)
+  }
 }
 
 function cancelActiveTween() {
   if (!activeTween) return
   cancelAnimationFrame(activeTween.frameId)
   activeTween = null
+}
+
+function clearTourTimeout() {
+  if (!tourTimeoutId) return
+  clearTimeout(tourTimeoutId)
+  tourTimeoutId = null
+}
+
+function stopTour(options = {}) {
+  const { cancelTween = true } = options
+  if (!isTouring && !tourTimeoutId) return
+
+  tourToken += 1
+  isTouring = false
+  clearTourTimeout()
+  if (cancelTween) cancelActiveTween()
+  tourButton.textContent = '自动漫游'
 }
 
 function applySkyView(view) {
@@ -272,7 +302,12 @@ function tweenToView(targetView, onComplete) {
   activeTween.frameId = requestAnimationFrame(step)
 }
 
-function selectAnchor(anchorId, options = { moveSky: true }) {
+function selectAnchor(anchorId, options = {}) {
+  const { moveSky = true, fromTour = false } = options
+  if (!fromTour) {
+    stopTour({ cancelTween: true })
+  }
+
   selectedId = anchorId
   const anchor = anchors.find((item) => item.id === anchorId)
   if (!anchor) return
@@ -280,7 +315,7 @@ function selectAnchor(anchorId, options = { moveSky: true }) {
   updateSelectedButton()
   renderPanel(anchor)
 
-  if (options.moveSky) {
+  if (moveSky) {
     panelStatus.textContent = `已拉近：${anchor.label}`
     panelNext.textContent = '可以继续拖动天空，或切换到另一个天区。'
     tweenToView({ ...anchor.sky, fov: anchor.fov }, updateHotspotPositions)
@@ -318,7 +353,86 @@ function renderAnchors() {
   updateHotspotPositions()
 }
 
+function renderTargetList() {
+  targetList.innerHTML = anchors
+    .map((anchor) => `
+      <button
+        class="target-button${anchor.id === selectedId ? ' is-selected' : ''}"
+        type="button"
+        data-anchor-id="${anchor.id}"
+      >
+        ${anchor.label}
+      </button>
+    `)
+    .join('')
+
+  for (const button of targetList.querySelectorAll('.target-button')) {
+    button.addEventListener('click', () => selectAnchor(button.dataset.anchorId))
+  }
+}
+
+function finishTour(token) {
+  panelStatus.textContent = '返回总览'
+  panelNext.textContent = '漫游结束后可以重新选择任意天区。'
+  tweenToView(overviewView, () => {
+    if (token !== tourToken) return
+    isTouring = false
+    clearTourTimeout()
+    tourButton.textContent = '自动漫游'
+    panelStatus.textContent = '总览模式'
+    panelNext.textContent = '点击一个天区开始拉近。'
+    activeSurvey = overviewSurvey
+    aladin.setImageSurvey(activeSurvey)
+    renderBoundary()
+    updateHotspotPositions()
+  })
+}
+
+function visitTourStop(index, token) {
+  if (token !== tourToken || !isTouring) return
+  if (index >= anchors.length) {
+    finishTour(token)
+    return
+  }
+
+  const anchor = anchors[index]
+  selectAnchor(anchor.id, { moveSky: false, fromTour: true })
+  panelStatus.textContent = `漫游中 (${index + 1}/${anchors.length})：${anchor.label}`
+  panelNext.textContent = '自动漫游会停留片刻，然后前往下一站。'
+
+  tweenToView({ ...anchor.sky, fov: anchor.fov }, () => {
+    if (token !== tourToken || !isTouring) return
+    tourTimeoutId = setTimeout(() => {
+      tourTimeoutId = null
+      visitTourStop(index + 1, token)
+    }, 6000)
+  })
+}
+
+function startTour() {
+  if (!anchors.length) return
+
+  stopTour({ cancelTween: true })
+  isTouring = true
+  tourToken += 1
+  tourButton.textContent = '停止漫游'
+  visitTourStop(0, tourToken)
+}
+
+function toggleTour() {
+  if (isTouring) {
+    stopTour({ cancelTween: true })
+    const selected = anchors.find((item) => item.id === selectedId)
+    panelStatus.textContent = selected ? `已停止：${selected.label}` : '已停止漫游'
+    panelNext.textContent = '可以继续拖动天空，或重新开始自动漫游。'
+    return
+  }
+
+  startTour()
+}
+
 function resetView() {
+  stopTour({ cancelTween: true })
   panelStatus.textContent = '总览模式'
   panelNext.textContent = '点击一个天区开始拉近。'
   tweenToView(overviewView, () => {
@@ -399,6 +513,7 @@ async function init() {
   anchors = await response.json()
   selectedId = anchors[0]?.id ?? null
   renderAnchors()
+  renderTargetList()
   if (selectedId) {
     selectAnchor(selectedId, { moveSky: false })
   }
@@ -406,6 +521,7 @@ async function init() {
 }
 
 resetButton.addEventListener('click', resetView)
+tourButton.addEventListener('click', toggleTour)
 bortleButton.addEventListener('click', toggleBortleCard)
 
 // debug handle for headless QA (read-only introspection)

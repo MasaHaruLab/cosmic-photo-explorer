@@ -244,6 +244,8 @@ h2 {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  max-height: calc(100vh - 132px);
+  overflow-y: auto;
 }
 
 .panel-section {
@@ -280,6 +282,34 @@ h2 {
 
 .panel-actions {
   margin-top: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.target-list {
+  margin-top: 12px;
+  display: grid;
+  gap: 8px;
+}
+
+.target-button {
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  background: rgba(255, 255, 255, 0.035);
+  color: rgba(234, 241, 255, 0.76);
+  border-radius: 8px;
+  padding: 8px 10px;
+  text-align: left;
+  cursor: pointer;
+  transition: background 180ms ease, border-color 180ms ease, color 180ms ease;
+}
+
+.target-button:hover,
+.target-button.is-selected {
+  background: rgba(16, 24, 42, 0.72);
+  border-color: rgba(196, 219, 255, 0.3);
+  color: rgba(246, 249, 255, 0.96);
 }
 
 .explainer-card {
@@ -309,9 +339,9 @@ h2 {
   font-size: 13px;
 }
 
-.ghost-button {
+.ghost-button,
+.primary-button {
   border: 1px solid rgba(255, 255, 255, 0.14);
-  background: rgba(255, 255, 255, 0.04);
   color: rgba(244, 248, 255, 0.9);
   border-radius: 999px;
   padding: 10px 14px;
@@ -319,7 +349,17 @@ h2 {
   transition: background 180ms ease, border-color 180ms ease, transform 180ms ease;
 }
 
-.ghost-button:hover {
+.ghost-button {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.primary-button {
+  background: rgba(196, 219, 255, 0.14);
+  border-color: rgba(210, 224, 255, 0.26);
+}
+
+.ghost-button:hover,
+.primary-button:hover {
   background: rgba(255, 255, 255, 0.08);
   border-color: rgba(210, 224, 255, 0.3);
   transform: translateY(-1px);
@@ -342,6 +382,10 @@ h2 {
     left: 20px;
     right: 20px;
     bottom: 20px;
+  }
+
+  .panel {
+    max-height: none;
   }
 }
 
