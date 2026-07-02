@@ -39,7 +39,7 @@ def fetch(command, start, stop):
         'CENTER': "'500@399'",  # geocentric
         'START_TIME': f"'{start}'",
         'STOP_TIME': f"'{TODAY if stop == 'NOW' else stop}'",
-        'STEP_SIZE': "'30 d'",
+        'STEP_SIZE': "'10 d'",
         'QUANTITIES': "'1,20'",  # astrometric RA/Dec + observer range
         'ANG_FORMAT': "'DEG'",
         'CSV_FORMAT': "'YES'",
