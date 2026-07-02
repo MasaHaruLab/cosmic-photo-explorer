@@ -1,13 +1,42 @@
 # HANDOFF
 
-Updated: 2026-07-02（Phase 3 全部落地，已公开上线）
+Updated: 2026-07-03（整站双语 + 探测器模拟器全部落地，**仅本地提交，未部署，待授权**）
 
-## 🌐 线上地址（已部署并真浏览器实测）
+## ⭐ 本次会话新增（2026-07-03，master 已提交，尚未推 gh-pages）
+
+CEO 睡前指令：全站中英双语（专业英译非机翻）+ 卫星轨迹点击播放模拟器 + 视差解释卡
++ 空间站详情，「后面全部直接走 不要停 / 你决定最佳方向不要最快方向 token 管够」。
+**红线：未授权不推公开**（外部写入需明确授权），故只在本地 master 提交，未动 gh-pages。
+
+- **3a4f3f5 整站双语引擎**：`public/i18n.js`（零依赖 classic script，静态页 + 打包 SPA
+  共用 `window.I18N`）+ `src/content.js`（UI 文案 `{zh,en}` 唯一事实源）+ `data-i18n`/
+  `-html`/`-attr` 声明式本地化 + 长春花蓝切换钮 + `localStorage['cosmic-lang']` 记忆。
+  22 锚点 label/summary/details 全 `{zh,en}`。真浏览器实测 ZH↔EN 全量翻译无残留。
+- **60c0e3f 三静态页双语**：观星台 / 太阳系 / 空间站，各自内联词典 + 专业英译；
+  空间站 `<strong>` 用 `data-i18n-html` 保留，画廊 `data-cap` 用 `data-i18n-attr` 翻译。
+- **818c336 来源页 + 翻译指南**：`reference.html`（16 张来源卡：Gaia DR3/DSS2/Aladin/
+  JPL Horizons/NASA 图库+APOD/月火表面/model-viewer+ISS glTF+天宫渲染/天文台照片授权/
+  Bortle+银河示意/grapeot 致谢）+ `TRANSLATION-GUIDE.md`（双语机制 + 英译标准 + 术语表
+  + 「让 Claude 翻新内容」一句话指令）。顶栏「来源 →」链接全站已就位。
+- **Batch-1（4f8a4e6，上次会话）探测器模拟器 + 视差**：Catmull-Rom 样条平滑（解 RA 回卷 +
+  按转角自适应细分，多边形→丝滑）+「从发射播放」9 秒扫全程 + 视差解释卡（近直线飞、
+  弹簧是地球公转视差）。本次实测：选旅行者 1 号 → 面板英文 → 播放 ▶→⏸→▶ 跑通 → 视差卡开合正常。
+- **fa5f779 可复用逻辑提取分析** `REUSE-EXTRACTION.md`：只有 A（整站双语引擎）够格提升
+  为全局 skill——**创建全局 skill = 持久化自我修改，待 CEO 授权**，其余标为片段/套路。
+- 生产构建 QA：`npm run build` 绿；`dist` 全 5 页 200；stations 生产版 EN 零 CJK 残留、
+  灯箱读到翻译后的 data-cap。站点默认语言已设回 zh（她先看中文）。
+
+**下一步（等 CEO 醒）**：① 授权后 `cd app && npm run build` → 推 `dist` 到 `gh-pages`
+force push 部署（做法见下「更新部署」）；② 授权后用 `skill-creator` 落地 `bilingual-static-site`
+全局 skill；③ B-F 公众号复盘仍待写。
+
+## 🌐 线上地址（上次已部署；本次双语改动尚未上线）
 
 **https://masaharulab.github.io/cosmic-photo-explorer/**
 
 - CEO 2026-07-02 口头批准公开（"好的 放吧"）。repo 转公开（原为旧冲刺私有备份，
   快进推送无历史丢失），dist 推 `gh-pages` 分支，Pages 已启用。
+- ⚠️ 线上是 2026-07-02 版本；本次会话的双语 + 模拟器改动**只在本地 master，未部署**。
 - 线上实测：Gaia 底图加载、10 锚点热点、列表点仙女座 → tween 到位
   (ra 10.68/dec 41.27/fov 3.5) + 自动切 DSS2、观星台页 200。
 - **更新部署**：`cd app && npm run build` → 把 `dist/` 内容 commit 到 `gh-pages`
