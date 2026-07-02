@@ -5,6 +5,18 @@ const overviewSurvey = 'CDS/P/DM/flux-color-Rp-G-Bp/I/355/gaiadr3'
 const closeUpSurvey = 'P/DSS2/color'
 const overviewView = { ra: 266.4168, dec: -29.0078, fov: 150 }
 const tweenDuration = 2400
+const nasaImageQueries = {
+  'galactic-center': 'galactic center milky way',
+  'antares-region': 'rho ophiuchi',
+  'summer-triangle': 'cygnus milky way',
+  'cygnus-rift': 'cygnus dark nebula',
+  andromeda: 'andromeda galaxy',
+  pleiades: 'pleiades',
+  'orion-nebula': 'orion nebula',
+  'carina-nebula': 'carina nebula',
+  lmc: 'large magellanic cloud',
+  smc: 'small magellanic cloud',
+}
 
 const surveyBoundary = {
   [overviewSurvey]: {
@@ -27,7 +39,10 @@ app.innerHTML = `
         <h1>星空照片探索器</h1>
         <p class="subtitle">从真实巡天数据进入银河：先看整片天空，再拉近到可以辨认的天区。</p>
       </div>
-      <div class="badge">银河总览</div>
+      <div class="topbar-actions">
+        <div class="badge">银河总览</div>
+        <a class="badge badge-link" href="/observatories.html">观星台 →</a>
+      </div>
     </header>
 
     <main class="stage-wrap">
@@ -63,11 +78,11 @@ app.innerHTML = `
           <div class="panel-label">当前目标</div>
           <div class="panel-value panel-title" data-panel-title>正在加载锚点…</div>
           <div class="panel-copy" data-panel-summary></div>
-        </div>
-        <div class="panel-section">
-          <div class="panel-label">为什么值得看</div>
           <div class="panel-copy" data-panel-details>
             这里不再只是静态背景，而是可以从真实天空数据进入的探索界面。
+          </div>
+          <div class="panel-actions">
+            <button class="ghost-button" type="button" data-nasa-open hidden>在 NASA 图库看这里</button>
           </div>
         </div>
         <div class="panel-section">
@@ -101,6 +116,16 @@ app.innerHTML = `
       </aside>
     </main>
   </div>
+  <div class="modal-backdrop" data-nasa-modal hidden>
+    <section class="nasa-modal" role="dialog" aria-label="NASA 图库">
+      <div class="nasa-modal-header">
+        <h3 data-nasa-title>NASA 图库</h3>
+        <button class="modal-close" type="button" data-nasa-close aria-label="关闭 NASA 图库">×</button>
+      </div>
+      <div class="nasa-modal-body" data-nasa-content></div>
+      <p class="nasa-modal-footer">图片版权归 NASA 及其合作机构所有，点击缩略图查看原始页面与授权信息。</p>
+    </section>
+  </div>
 `
 
 const layer = document.querySelector('[data-anchor-layer]')
@@ -117,6 +142,11 @@ const bortleButton = document.querySelector('[data-toggle-bortle]')
 const bortleCard = document.querySelector('[data-bortle-card]')
 const targetList = document.querySelector('[data-target-list]')
 const surveyChip = document.querySelector('[data-survey-chip]')
+const nasaOpenButton = document.querySelector('[data-nasa-open]')
+const nasaModal = document.querySelector('[data-nasa-modal]')
+const nasaTitle = document.querySelector('[data-nasa-title]')
+const nasaContent = document.querySelector('[data-nasa-content]')
+const nasaCloseButton = document.querySelector('[data-nasa-close]')
 
 let selectedId = null
 let anchors = []
@@ -128,6 +158,8 @@ let activeTween = null
 let isTouring = false
 let tourTimeoutId = null
 let tourToken = 0
+const nasaCache = new Map()
+let nasaRequestToken = 0
 
 function easeInOutCubic(t) {
   return t < 0.5 ? 4 * t * t * t : 1 - ((-2 * t + 2) ** 3) / 2
@@ -183,6 +215,15 @@ function renderBoundary() {
   const boundary = surveyBoundary[activeSurvey] ?? surveyBoundary[overviewSurvey]
   panelBoundaryTitle.textContent = boundary.title
   panelBoundaryCopy.textContent = boundary.copy
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;')
 }
 
 function updateSurveyChip() {
@@ -249,7 +290,96 @@ function renderPanel(anchor) {
   panelTitle.textContent = anchor.label
   panelSummary.textContent = anchor.summary
   panelDetails.textContent = anchor.details
+  nasaOpenButton.hidden = !anchor
   renderBoundary()
+}
+
+function renderNasaState(message) {
+  nasaContent.innerHTML = `<div class="nasa-state">${message}</div>`
+}
+
+function renderNasaImages(images) {
+  if (!images.length) {
+    renderNasaState('这个天区在 NASA 图库里没有直接匹配的照片。')
+    return
+  }
+
+  nasaContent.innerHTML = `
+    <div class="nasa-grid">
+      ${images
+        .map((image) => `
+          <a
+            class="nasa-card"
+            href="https://images.nasa.gov/details/${encodeURIComponent(image.nasaId)}"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <img src="${escapeHtml(image.thumbnail)}" alt="${escapeHtml(image.title)}" loading="lazy" />
+            <span>${escapeHtml(image.title)}</span>
+          </a>
+        `)
+        .join('')}
+    </div>
+  `
+}
+
+function normalizeNasaItems(items) {
+  return items
+    .map((item) => {
+      const data = item.data?.[0] ?? {}
+      const thumbnail = item.links?.[0]?.href
+      if (!thumbnail || !data.nasa_id) return null
+
+      return {
+        nasaId: data.nasa_id,
+        title: data.title || 'NASA 图像',
+        thumbnail,
+      }
+    })
+    .filter(Boolean)
+    .slice(0, 6)
+}
+
+async function loadNasaImages(anchor, token) {
+  if (nasaCache.has(anchor.id)) {
+    renderNasaImages(nasaCache.get(anchor.id))
+    return
+  }
+
+  const query = nasaImageQueries[anchor.id] ?? anchor.label
+  const url = new URL('https://images-api.nasa.gov/search')
+  url.searchParams.set('q', query)
+  url.searchParams.set('media_type', 'image')
+  url.searchParams.set('page_size', '6')
+
+  renderNasaState('正在向 NASA 查询…')
+
+  try {
+    const response = await fetch(url)
+    if (!response.ok) throw new Error(`NASA API returned ${response.status}`)
+    const payload = await response.json()
+    const images = normalizeNasaItems(payload.collection?.items ?? [])
+    nasaCache.set(anchor.id, images)
+    if (token === nasaRequestToken) renderNasaImages(images)
+  } catch {
+    if (token === nasaRequestToken) renderNasaState('查询失败，可能是网络问题。')
+  }
+}
+
+function closeNasaModal() {
+  nasaRequestToken += 1
+  nasaModal.hidden = true
+}
+
+function openNasaModal() {
+  const anchor = anchors.find((item) => item.id === selectedId)
+  if (!anchor) return
+
+  const token = nasaRequestToken + 1
+  nasaRequestToken = token
+  nasaTitle.textContent = `NASA 图库 · ${anchor.label}`
+  nasaModal.hidden = false
+  loadNasaImages(anchor, token)
 }
 
 function updateSelectedButton() {
@@ -556,6 +686,14 @@ async function init() {
 resetButton.addEventListener('click', resetView)
 tourButton.addEventListener('click', toggleTour)
 bortleButton.addEventListener('click', toggleBortleCard)
+nasaOpenButton.addEventListener('click', openNasaModal)
+nasaCloseButton.addEventListener('click', closeNasaModal)
+nasaModal.addEventListener('click', (event) => {
+  if (event.target === nasaModal) closeNasaModal()
+})
+window.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape' && !nasaModal.hidden) closeNasaModal()
+})
 for (const button of surveyChip.querySelectorAll('.survey-option')) {
   button.addEventListener('click', () => setManualSurvey(button.dataset.surveyChoice))
 }
