@@ -341,6 +341,31 @@ function toggleBortleCard() {
   bortleButton.setAttribute('aria-expanded', String(nextOpen))
 }
 
+function addSummerTriangleOverlay() {
+  try {
+    const points = [
+      [279.2347, 38.7837],
+      [310.358, 45.2803],
+      [297.6958, 8.8683],
+      [279.2347, 38.7837],
+    ]
+    const overlay = window.A.graphicOverlay({ color: 'rgba(255,255,255,0.3)', lineWidth: 1 })
+    aladin.addOverlay(overlay)
+
+    if (typeof window.A.polyline === 'function') {
+      overlay.add(window.A.polyline(points))
+      return
+    }
+
+    if (typeof window.A.line !== 'function') return
+    for (let index = 0; index < points.length - 1; index += 1) {
+      overlay.add(window.A.line(points[index], points[index + 1]))
+    }
+  } catch {
+    // The narrative anchors still work if the optional overlay API is unavailable.
+  }
+}
+
 async function initAladin() {
   if (!window.A?.init) {
     throw new Error('Aladin Lite 没有加载成功。')
@@ -362,6 +387,7 @@ async function initAladin() {
   })
 
   bindAladinEvents()
+  addSummerTriangleOverlay()
   // The `target` init option is parsed in the active cooFrame (galactic here),
   // so re-point explicitly: gotoRaDec is always ICRS.
   requestAnimationFrame(() => applySkyView(overviewView))

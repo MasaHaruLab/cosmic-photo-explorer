@@ -1,46 +1,102 @@
 [
   {
     "id": "galactic-center",
-    "sceneId": "milky-way-overview-real",
     "label": "银心",
     "kind": "region",
     "mode": "real",
     "sky": { "ra": 266.4168, "dec": -29.0078 },
     "fov": 10,
     "summary": "银河系中心所在的方向，恒星密度和尘埃结构都格外醒目。",
-    "details": "拉近后能看到银心附近密集星场与暗尘带交织的区域，但这仍是从地球方向看到的投影视角。"
-  },
-  {
-    "id": "summer-triangle",
-    "sceneId": "milky-way-overview-real",
-    "label": "夏季大三角",
-    "kind": "region",
-    "mode": "real",
-    "sky": { "ra": 295.5, "dec": 31.0 },
-    "fov": 45,
-    "summary": "由牛郎星、织女星和天津四构成，是夏夜最容易认出的星空路标之一。",
-    "details": "它横跨银河明亮的夏季区域，适合作为从整条银河进入具体星座方向的第一站。"
+    "details": "拉近后能看到密集星场与暗尘带交织。我们看不到银心本体——它藏在厚厚的尘埃后面，这本身就是照片里的信息。"
   },
   {
     "id": "antares-region",
-    "sceneId": "milky-way-overview-real",
     "label": "心宿二 · 蛇夫座暗云",
     "kind": "star-region",
     "mode": "real",
     "sky": { "ra": 247.3519, "dec": -26.432 },
     "fov": 8,
     "summary": "心宿二附近有亮星、尘埃云和暗云，是夏季银河旁极有层次的天区。",
-    "details": "这里的颜色和暗带来自不同恒星与尘埃的真实观测痕迹，适合说明照片里的亮区并不只是“发光背景”。"
+    "details": "这里的橙黄、蓝白和漆黑都来自真实观测：红超巨星的光、反射星云的尘埃散射、以及挡住背景星光的暗云。"
+  },
+  {
+    "id": "summer-triangle",
+    "label": "夏季大三角",
+    "kind": "asterism",
+    "mode": "real",
+    "sky": { "ra": 295.5, "dec": 31 },
+    "fov": 45,
+    "summary": "织女星、天津四、牛郎星构成的高辨识度导航三角。",
+    "details": "三颗亮星横跨银河两岸，是北半球夏夜认路的起点。放大后注意三角内部穿过的银河光带与暗隙。"
+  },
+  {
+    "id": "cygnus-rift",
+    "label": "天鹅座 · 银河暗隙",
+    "kind": "region",
+    "mode": "real",
+    "sky": { "ra": 310.358, "dec": 45.2803 },
+    "fov": 18,
+    "summary": "天津四脚下，一条黑色裂缝把银河劈成两条。",
+    "details": "这条“大暗隙”不是没有星，而是前景尘埃云挡住了后面的亿万颗星——暗，也是一种观测结果。"
+  },
+  {
+    "id": "andromeda",
+    "label": "仙女座星系 M31",
+    "kind": "galaxy",
+    "mode": "real",
+    "sky": { "ra": 10.6847, "dec": 41.269 },
+    "fov": 3.5,
+    "summary": "肉眼可见的最远天体，一整个和银河系同级的星系。",
+    "details": "照片里那团拉长的光斑是两千五百亿颗恒星的总和。Gaia 测的是我们银河系内的恒星，M31 在它的边界之外。"
+  },
+  {
+    "id": "pleiades",
+    "label": "昴星团 M45",
+    "kind": "cluster",
+    "mode": "real",
+    "sky": { "ra": 56.75, "dec": 24.1167 },
+    "fov": 2.5,
+    "summary": "最著名的疏散星团，蓝白色的年轻恒星群。",
+    "details": "恒星周围的蓝色雾光是星团正好穿过的尘埃云反射的星光，不是恒星诞生时的残留物。"
   },
   {
     "id": "orion-nebula",
-    "sceneId": "milky-way-overview-real",
     "label": "猎户座大星云 M42",
     "kind": "nebula",
     "mode": "real",
     "sky": { "ra": 83.8221, "dec": -5.3911 },
     "fov": 3,
-    "summary": "猎户座大星云是冬季星空中最经典的明亮星云之一，近距离很适合展示 DSS2 的照片质感。",
-    "details": "它是恒星形成活跃的星云区域，用来替代原来的太阳系叙事锚点，更符合真实天空底图的可指向范围。"
+    "summary": "离我们最近的大型恒星形成区，肉眼可见的星云。",
+    "details": "它是恒星形成活跃的星云区域。DSS2 照片里能看到发光气体的层次和被新生恒星吹开的空腔。"
+  },
+  {
+    "id": "carina-nebula",
+    "label": "船底座大星云",
+    "kind": "nebula",
+    "mode": "real",
+    "sky": { "ra": 161.265, "dec": -59.6844 },
+    "fov": 4,
+    "summary": "南天最壮观的恒星形成区，比猎户座大星云更大更亮。",
+    "details": "这里住着银河系里已知最不稳定的大质量恒星之一（海山二）。南天巡天照片里它的气体结构非常震撼。"
+  },
+  {
+    "id": "lmc",
+    "label": "大麦哲伦云",
+    "kind": "galaxy",
+    "mode": "real",
+    "sky": { "ra": 80.8942, "dec": -69.7561 },
+    "fov": 8,
+    "summary": "银河系最大的卫星星系，南天肉眼可见的一片光雾。",
+    "details": "它正围绕银河系运动，未来会被逐渐吸收。放大能看到里面自己的恒星形成区（蜘蛛星云）。"
+  },
+  {
+    "id": "smc",
+    "label": "小麦哲伦云",
+    "kind": "galaxy",
+    "mode": "real",
+    "sky": { "ra": 13.1867, "dec": -72.8286 },
+    "fov": 5,
+    "summary": "大麦哲伦云的小伙伴，另一个卫星星系。",
+    "details": "大小麦哲伦云之间由一条气体桥相连——星系之间的引力拉扯是看得见后果的。"
   }
 ]
