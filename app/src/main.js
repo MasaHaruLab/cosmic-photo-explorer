@@ -16,6 +16,12 @@ const nasaImageQueries = {
   'carina-nebula': 'carina nebula',
   lmc: 'large magellanic cloud',
   smc: 'small magellanic cloud',
+  'winter-triangle': 'winter milky way',
+  sirius: 'sirius star',
+  horsehead: 'horsehead nebula',
+  rosette: 'rosette nebula',
+  hyades: 'hyades',
+  m35: 'Messier 35',
 }
 
 const surveyBoundary = {
@@ -583,8 +589,14 @@ function renderAnchors() {
 }
 
 function renderTargetList() {
-  targetList.innerHTML = anchors
-    .map((anchor) => `
+  const parts = []
+  let currentGroup = null
+  for (const anchor of anchors) {
+    if (anchor.group !== currentGroup) {
+      currentGroup = anchor.group
+      parts.push(`<div class="target-group-label">${currentGroup}</div>`)
+    }
+    parts.push(`
       <button
         class="target-button${anchor.id === selectedId ? ' is-selected' : ''}"
         type="button"
@@ -593,7 +605,8 @@ function renderTargetList() {
         ${anchor.label}
       </button>
     `)
-    .join('')
+  }
+  targetList.innerHTML = parts.join('')
 
   for (const button of targetList.querySelectorAll('.target-button')) {
     button.addEventListener('click', () => selectAnchor(button.dataset.anchorId))
@@ -618,15 +631,16 @@ function finishTour(token) {
 
 function visitTourStop(index, token) {
   if (token !== tourToken || !isTouring) return
-  if (index >= anchors.length) {
+  const stops = anchors.filter((item) => item.tour)
+  if (index >= stops.length) {
     finishTour(token)
     return
   }
 
-  const anchor = anchors[index]
+  const anchor = stops[index]
   surveyMode = 'auto'
   selectAnchor(anchor.id, { moveSky: false, fromTour: true })
-  panelStatus.textContent = `漫游中 (${index + 1}/${anchors.length})：${anchor.label}`
+  panelStatus.textContent = `漫游中 (${index + 1}/${stops.length})：${anchor.label}`
   panelNext.textContent = '自动漫游会停留片刻，然后前往下一站。'
 
   tweenToView({ ...anchor.sky, fov: anchor.fov }, () => {
@@ -694,14 +708,8 @@ function toggleGalaxyCard() {
   galaxyButton.setAttribute('aria-expanded', String(nextOpen))
 }
 
-function addSummerTriangleOverlay() {
+function addTriangleOverlay(points) {
   try {
-    const points = [
-      [279.2347, 38.7837],
-      [310.358, 45.2803],
-      [297.6958, 8.8683],
-      [279.2347, 38.7837],
-    ]
     const overlay = window.A.graphicOverlay({ color: 'rgba(255,255,255,0.3)', lineWidth: 1 })
     aladin.addOverlay(overlay)
 
@@ -717,6 +725,24 @@ function addSummerTriangleOverlay() {
   } catch {
     // The narrative anchors still work if the optional overlay API is unavailable.
   }
+}
+
+function addSummerTriangleOverlay() {
+  addTriangleOverlay([
+    [279.2347, 38.7837],
+    [310.358, 45.2803],
+    [297.6958, 8.8683],
+    [279.2347, 38.7837],
+  ])
+}
+
+function addWinterTriangleOverlay() {
+  addTriangleOverlay([
+    [101.28716, -16.71612],
+    [88.79294, 7.40706],
+    [114.8255, 5.22499],
+    [101.28716, -16.71612],
+  ])
 }
 
 async function initAladin() {
@@ -741,6 +767,7 @@ async function initAladin() {
 
   bindAladinEvents()
   addSummerTriangleOverlay()
+  addWinterTriangleOverlay()
   // The `target` init option is parsed in the active cooFrame (galactic here),
   // so re-point explicitly: gotoRaDec is always ICRS.
   requestAnimationFrame(() => applySkyView(overviewView))

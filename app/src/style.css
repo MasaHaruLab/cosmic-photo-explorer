@@ -346,6 +346,17 @@ h2 {
   gap: 8px;
 }
 
+.target-group-label {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: rgba(198, 216, 255, 0.56);
+  margin-top: 6px;
+}
+
+.target-group-label:first-child {
+  margin-top: 0;
+}
+
 .target-button {
   width: 100%;
   border: 1px solid rgba(255, 255, 255, 0.09);
