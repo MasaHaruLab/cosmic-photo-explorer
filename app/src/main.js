@@ -1,12 +1,20 @@
 import './style.css'
 
 const anchorsUrl = '/data/anchors/phase1.json'
+const overviewSurvey = 'CDS/P/DM/flux-color-Rp-G-Bp/I/355/gaiadr3'
+const closeUpSurvey = 'P/DSS2/color'
+const overviewView = { ra: 266.4168, dec: -29.0078, fov: 150 }
+const tweenDuration = 2400
 
-const zoomPresets = {
-  'galactic-center': { scale: 1.85, x: 0.61, y: 0.54 },
-  'summer-triangle': { scale: 1.6, x: 0.51, y: 0.37 },
-  'solar-system-anchor': { scale: 1.45, x: 0.74, y: 0.57 },
-  'antares-region': { scale: 1.72, x: 0.69, y: 0.49 },
+const surveyBoundary = {
+  [overviewSurvey]: {
+    title: '真实数据 · Gaia DR3 官方全天图',
+    copy: '这层底图来自 ESA Gaia DR3 的官方全天渲染，基于约 18 亿颗被实际测量的恒星位置与亮度。它适合做银河的大尺度总览，而不是深空长曝光照片。',
+  },
+  [closeUpSurvey]: {
+    title: '真实数据 · DSS2 巡天照片',
+    copy: '这层底图来自 DSS2 数字化巡天照片，放大到具体天区时能看到真实照相底片记录下的星场。它更适合近距离查看星云、暗云和密集星区。',
+  },
 }
 
 const app = document.querySelector('#app')
@@ -15,66 +23,59 @@ app.innerHTML = `
   <div class="shell">
     <header class="topbar">
       <div>
-        <div class="eyebrow">Phase 1 / Real Mode</div>
-        <h1>Cosmic Photo Explorer</h1>
-        <p class="subtitle">A photoreal cosmic exploration shell for image-first science storytelling.</p>
+        <div class="eyebrow">第一阶段 / 真实数据模式</div>
+        <h1>星空照片探索器</h1>
+        <p class="subtitle">从真实巡天数据进入银河：先看整片天空，再拉近到可以辨认的天区。</p>
       </div>
-      <div class="badge">Milky Way Overview</div>
+      <div class="badge">银河总览</div>
     </header>
 
     <main class="stage-wrap">
       <section class="stage">
         <div class="hero-view">
-          <div class="hero-scene" data-hero-scene data-zoom-state="overview">
-            <img
-              class="hero-image"
-              src="/hero/reference-superlinear-gaia.jpg"
-              alt="Photoreal Milky Way overview reference"
-            />
+          <div class="hero-scene" data-hero-scene>
+            <div id="sky-view" aria-label="可交互星空视图"></div>
             <div class="hero-overlay"></div>
             <div class="anchor-layer" data-anchor-layer></div>
           </div>
           <div class="hero-caption">
-            <div class="hero-kicker">Photoreal hero view / reference-backed</div>
-            <h2>Milky Way overview</h2>
-            <p>
-              The stage now supports a restrained cinematic zoom so anchor selection feels like exploration,
-              not a toy overlay sitting on top of a static image.
-            </p>
+            <div class="hero-kicker">真实天空 / 可交互巡天底图</div>
+            <h2>把银河拉近</h2>
+            <p>拖动天空可以自由探索，点击标记会把视野平滑带到对应天区。总览使用 Gaia DR3，近距离自动切到 DSS2。</p>
           </div>
         </div>
       </section>
 
       <aside class="panel">
         <div class="panel-section">
-          <div class="panel-label">Mode</div>
-          <div class="panel-value">Real data layer</div>
+          <div class="panel-label">模式</div>
+          <div class="panel-value">真实数据底图</div>
         </div>
         <div class="panel-section">
-          <div class="panel-label">Status</div>
-          <div class="panel-value" data-panel-status>Overview mode</div>
+          <div class="panel-label">状态</div>
+          <div class="panel-value" data-panel-status>总览模式</div>
         </div>
         <div class="panel-section">
-          <div class="panel-label">Selected target</div>
-          <div class="panel-value panel-title" data-panel-title>Loading anchors…</div>
+          <div class="panel-label">当前目标</div>
+          <div class="panel-value panel-title" data-panel-title>正在加载锚点…</div>
           <div class="panel-copy" data-panel-summary></div>
         </div>
         <div class="panel-section">
-          <div class="panel-label">Why this matters</div>
+          <div class="panel-label">为什么值得看</div>
           <div class="panel-copy" data-panel-details>
-            We are switching from “just a pretty background” to “a guided exploration surface”.
+            这里不再只是静态背景，而是可以从真实天空数据进入的探索界面。
           </div>
         </div>
         <div class="panel-section">
-          <div class="panel-label">Boundary</div>
-          <div class="panel-value panel-boundary-title" data-panel-boundary-title>Loading boundary…</div>
+          <div class="panel-label">边界</div>
+          <div class="panel-value panel-boundary-title" data-panel-boundary-title>真实数据 · Gaia DR3 官方全天图</div>
           <div class="panel-copy" data-panel-boundary-copy></div>
         </div>
         <div class="panel-section">
-          <div class="panel-label">Next</div>
-          <div class="panel-value" data-panel-next>Click a target to begin the first cinematic zoom pass.</div>
+          <div class="panel-label">下一步</div>
+          <div class="panel-value" data-panel-next>点击一个天区开始拉近。</div>
           <div class="panel-actions">
-            <button class="ghost-button" type="button" data-reset-view>Reset view</button>
+            <button class="ghost-button" type="button" data-reset-view>重置视野</button>
           </div>
         </div>
       </aside>
@@ -83,7 +84,6 @@ app.innerHTML = `
 `
 
 const layer = document.querySelector('[data-anchor-layer]')
-const heroScene = document.querySelector('[data-hero-scene]')
 const panelStatus = document.querySelector('[data-panel-status]')
 const panelTitle = document.querySelector('[data-panel-title]')
 const panelSummary = document.querySelector('[data-panel-summary]')
@@ -95,66 +95,176 @@ const resetButton = document.querySelector('[data-reset-view]')
 
 let selectedId = null
 let anchors = []
+let aladin = null
+let activeSurvey = overviewSurvey
+let currentView = { ...overviewView }
+let activeTween = null
 
-function getZoomPreset(anchor) {
-  return zoomPresets[anchor.id] ?? {
-    scale: 1.55,
-    x: anchor.position.x,
-    y: anchor.position.y,
+function easeInOutCubic(t) {
+  return t < 0.5 ? 4 * t * t * t : 1 - ((-2 * t + 2) ** 3) / 2
+}
+
+function normalizeRa(ra) {
+  return ((ra % 360) + 360) % 360
+}
+
+function interpolateRa(startRa, endRa, progress) {
+  const delta = ((endRa - startRa + 540) % 360) - 180
+  return normalizeRa(startRa + delta * progress)
+}
+
+function interpolateLog(start, end, progress) {
+  return Math.exp(Math.log(start) + (Math.log(end) - Math.log(start)) * progress)
+}
+
+function getAladinCenter() {
+  if (!aladin || typeof aladin.getRaDec !== 'function') return null
+  const value = aladin.getRaDec()
+  if (!Array.isArray(value) || value.length < 2) return null
+  const [ra, dec] = value.map(Number)
+  return Number.isFinite(ra) && Number.isFinite(dec) ? { ra: normalizeRa(ra), dec } : null
+}
+
+function getAladinFov() {
+  if (!aladin) return null
+  const getter = typeof aladin.getFoV === 'function' ? aladin.getFoV : aladin.getFov
+  if (typeof getter !== 'function') return null
+  const value = getter.call(aladin)
+  const fov = Array.isArray(value) ? Math.max(...value.map(Number)) : Number(value)
+  return Number.isFinite(fov) && fov > 0 ? fov : null
+}
+
+function syncCurrentView() {
+  const center = getAladinCenter()
+  const fov = getAladinFov()
+  if (center) {
+    currentView.ra = center.ra
+    currentView.dec = center.dec
+  }
+  if (fov) {
+    currentView.fov = fov
   }
 }
 
-function applyOverview() {
-  heroScene.dataset.zoomState = 'overview'
-  heroScene.style.setProperty('--zoom-scale', '1.015')
-  heroScene.style.setProperty('--focus-x', '0.5')
-  heroScene.style.setProperty('--focus-y', '0.5')
-  panelStatus.textContent = 'Overview mode'
-  panelNext.textContent = 'Click a target to begin the first cinematic zoom pass.'
+function renderBoundary() {
+  const boundary = surveyBoundary[activeSurvey] ?? surveyBoundary[overviewSurvey]
+  panelBoundaryTitle.textContent = boundary.title
+  panelBoundaryCopy.textContent = boundary.copy
 }
 
-function applyZoom(anchor) {
-  const preset = getZoomPreset(anchor)
-  heroScene.dataset.zoomState = 'zoomed'
-  heroScene.style.setProperty('--zoom-scale', String(preset.scale))
-  heroScene.style.setProperty('--focus-x', String(preset.x))
-  heroScene.style.setProperty('--focus-y', String(preset.y))
-  panelStatus.textContent = `Zoomed to ${anchor.label}`
-  panelNext.textContent = anchor.zoomPresetId
-    ? `Zoom preset active: ${anchor.zoomPresetId}`
-    : 'Using a first-pass inferred zoom preset from anchor position.'
+function setSurveyForFov(fov = currentView.fov) {
+  if (!aladin || !Number.isFinite(fov)) return
+
+  const nextSurvey = fov < 30 ? closeUpSurvey : fov > 50 ? overviewSurvey : activeSurvey
+  if (nextSurvey === activeSurvey) return
+
+  activeSurvey = nextSurvey
+  aladin.setImageSurvey(activeSurvey)
+  renderBoundary()
 }
 
-function renderBoundary(anchor) {
-  const usesPreset = Boolean(anchor.zoomPresetId)
-  panelBoundaryTitle.textContent = usesPreset ? 'Real image / inferred camera move' : 'Real image / provisional camera move'
-  panelBoundaryCopy.textContent = usesPreset
-    ? `Anchor position is placed on the real overview image, but the current zoom path (${anchor.zoomPresetId}) is still a product-side cinematic inference rather than a scientific reconstruction.`
-    : 'Anchor position is placed on the real overview image, but the current zoom path is only inferred from anchor position because no dedicated preset exists yet.'
+function updateHotspotPositions() {
+  if (!aladin || !anchors.length) return
+
+  const rect = layer.getBoundingClientRect()
+  for (const anchor of anchors) {
+    const button = layer.querySelector(`[data-anchor-id="${anchor.id}"]`)
+    if (!button || !anchor.sky) continue
+
+    const pixel = aladin.world2pix(anchor.sky.ra, anchor.sky.dec)
+    const x = Array.isArray(pixel) ? Number(pixel[0]) : Number.NaN
+    const y = Array.isArray(pixel) ? Number(pixel[1]) : Number.NaN
+    const isVisible = Number.isFinite(x) && Number.isFinite(y) && x >= 0 && y >= 0 && x <= rect.width && y <= rect.height
+
+    button.style.left = `${x}px`
+    button.style.top = `${y}px`
+    button.style.visibility = isVisible ? 'visible' : 'hidden'
+  }
+}
+
+function refreshSkyState() {
+  syncCurrentView()
+  setSurveyForFov()
+  updateHotspotPositions()
 }
 
 function renderPanel(anchor) {
   panelTitle.textContent = anchor.label
   panelSummary.textContent = anchor.summary
   panelDetails.textContent = anchor.details
-  renderBoundary(anchor)
+  renderBoundary()
 }
 
-function selectAnchor(anchorId, options = { applyCinematicZoom: true }) {
+function updateSelectedButton() {
+  for (const button of layer.querySelectorAll('.anchor-hotspot')) {
+    button.classList.toggle('is-selected', button.dataset.anchorId === selectedId)
+  }
+}
+
+function cancelActiveTween() {
+  if (!activeTween) return
+  cancelAnimationFrame(activeTween.frameId)
+  activeTween = null
+}
+
+function applySkyView(view) {
+  if (!aladin) return
+  currentView = {
+    ra: normalizeRa(view.ra),
+    dec: view.dec,
+    fov: view.fov,
+  }
+  aladin.gotoRaDec(currentView.ra, currentView.dec)
+  aladin.setFoV(currentView.fov)
+  setSurveyForFov(currentView.fov)
+  updateHotspotPositions()
+}
+
+function tweenToView(targetView, onComplete) {
+  if (!aladin) return
+  cancelActiveTween()
+  syncCurrentView()
+
+  const startView = { ...currentView }
+  const startedAt = performance.now()
+  activeTween = { frameId: 0 }
+
+  function step(now) {
+    const rawProgress = Math.min((now - startedAt) / tweenDuration, 1)
+    const progress = easeInOutCubic(rawProgress)
+    const nextView = {
+      ra: interpolateRa(startView.ra, targetView.ra, progress),
+      dec: startView.dec + (targetView.dec - startView.dec) * progress,
+      fov: interpolateLog(startView.fov, targetView.fov, progress),
+    }
+
+    applySkyView(nextView)
+
+    if (rawProgress < 1) {
+      activeTween.frameId = requestAnimationFrame(step)
+      return
+    }
+
+    applySkyView(targetView)
+    activeTween = null
+    onComplete?.()
+  }
+
+  activeTween.frameId = requestAnimationFrame(step)
+}
+
+function selectAnchor(anchorId, options = { moveSky: true }) {
   selectedId = anchorId
   const anchor = anchors.find((item) => item.id === anchorId)
   if (!anchor) return
 
-  for (const button of layer.querySelectorAll('.anchor-hotspot')) {
-    button.classList.toggle('is-selected', button.dataset.anchorId === anchorId)
-  }
-
+  updateSelectedButton()
   renderPanel(anchor)
 
-  if (options.applyCinematicZoom) {
-    applyZoom(anchor)
-  } else {
-    renderBoundary(anchor)
+  if (options.moveSky) {
+    panelStatus.textContent = `已拉近：${anchor.label}`
+    panelNext.textContent = '可以继续拖动天空，或切换到另一个天区。'
+    tweenToView({ ...anchor.sky, fov: anchor.fov }, updateHotspotPositions)
   }
 }
 
@@ -165,7 +275,6 @@ function renderAnchors() {
         class="anchor-hotspot${anchor.id === selectedId ? ' is-selected' : ''}"
         type="button"
         data-anchor-id="${anchor.id}"
-        style="left:${anchor.position.x * 100}%; top:${anchor.position.y * 100}%;"
         aria-label="${anchor.label}"
         title="${anchor.label}"
       >
@@ -181,35 +290,74 @@ function renderAnchors() {
       const hovered = anchors.find((item) => item.id === button.dataset.anchorId)
       if (hovered) renderPanel(hovered)
     })
+    button.addEventListener('mouseleave', () => {
+      const selected = anchors.find((item) => item.id === selectedId)
+      if (selected) renderPanel(selected)
+    })
   }
+
+  updateHotspotPositions()
+}
+
+function resetView() {
+  panelStatus.textContent = '总览模式'
+  panelNext.textContent = '点击一个天区开始拉近。'
+  tweenToView(overviewView, () => {
+    activeSurvey = overviewSurvey
+    aladin.setImageSurvey(activeSurvey)
+    renderBoundary()
+    updateHotspotPositions()
+  })
+}
+
+function bindAladinEvents() {
+  aladin.on('positionChanged', refreshSkyState)
+  aladin.on('zoomChanged', refreshSkyState)
+  window.addEventListener('resize', updateHotspotPositions)
+}
+
+async function initAladin() {
+  if (!window.A?.init) {
+    throw new Error('Aladin Lite 没有加载成功。')
+  }
+
+  await window.A.init
+  aladin = window.A.aladin('#sky-view', {
+    survey: overviewSurvey,
+    target: `${overviewView.ra} ${overviewView.dec}`,
+    fov: overviewView.fov,
+    cooFrame: 'galactic',
+    showFullscreenControl: false,
+    showLayersControl: false,
+    showGotoControl: false,
+    showZoomControl: false,
+    showFrame: false,
+    showCooGrid: false,
+    showSimbadPointerControl: false,
+  })
+
+  bindAladinEvents()
+  requestAnimationFrame(refreshSkyState)
 }
 
 async function init() {
-  applyOverview()
+  renderBoundary()
   const response = await fetch(anchorsUrl)
   anchors = await response.json()
   selectedId = anchors[0]?.id ?? null
   renderAnchors()
   if (selectedId) {
-    selectAnchor(selectedId, { applyCinematicZoom: false })
+    selectAnchor(selectedId, { moveSky: false })
   }
+  await initAladin()
 }
 
-resetButton.addEventListener('click', () => {
-  applyOverview()
-  if (selectedId) {
-    const anchor = anchors.find((item) => item.id === selectedId)
-    if (anchor) {
-      renderPanel(anchor)
-      panelBoundaryCopy.textContent += ' You are now back at the overview scale.'
-    }
-  }
-})
+resetButton.addEventListener('click', resetView)
 
 init().catch((error) => {
-  panelStatus.textContent = 'Error state'
-  panelTitle.textContent = 'Anchor load failed'
-  panelSummary.textContent = 'Could not load phase-1 anchor metadata.'
+  panelStatus.textContent = '出错'
+  panelTitle.textContent = '锚点或星图加载失败'
+  panelSummary.textContent = '无法加载第一阶段的天区数据。'
   panelDetails.textContent = String(error)
-  panelNext.textContent = 'Fix anchor data wiring before continuing to zoom transitions.'
+  panelNext.textContent = '请先修复数据或 Aladin Lite 加载问题。'
 })

@@ -5,10 +5,10 @@
     "label": "银心",
     "kind": "region",
     "mode": "real",
-    "position": { "x": 0.61, "y": 0.54, "space": "normalized-image" },
-    "summary": "银河最亮、恒星最密集的方向。",
-    "details": "第一阶段先把它作为最重要的区域锚点。后续可接入更精确的 zoom preset 与边界说明。",
-    "zoomPresetId": "zoom-galactic-center"
+    "sky": { "ra": 266.4168, "dec": -29.0078 },
+    "fov": 10,
+    "summary": "银河系中心所在的方向，恒星密度和尘埃结构都格外醒目。",
+    "details": "拉近后能看到银心附近密集星场与暗尘带交织的区域，但这仍是从地球方向看到的投影视角。"
   },
   {
     "id": "summer-triangle",
@@ -16,31 +16,31 @@
     "label": "夏季大三角",
     "kind": "region",
     "mode": "real",
-    "position": { "x": 0.51, "y": 0.37, "space": "normalized-image" },
-    "summary": "牛郎、织女、天津四构成的高辨识度导航区域。",
-    "details": "这是第一批最适合作为“从照片进入探索”的用户锚点之一，因为非天文用户也容易建立方位感。",
-    "zoomPresetId": "zoom-summer-triangle"
-  },
-  {
-    "id": "solar-system-anchor",
-    "sceneId": "milky-way-overview-real",
-    "label": "太阳系锚点",
-    "kind": "anchor",
-    "mode": "real",
-    "position": { "x": 0.74, "y": 0.57, "space": "normalized-image" },
-    "summary": "代表我们在银河盘内的本地观察位置。",
-    "details": "当前仍是产品级锚点，主要用于建立“我们从哪里看出去”的叙事入口；科学位置可在更高精度资产接入后继续校准。",
-    "zoomPresetId": null
+    "sky": { "ra": 295.5, "dec": 31.0 },
+    "fov": 45,
+    "summary": "由牛郎星、织女星和天津四构成，是夏夜最容易认出的星空路标之一。",
+    "details": "它横跨银河明亮的夏季区域，适合作为从整条银河进入具体星座方向的第一站。"
   },
   {
     "id": "antares-region",
     "sceneId": "milky-way-overview-real",
-    "label": "心宿二附近",
+    "label": "心宿二 · 蛇夫座暗云",
     "kind": "star-region",
     "mode": "real",
-    "position": { "x": 0.69, "y": 0.49, "space": "normalized-image" },
-    "summary": "低纬夏季银河中极具识别度的亮星区域。",
-    "details": "这类亮星锚点能帮用户把“漂亮但陌生”的银河图，转换成“我知道自己看到了哪里”的体验。",
-    "zoomPresetId": null
+    "sky": { "ra": 247.3519, "dec": -26.432 },
+    "fov": 8,
+    "summary": "心宿二附近有亮星、尘埃云和暗云，是夏季银河旁极有层次的天区。",
+    "details": "这里的颜色和暗带来自不同恒星与尘埃的真实观测痕迹，适合说明照片里的亮区并不只是“发光背景”。"
+  },
+  {
+    "id": "orion-nebula",
+    "sceneId": "milky-way-overview-real",
+    "label": "猎户座大星云 M42",
+    "kind": "nebula",
+    "mode": "real",
+    "sky": { "ra": 83.8221, "dec": -5.3911 },
+    "fov": 3,
+    "summary": "猎户座大星云是冬季星空中最经典的明亮星云之一，近距离很适合展示 DSS2 的照片质感。",
+    "details": "它是恒星形成活跃的星云区域，用来替代原来的太阳系叙事锚点，更符合真实天空底图的可指向范围。"
   }
 ]
