@@ -1,14 +1,28 @@
 # HANDOFF
 
-Updated: 2026-07-02（Phase 2 已落地）
+Updated: 2026-07-02（Phase 3 已落地，只剩部署等 CEO 确认）
 
 ## ▶ 继续
 
-Phase 3 候选（未开工，等 CEO 玩过再定）：
-1. 观星台页面扩容：给 FAST/Keck/Subaru/帕洛马/格林威治补授权配图；可加「今晚它们在看什么」动态位。
-2. 解释层扩展：Gaia 观测边界可视化（银河系外俯视叙事）。
-3. 移动端适配 + 对外部署（部署属外部写入，需 CEO 明确授权）。
-4. 自动漫游可配置（站点勾选/停留时长/背景乐）。
+1. **部署 GitHub Pages（唯一待办）**：CEO 已批 Phase 3，但「建公开 repo」被
+   auto-classifier 拦（公开发布要人当场确认）。CEO 确认后执行：
+   `gh repo create MasaHaruLab/cosmic-photo-explorer --public --source . --push`
+   → 构建 dist 推 `gh-pages` 分支 → `gh api .../pages` 开 Pages
+   → 目标 URL https://masaharulab.github.io/cosmic-photo-explorer/
+   （vite base './' 已配好，子路径直接可用。）
+2. Phase 3 第 4 项「自动漫游可配置（站点勾选/停留时长/背景乐）」已批未做，可选。
+
+## Phase 3 已完成（2026-07-02，真浏览器实测）
+
+- P3-C（d0598de + 9e72ca8，Codex）：vite base './' 相对路径改造（子路径托管可用）
+  + 移动端断点（≤900px 单列：舞台在上、面板在下；390px 宽实测通过）。
+- P3-A（f870db3）：观星台页 8 台全部配图（新增 FAST 航拍/Keck/Subaru/帕洛马/
+  格林威治报时球，来源 Wikimedia Commons CC + NASA/JPL 公版，页脚全署名）；
+  6 个「最新动态」官方直达位（URL 全部 curl 验活，帕洛马新闻页 404 故跳过）；
+  页内链接相对化。
+- P3-B（b387da9）：解释层新增「跳出银河系」卡——NASA/JPL-Caltech/R. Hurt 银河系
+  俯视示意图 + Gaia 测量范围 vs 整个银河系的中文叙事。
+- QA：观星台页 8 图零破图、解释卡开合正常、移动端单列布局正常（真 Chrome 实测）。
 
 ## Phase 2 已完成（2026-07-02，全部真浏览器实测）
 
