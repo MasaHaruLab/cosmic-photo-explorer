@@ -144,6 +144,40 @@ h1 {
   pointer-events: none;
 }
 
+.survey-chip {
+  position: absolute;
+  right: 18px;
+  bottom: 18px;
+  z-index: 3;
+  display: inline-flex;
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  background: rgba(5, 8, 16, 0.58);
+  backdrop-filter: blur(10px);
+}
+
+.survey-chip[hidden] {
+  display: none;
+}
+
+.survey-option {
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: rgba(234, 241, 255, 0.68);
+  padding: 8px 10px;
+  cursor: pointer;
+  transition: background 180ms ease, color 180ms ease;
+}
+
+.survey-option:hover,
+.survey-option.is-selected {
+  background: rgba(196, 219, 255, 0.16);
+  color: rgba(246, 249, 255, 0.96);
+}
+
 .anchor-hotspot {
   position: absolute;
   transform: translate(-50%, -50%);

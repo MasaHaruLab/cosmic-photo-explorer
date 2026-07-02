@@ -9,7 +9,7 @@ const tweenDuration = 2400
 const surveyBoundary = {
   [overviewSurvey]: {
     title: '真实数据 · Gaia DR3 官方全天图',
-    copy: '这层底图来自 ESA Gaia DR3 的官方全天渲染，基于约 18 亿颗被实际测量的恒星位置与亮度。它适合做银河的大尺度总览，而不是深空长曝光照片。',
+    copy: '这层底图来自 ESA Gaia DR3 的官方全天渲染，基于约 18 亿颗被实际测量的恒星位置与亮度。它适合做银河的大尺度总览，而不是深空长曝光照片。近距离下它会显出颗粒感——每个亮点都是一颗被单独测量的恒星，这正是“测量图”和“照片”的区别。',
   },
   [closeUpSurvey]: {
     title: '真实数据 · DSS2 巡天照片',
@@ -37,6 +37,10 @@ app.innerHTML = `
             <div id="sky-view" aria-label="可交互星空视图"></div>
             <div class="hero-overlay"></div>
             <div class="anchor-layer" data-anchor-layer></div>
+            <div class="survey-chip" data-survey-chip hidden>
+              <button class="survey-option" type="button" data-survey-choice="dss2">DSS2 照片</button>
+              <button class="survey-option" type="button" data-survey-choice="gaia">Gaia 测量图</button>
+            </div>
           </div>
           <div class="hero-caption">
             <div class="hero-kicker">真实天空 / 可交互巡天底图</div>
@@ -112,11 +116,13 @@ const tourButton = document.querySelector('[data-tour-toggle]')
 const bortleButton = document.querySelector('[data-toggle-bortle]')
 const bortleCard = document.querySelector('[data-bortle-card]')
 const targetList = document.querySelector('[data-target-list]')
+const surveyChip = document.querySelector('[data-survey-chip]')
 
 let selectedId = null
 let anchors = []
 let aladin = null
 let activeSurvey = overviewSurvey
+let surveyMode = 'auto'
 let currentView = { ...overviewView }
 let activeTween = null
 let isTouring = false
@@ -179,15 +185,37 @@ function renderBoundary() {
   panelBoundaryCopy.textContent = boundary.copy
 }
 
+function updateSurveyChip() {
+  const isCloseView = Number.isFinite(currentView.fov) && currentView.fov < 30
+  surveyChip.hidden = !isCloseView
+
+  for (const button of surveyChip.querySelectorAll('.survey-option')) {
+    const survey = button.dataset.surveyChoice === 'dss2' ? closeUpSurvey : overviewSurvey
+    const isSelected = survey === activeSurvey
+    button.classList.toggle('is-selected', isSelected)
+    button.setAttribute('aria-pressed', String(isSelected))
+  }
+}
+
+function setActiveSurvey(nextSurvey) {
+  if (!aladin) return
+  if (nextSurvey !== activeSurvey) {
+    activeSurvey = nextSurvey
+    aladin.setImageSurvey(activeSurvey)
+  }
+  renderBoundary()
+  updateSurveyChip()
+}
+
 function setSurveyForFov(fov = currentView.fov) {
   if (!aladin || !Number.isFinite(fov)) return
+  if (surveyMode === 'manual') {
+    updateSurveyChip()
+    return
+  }
 
   const nextSurvey = fov < 30 ? closeUpSurvey : fov > 50 ? overviewSurvey : activeSurvey
-  if (nextSurvey === activeSurvey) return
-
-  activeSurvey = nextSurvey
-  aladin.setImageSurvey(activeSurvey)
-  renderBoundary()
+  setActiveSurvey(nextSurvey)
 }
 
 function updateHotspotPositions() {
@@ -316,6 +344,7 @@ function selectAnchor(anchorId, options = {}) {
   renderPanel(anchor)
 
   if (moveSky) {
+    surveyMode = 'auto'
     panelStatus.textContent = `已拉近：${anchor.label}`
     panelNext.textContent = '可以继续拖动天空，或切换到另一个天区。'
     tweenToView({ ...anchor.sky, fov: anchor.fov }, updateHotspotPositions)
@@ -372,6 +401,7 @@ function renderTargetList() {
 }
 
 function finishTour(token) {
+  surveyMode = 'auto'
   panelStatus.textContent = '返回总览'
   panelNext.textContent = '漫游结束后可以重新选择任意天区。'
   tweenToView(overviewView, () => {
@@ -381,9 +411,7 @@ function finishTour(token) {
     tourButton.textContent = '自动漫游'
     panelStatus.textContent = '总览模式'
     panelNext.textContent = '点击一个天区开始拉近。'
-    activeSurvey = overviewSurvey
-    aladin.setImageSurvey(activeSurvey)
-    renderBoundary()
+    setActiveSurvey(overviewSurvey)
     updateHotspotPositions()
   })
 }
@@ -396,6 +424,7 @@ function visitTourStop(index, token) {
   }
 
   const anchor = anchors[index]
+  surveyMode = 'auto'
   selectAnchor(anchor.id, { moveSky: false, fromTour: true })
   panelStatus.textContent = `漫游中 (${index + 1}/${anchors.length})：${anchor.label}`
   panelNext.textContent = '自动漫游会停留片刻，然后前往下一站。'
@@ -433,14 +462,18 @@ function toggleTour() {
 
 function resetView() {
   stopTour({ cancelTween: true })
+  surveyMode = 'auto'
   panelStatus.textContent = '总览模式'
   panelNext.textContent = '点击一个天区开始拉近。'
   tweenToView(overviewView, () => {
-    activeSurvey = overviewSurvey
-    aladin.setImageSurvey(activeSurvey)
-    renderBoundary()
+    setActiveSurvey(overviewSurvey)
     updateHotspotPositions()
   })
+}
+
+function setManualSurvey(choice) {
+  surveyMode = 'manual'
+  setActiveSurvey(choice === 'dss2' ? closeUpSurvey : overviewSurvey)
 }
 
 function bindAladinEvents() {
@@ -523,12 +556,16 @@ async function init() {
 resetButton.addEventListener('click', resetView)
 tourButton.addEventListener('click', toggleTour)
 bortleButton.addEventListener('click', toggleBortleCard)
+for (const button of surveyChip.querySelectorAll('.survey-option')) {
+  button.addEventListener('click', () => setManualSurvey(button.dataset.surveyChoice))
+}
 
 // debug handle for headless QA (read-only introspection)
 window.__cosmicDebug = {
   get aladin() { return aladin },
   get currentView() { return currentView },
   get activeSurvey() { return activeSurvey },
+  get surveyMode() { return surveyMode },
 }
 
 init().catch((error) => {
