@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<title>Batch 0 spike — 公共 HiPS 照片感验证</title>
+<style>
+  body { margin: 0; background: #000; color: #ccc; font: 13px/1.4 -apple-system, sans-serif; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; }
+  .panel { position: relative; }
+  .panel .viz { width: 100%; height: 560px; }
+  .panel .label {
+    position: absolute; top: 6px; left: 8px; z-index: 30;
+    background: rgba(0,0,0,.65); padding: 2px 8px; border-radius: 4px;
+  }
+</style>
+<script src="https://aladin.cds.unistra.fr/AladinLite/api/v3/latest/aladin.js" charset="utf-8"></script>
+</head>
+<body>
+<div class="grid">
+  <div class="panel"><div class="label">A · DSS2 color · 全银河 FOV 120°</div><div id="p1" class="viz"></div></div>
+  <div class="panel"><div class="label">B · DSS2 color · 银心 FOV 10°</div><div id="p2" class="viz"></div></div>
+  <div class="panel"><div class="label">C · Mellinger 全景 · FOV 200°</div><div id="p3" class="viz"></div></div>
+  <div class="panel"><div class="label">D · Gaia DR3 flux · 全天 FOV 200°</div><div id="p4" class="viz"></div></div>
+</div>
+<script>
+  const shared = { showFullscreenControl: false, showLayersControl: false,
+    showGotoControl: false, showZoomControl: false, showFrame: false,
+    showCooGrid: false, showSimbadPointerControl: false, cooFrame: 'galactic' };
+  A.init.then(() => {
+    A.aladin('#p1', Object.assign({ survey: 'P/DSS2/color', target: 'gal center', fov: 120 }, shared));
+    A.aladin('#p2', Object.assign({ survey: 'P/DSS2/color', target: 'gal center', fov: 10 }, shared));
+    A.aladin('#p3', Object.assign({ survey: 'P/Mellinger/color', target: 'gal center', fov: 200 }, shared));
+    A.aladin('#p4', Object.assign({ survey: 'CDS/P/DM/flux-color-Rp-G-Bp/I/355/gaiadr3', target: 'gal center', fov: 200 }, shared));
+    window.__spikeReady = true;
+  });
+</script>
+</body>
+</html>
