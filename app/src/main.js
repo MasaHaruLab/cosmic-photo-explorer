@@ -123,8 +123,21 @@ app.innerHTML = `
         <button class="modal-close" type="button" data-nasa-close aria-label="关闭 NASA 图库">×</button>
       </div>
       <div class="nasa-modal-body" data-nasa-content></div>
-      <p class="nasa-modal-footer">图片版权归 NASA 及其合作机构所有，点击缩略图查看原始页面与授权信息。</p>
+      <p class="nasa-modal-footer">图片版权归 NASA 及其合作机构所有，点击缩略图直接看大图。</p>
     </section>
+  </div>
+  <div class="lightbox-backdrop" data-nasa-lightbox hidden>
+    <figure class="nasa-lightbox" role="dialog" aria-label="NASA 大图">
+      <button class="modal-close lightbox-close" type="button" data-lightbox-close aria-label="关闭大图">×</button>
+      <div class="lightbox-stage">
+        <div class="nasa-state" data-lightbox-state>正在加载大图…</div>
+        <img data-lightbox-img alt="" hidden />
+      </div>
+      <figcaption class="lightbox-caption">
+        <span data-lightbox-title></span>
+        <a data-lightbox-nasa-link href="#" target="_blank" rel="noreferrer">在 NASA 页面打开 ↗</a>
+      </figcaption>
+    </figure>
   </div>
 `
 
@@ -147,6 +160,12 @@ const nasaModal = document.querySelector('[data-nasa-modal]')
 const nasaTitle = document.querySelector('[data-nasa-title]')
 const nasaContent = document.querySelector('[data-nasa-content]')
 const nasaCloseButton = document.querySelector('[data-nasa-close]')
+const nasaLightbox = document.querySelector('[data-nasa-lightbox]')
+const nasaLightboxImg = document.querySelector('[data-lightbox-img]')
+const nasaLightboxState = document.querySelector('[data-lightbox-state]')
+const nasaLightboxTitle = document.querySelector('[data-lightbox-title]')
+const nasaLightboxLink = document.querySelector('[data-lightbox-nasa-link]')
+const nasaLightboxClose = document.querySelector('[data-lightbox-close]')
 
 let selectedId = null
 let anchors = []
@@ -307,20 +326,63 @@ function renderNasaImages(images) {
   nasaContent.innerHTML = `
     <div class="nasa-grid">
       ${images
-        .map((image) => `
-          <a
-            class="nasa-card"
-            href="https://images.nasa.gov/details/${encodeURIComponent(image.nasaId)}"
-            target="_blank"
-            rel="noreferrer"
-          >
+        .map((image, index) => `
+          <button class="nasa-card" type="button" data-nasa-index="${index}">
             <img src="${escapeHtml(image.thumbnail)}" alt="${escapeHtml(image.title)}" loading="lazy" />
             <span>${escapeHtml(image.title)}</span>
-          </a>
+          </button>
         `)
         .join('')}
     </div>
   `
+
+  for (const card of nasaContent.querySelectorAll('[data-nasa-index]')) {
+    card.addEventListener('click', () => openNasaLightbox(images[Number(card.dataset.nasaIndex)]))
+  }
+}
+
+// NASA asset URLs encode the size as a suffix (~thumb/~small/~medium/~large/
+// ~orig); swapping the suffix yields the direct large-image URL without an
+// extra API round trip. Fall back through sizes via the img error handler.
+function nasaImageCandidates(image) {
+  const sizes = ['~large', '~medium', '~orig']
+  const candidates = sizes
+    .map((size) => image.thumbnail.replace(/~(thumb|small|medium)(?=\.[a-z]+$)/i, size))
+    .filter((url) => url !== image.thumbnail)
+  candidates.push(image.thumbnail)
+  return [...new Set(candidates)]
+}
+
+function openNasaLightbox(image) {
+  const candidates = nasaImageCandidates(image)
+  let attempt = 0
+
+  nasaLightboxTitle.textContent = image.title
+  nasaLightboxLink.href = `https://images.nasa.gov/details/${encodeURIComponent(image.nasaId)}`
+  nasaLightboxState.hidden = false
+  nasaLightboxState.textContent = '正在加载大图…'
+  nasaLightboxImg.hidden = true
+  nasaLightboxImg.onload = () => {
+    nasaLightboxState.hidden = true
+    nasaLightboxImg.hidden = false
+  }
+  nasaLightboxImg.onerror = () => {
+    attempt += 1
+    if (attempt < candidates.length) {
+      nasaLightboxImg.src = candidates[attempt]
+    } else {
+      nasaLightboxState.textContent = '大图加载失败，可以去 NASA 页面查看。'
+    }
+  }
+  nasaLightboxImg.src = candidates[0]
+  nasaLightbox.hidden = false
+}
+
+function closeNasaLightbox() {
+  nasaLightbox.hidden = true
+  nasaLightboxImg.onload = null
+  nasaLightboxImg.onerror = null
+  nasaLightboxImg.removeAttribute('src')
 }
 
 function normalizeNasaItems(items) {
@@ -691,8 +753,17 @@ nasaCloseButton.addEventListener('click', closeNasaModal)
 nasaModal.addEventListener('click', (event) => {
   if (event.target === nasaModal) closeNasaModal()
 })
+nasaLightboxClose.addEventListener('click', closeNasaLightbox)
+nasaLightbox.addEventListener('click', (event) => {
+  if (event.target === nasaLightbox) closeNasaLightbox()
+})
 window.addEventListener('keydown', (event) => {
-  if (event.key === 'Escape' && !nasaModal.hidden) closeNasaModal()
+  if (event.key !== 'Escape') return
+  if (!nasaLightbox.hidden) {
+    closeNasaLightbox()
+  } else if (!nasaModal.hidden) {
+    closeNasaModal()
+  }
 })
 for (const button of surveyChip.querySelectorAll('.survey-option')) {
   button.addEventListener('click', () => setManualSurvey(button.dataset.surveyChoice))

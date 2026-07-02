@@ -608,3 +608,69 @@ h2 {
   transform: translateY(10px);
   pointer-events: none;
 }
+
+.lightbox-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: grid;
+  place-items: center;
+  padding: 28px;
+  background: rgba(0, 0, 0, 0.86);
+  backdrop-filter: blur(14px);
+}
+
+.lightbox-backdrop[hidden] {
+  display: none;
+}
+
+.nasa-lightbox {
+  position: relative;
+  margin: 0;
+  max-width: min(1240px, 94vw);
+  max-height: 92vh;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.lightbox-stage {
+  display: grid;
+  place-items: center;
+  min-height: 200px;
+  min-width: 320px;
+}
+
+.nasa-lightbox img {
+  max-width: min(1240px, 94vw);
+  max-height: 80vh;
+  object-fit: contain;
+  border-radius: 10px;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6);
+}
+
+.lightbox-close {
+  position: absolute;
+  top: -6px;
+  right: -2px;
+  z-index: 2;
+}
+
+.lightbox-caption {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 18px;
+  color: rgba(239, 244, 255, 0.8);
+  font-size: 13.5px;
+}
+
+.lightbox-caption a {
+  color: #9db8ff;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.lightbox-caption a:hover {
+  text-decoration: underline;
+}
