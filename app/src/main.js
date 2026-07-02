@@ -128,6 +128,11 @@ app.innerHTML = `
           <div class="panel-actions">
             <button class="ghost-button" type="button" data-nasa-open hidden>在 NASA 图库看这里</button>
           </div>
+          <div class="probe-timeline" data-probe-timeline hidden>
+            <div class="panel-label">时间机器</div>
+            <input type="range" class="timeline-range" data-timeline-range min="0" max="1000" value="1000" aria-label="轨迹时间轴" />
+            <div class="panel-copy timeline-label" data-timeline-label></div>
+          </div>
         </div>
         <div class="panel-section">
           <div class="panel-label">边界</div>
@@ -143,6 +148,10 @@ app.innerHTML = `
           <div class="panel-actions">
             <button class="ghost-button" type="button" data-toggle-bortle aria-expanded="false">光污染阶梯</button>
             <button class="ghost-button" type="button" data-toggle-galaxy aria-expanded="false">跳出银河系</button>
+            <button class="ghost-button" type="button" data-toggle-apod aria-expanded="false">NASA 今天看什么</button>
+          </div>
+          <div class="explainer-card" data-apod-card hidden>
+            <div class="panel-copy" data-apod-content>正在向 NASA 查询今天的天文图…</div>
           </div>
           <div class="explainer-card" data-bortle-card hidden>
             <img src="explainers/bortle_scale.png" alt="Bortle 光污染等级示意图" />
@@ -161,6 +170,19 @@ app.innerHTML = `
           <div class="panel-actions">
             <button class="primary-button" type="button" data-tour-toggle>自动漫游</button>
             <button class="ghost-button" type="button" data-reset-view>重置视野</button>
+          </div>
+          <div class="tour-config" data-tour-config>
+            <label><input type="checkbox" data-tour-group="夏季银河" checked /> 夏季银河</label>
+            <label><input type="checkbox" data-tour-group="秋冬星空" checked /> 秋冬星空</label>
+            <label><input type="checkbox" data-tour-group="南天深空" checked /> 南天深空</label>
+            <label><input type="checkbox" data-tour-group="深空信使" /> 深空信使</label>
+            <label class="tour-dwell">每站停留
+              <select data-tour-dwell>
+                <option value="4000">4 秒</option>
+                <option value="6000" selected>6 秒</option>
+                <option value="10000">10 秒</option>
+              </select>
+            </label>
           </div>
         </div>
       </aside>
@@ -205,6 +227,14 @@ const bortleButton = document.querySelector('[data-toggle-bortle]')
 const bortleCard = document.querySelector('[data-bortle-card]')
 const galaxyButton = document.querySelector('[data-toggle-galaxy]')
 const galaxyCard = document.querySelector('[data-galaxy-card]')
+const apodButton = document.querySelector('[data-toggle-apod]')
+const apodCard = document.querySelector('[data-apod-card]')
+const apodContent = document.querySelector('[data-apod-content]')
+const tourConfig = document.querySelector('[data-tour-config]')
+const tourDwellSelect = document.querySelector('[data-tour-dwell]')
+const probeTimeline = document.querySelector('[data-probe-timeline]')
+const timelineRange = document.querySelector('[data-timeline-range]')
+const timelineLabel = document.querySelector('[data-timeline-label]')
 const targetList = document.querySelector('[data-target-list]')
 const surveyChip = document.querySelector('[data-survey-chip]')
 const nasaOpenButton = document.querySelector('[data-nasa-open]')
@@ -586,6 +616,7 @@ function selectAnchor(anchorId, options = {}) {
 
   updateSelectedButton()
   renderPanel(anchor)
+  syncProbeTimeline()
 
   if (moveSky) {
     surveyMode = 'auto'
@@ -667,9 +698,16 @@ function finishTour(token) {
   })
 }
 
+function getTourStops() {
+  const checked = new Set(
+    [...tourConfig.querySelectorAll('[data-tour-group]:checked')].map((box) => box.dataset.tourGroup),
+  )
+  return anchors.filter((item) => checked.has(item.group))
+}
+
 function visitTourStop(index, token) {
   if (token !== tourToken || !isTouring) return
-  const stops = anchors.filter((item) => item.tour)
+  const stops = getTourStops()
   if (index >= stops.length) {
     finishTour(token)
     return
@@ -686,12 +724,15 @@ function visitTourStop(index, token) {
     tourTimeoutId = setTimeout(() => {
       tourTimeoutId = null
       visitTourStop(index + 1, token)
-    }, 6000)
+    }, Number(tourDwellSelect.value) || 6000)
   })
 }
 
 function startTour() {
-  if (!anchors.length) return
+  if (!getTourStops().length) {
+    panelNext.textContent = '先在下面勾选至少一组天区，再开始漫游。'
+    return
+  }
 
   stopTour({ cancelTween: true })
   isTouring = true
@@ -744,6 +785,36 @@ function toggleGalaxyCard() {
   const nextOpen = galaxyCard.hidden
   galaxyCard.hidden = !nextOpen
   galaxyButton.setAttribute('aria-expanded', String(nextOpen))
+}
+
+let apodLoaded = false
+
+async function loadApod() {
+  try {
+    const response = await fetch('https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY&thumbs=true')
+    if (!response.ok) throw new Error(String(response.status))
+    const apod = await response.json()
+    const imageUrl = apod.media_type === 'video' ? apod.thumbnail_url : apod.url
+    apodContent.innerHTML = `
+      ${imageUrl ? `<img src="${imageUrl}" alt="NASA 每日一图" />` : ''}
+      <p><strong>${apod.title ?? ''}</strong>（${apod.date ?? ''}）</p>
+      ${apod.media_type === 'video' ? `<p><a href="${apod.url}" target="_blank" rel="noreferrer">今天是段视频，去看 ↗</a></p>` : ''}
+      <p>${(apod.explanation ?? '').slice(0, 300)}…（英文原文，<a href="https://apod.nasa.gov/apod/astropix.html" target="_blank" rel="noreferrer">APOD 官网 ↗</a>）</p>
+    `
+  } catch {
+    apodLoaded = false
+    apodContent.textContent = '查询失败——NASA 的免费接口偶尔限流，过一会儿再点一次。'
+  }
+}
+
+function toggleApodCard() {
+  const nextOpen = apodCard.hidden
+  apodCard.hidden = !nextOpen
+  apodButton.setAttribute('aria-expanded', String(nextOpen))
+  if (nextOpen && !apodLoaded) {
+    apodLoaded = true
+    loadApod()
+  }
 }
 
 // Aladin's default hover/selection highlight is #00ff00; match the app
@@ -839,6 +910,10 @@ function probesToAnchors(probes) {
   })
 }
 
+const probeOverlays = new Map()
+const truncatedProbes = new Set()
+const PROBE_STEP_DAYS = 5
+
 function addProbeRibbons() {
   for (const probe of probePaths) {
     try {
@@ -846,12 +921,78 @@ function addProbeRibbons() {
       aladin.addOverlay(overlay)
       if (typeof window.A.polyline === 'function') {
         overlay.add(window.A.polyline(probe.path, { ...overlayHighlight }))
+        probeOverlays.set(probe.id, overlay)
       }
     } catch {
       // Ribbons are decoration; anchors still work without the overlay API.
     }
   }
 }
+
+function redrawProbeRibbon(probe, index) {
+  const overlay = probeOverlays.get(probe.id)
+  if (!overlay) return
+  try {
+    overlay.removeAll()
+    overlay.add(window.A.polyline(probe.path.slice(0, index + 1), { ...overlayHighlight }))
+    const atEnd = index >= probe.path.length - 1
+    if (!atEnd && typeof window.A.circle === 'function') {
+      const [ra, dec] = probe.path[index]
+      overlay.add(window.A.circle(ra, dec, 0.5, { color: 'rgba(157, 184, 255, 0.9)', ...overlayHighlight }))
+    }
+    if (atEnd) {
+      truncatedProbes.delete(probe.id)
+    } else {
+      truncatedProbes.add(probe.id)
+    }
+  } catch {
+    // Timeline is decoration on top of decoration; never break selection.
+  }
+}
+
+function probeDateAt(probe, index) {
+  const start = new Date(`${probe.start}T00:00:00Z`)
+  const date = new Date(start.getTime() + index * PROBE_STEP_DAYS * 86400000)
+  return `${date.getUTCFullYear()} 年 ${date.getUTCMonth() + 1} 月`
+}
+
+function updateTimeline() {
+  const probe = probePaths.find((item) => item.id === selectedId)
+  if (!probe) return
+  const fraction = Number(timelineRange.value) / Number(timelineRange.max)
+  const index = Math.max(1, Math.round(fraction * (probe.path.length - 1)))
+  redrawProbeRibbon(probe, index)
+  timelineLabel.textContent = index >= probe.path.length - 1
+    ? `今天 · 距离约 ${probe.dist_au} AU`
+    : `${probeDateAt(probe, index)} · 它当时在天上的这个方向`
+}
+
+function syncProbeTimeline() {
+  // Restore any ribbon left truncated by a previous drag.
+  for (const id of [...truncatedProbes]) {
+    if (id === selectedId) continue
+    const probe = probePaths.find((item) => item.id === id)
+    if (probe) redrawProbeRibbon(probe, probe.path.length - 1)
+  }
+  const probe = probePaths.find((item) => item.id === selectedId)
+  if (!probe) {
+    probeTimeline.hidden = true
+    return
+  }
+  probeTimeline.hidden = false
+  timelineRange.value = timelineRange.max
+  updateTimeline()
+}
+
+let timelineFramePending = false
+timelineRange.addEventListener('input', () => {
+  if (timelineFramePending) return
+  timelineFramePending = true
+  requestAnimationFrame(() => {
+    timelineFramePending = false
+    updateTimeline()
+  })
+})
 
 async function init() {
   renderBoundary()
@@ -878,6 +1019,7 @@ resetButton.addEventListener('click', resetView)
 tourButton.addEventListener('click', toggleTour)
 bortleButton.addEventListener('click', toggleBortleCard)
 galaxyButton.addEventListener('click', toggleGalaxyCard)
+apodButton.addEventListener('click', toggleApodCard)
 nasaOpenButton.addEventListener('click', openNasaModal)
 nasaCloseButton.addEventListener('click', closeNasaModal)
 nasaModal.addEventListener('click', (event) => {

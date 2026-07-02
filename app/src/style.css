@@ -384,6 +384,50 @@ h2 {
   background: rgba(5, 8, 16, 0.46);
 }
 
+.tour-config {
+  margin-top: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  font-size: 12.5px;
+  color: rgba(198, 216, 255, 0.72);
+}
+
+.tour-config label {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+}
+
+.tour-config input[type='checkbox'] {
+  accent-color: #9db8ff;
+}
+
+.tour-config select {
+  background: rgba(255, 255, 255, 0.05);
+  color: inherit;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 6px;
+  padding: 2px 6px;
+  font-size: 12px;
+}
+
+.probe-timeline {
+  margin-top: 14px;
+}
+
+.timeline-range {
+  width: 100%;
+  margin-top: 8px;
+  accent-color: #9db8ff;
+}
+
+.timeline-label {
+  font-size: 12.5px;
+  color: rgba(198, 216, 255, 0.72);
+}
+
 .explainer-card img {
   display: block;
   width: 100%;
