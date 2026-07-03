@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>星空探索器 · 从「感动」到「上线」的旅程</title>
+<style>
+  :root{
+    --bg:#05060d; --bg2:#0a0e1a; --panel:#0e1424; --panel2:#111a30;
+    --ink:#e8edfb; --mut:#93a1c4; --dim:#6b789d;
+    --cyan:#5ad2ff; --blue:#6f8cff; --gold:#ffd479; --amber:#ff9d5c; --rose:#ff7a8f;
+    --line:rgba(120,150,220,.18);
+  }
+  *{box-sizing:border-box}
+  html{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  body{
+    margin:0; background:
+      radial-gradient(1200px 700px at 78% -8%, rgba(90,120,255,.16), transparent 60%),
+      radial-gradient(900px 600px at 8% 12%, rgba(90,210,255,.10), transparent 55%),
+      linear-gradient(180deg,var(--bg),var(--bg2) 40%,#070a14);
+    color:var(--ink);
+    font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;
+    line-height:1.85; font-size:17px; letter-spacing:.01em;
+  }
+  .wrap{max-width:820px; margin:0 auto; padding:0 26px 90px}
+  h1,h2,h3{font-family:"Noto Serif CJK SC","Songti SC","STSong",serif; font-weight:700; line-height:1.3}
+
+  /* ---------- HERO ---------- */
+  .hero{position:relative; min-height:78vh; display:flex; align-items:flex-end;
+        overflow:hidden; border-bottom:1px solid var(--line)}
+  .hero img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
+            opacity:.55; filter:saturate(1.1) contrast(1.05)}
+  .hero::after{content:""; position:absolute; inset:0;
+    background:linear-gradient(180deg, rgba(5,6,13,.30) 0%, rgba(5,6,13,.55) 55%, rgba(7,10,20,.96) 100%)}
+  .hero-in{position:relative; z-index:2; max-width:820px; margin:0 auto; width:100%;
+           padding:0 26px 58px}
+  .kicker{color:var(--cyan); font-size:13.5px; letter-spacing:.34em; text-transform:uppercase;
+          margin:0 0 18px; font-weight:600}
+  .hero h1{font-size:44px; margin:0 0 18px; letter-spacing:.01em;
+           text-shadow:0 2px 30px rgba(0,0,0,.6)}
+  .hero h1 .glow{color:var(--gold)}
+  .hero p{max-width:600px; color:#cdd7f2; font-size:18px; margin:0}
+
+  /* ---------- SECTIONS ---------- */
+  section{margin-top:70px}
+  .chap{display:flex; align-items:center; gap:16px; margin:0 0 8px}
+  .chip{flex:none; font-size:12.5px; letter-spacing:.12em; color:var(--bg);
+        background:linear-gradient(90deg,var(--cyan),var(--blue)); font-weight:700;
+        padding:5px 13px; border-radius:999px; box-shadow:0 4px 18px rgba(90,140,255,.35)}
+  .chap h2{font-size:29px; margin:0}
+  .lead{color:var(--mut); font-size:16px; margin:2px 0 26px; padding-left:2px}
+
+  p{margin:0 0 20px}
+  .em{color:var(--gold); font-weight:600}
+  .cy{color:var(--cyan); font-weight:600}
+  strong{color:#fff}
+
+  ul{margin:0 0 22px; padding-left:0; list-style:none}
+  ul li{position:relative; padding:5px 0 5px 26px; color:#d7def3}
+  ul li::before{content:"◇"; position:absolute; left:2px; top:5px; color:var(--cyan); font-size:13px}
+
+  /* ---------- FIGURES ---------- */
+  figure{margin:30px 0; }
+  figure img{width:100%; display:block; border-radius:14px; border:1px solid var(--line);
+             box-shadow:0 18px 50px rgba(0,0,0,.5), 0 0 0 1px rgba(90,140,255,.06);
+             break-inside:avoid}
+  figcaption{margin-top:11px; color:var(--dim); font-size:14px; font-style:italic; text-align:center}
+  .duo{display:grid; grid-template-columns:1fr 1fr; gap:16px}
+  .duo figure{margin:0}
+  @media (max-width:620px){ .duo{grid-template-columns:1fr} }
+
+  /* ---------- PULL QUOTE ---------- */
+  .pull{margin:34px 0; padding:6px 0 6px 26px; border-left:3px solid var(--gold);
+        font-family:"Noto Serif CJK SC","Songti SC",serif; font-size:24px; line-height:1.55;
+        color:#fff}
+  .pull.small{font-size:20px}
+
+  /* ---------- BUG PANEL ---------- */
+  .bug{margin:36px 0; background:linear-gradient(180deg,rgba(60,26,20,.55),rgba(30,16,20,.45));
+       border:1px solid rgba(255,140,90,.32); border-radius:16px; padding:26px 28px;
+       box-shadow:0 14px 40px rgba(0,0,0,.4)}
+  .bug h3{margin:0 0 14px; font-size:22px; color:var(--amber)}
+  .bug p{margin:0 0 16px}
+  .bug .fix{color:var(--gold); font-weight:600}
+
+  /* ---------- STATS ---------- */
+  .stats{margin:26px 0; display:grid; grid-template-columns:1fr 1fr; gap:1px;
+         background:var(--line); border:1px solid var(--line); border-radius:16px; overflow:hidden}
+  .stats .cell{background:var(--panel); padding:18px 22px}
+  .stats .cell .k{color:var(--dim); font-size:13px; letter-spacing:.06em; margin-bottom:6px}
+  .stats .cell .v{color:#fff; font-size:17px; font-weight:600}
+  .stats .cell .v b{color:var(--cyan); font-size:23px; font-family:"Noto Serif CJK SC",serif; margin-right:4px}
+  @media (max-width:620px){ .stats{grid-template-columns:1fr} }
+
+  /* ---------- CTA ---------- */
+  .cta{margin:44px 0 10px; text-align:center}
+  .cta a{display:inline-block; text-decoration:none; color:var(--bg); font-weight:700;
+         background:linear-gradient(90deg,var(--cyan),var(--blue)); padding:15px 30px;
+         border-radius:999px; font-size:16px; box-shadow:0 10px 34px rgba(90,140,255,.4)}
+  .cta .url{display:block; margin-top:14px; color:var(--dim); font-size:14px; word-break:break-all}
+
+  .divider{height:1px; background:var(--line); margin:56px 0}
+  .sign{color:var(--dim); font-size:14px; font-style:italic; text-align:center; margin-top:40px}
+
+  @media print{
+    body{font-size:12.5px}
+    .hero{min-height:96vh}
+    .wrap{padding-bottom:20px}
+    section{break-inside:avoid}
+    figure,.bug,.stats,.pull{break-inside:avoid}
+    .hero h1{font-size:38px}
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <img src="images/origin-milkyway.jpg" alt="银河全天渲染">
+  <div class="hero-in">
+    <p class="kicker">A Project Chronicle · 项目历程</p>
+    <h1>星空探索器<br>从「<span class="glow">感动</span>」到「上线」的旅程</h1>
+    <p>从最早被鸭哥的项目击中，到把十几亿颗真实恒星，搬进一个谁都能打开的网页。</p>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <section>
+    <div class="chap"><span class="chip">六月初</span><h2>缘起 · 被一张银河图击中</h2></div>
+    <p class="lead">The spark</p>
+    <p>一切的起点，是刷到了 <strong>鸭哥（grapeot）</strong> 的那篇文章——《把 18 亿颗星星画在一张图上，能还原我们拍到的银河吗？》。</p>
+    <p>那种感觉很难说清。不是「哇好厉害」，而是<span class="em">被击中</span>了：原来一个人可以拿欧空局 Gaia 卫星测出来的十几亿颗恒星的真实位置和亮度，一层一层地，把我们肉眼看到的那条银河，从数据里重新「显影」出来。</p>
+    <p>于是我把他的 <code>gaia_allsky</code> 仓库<strong>下载了回来</strong>，跟着一篇篇文章复现。那几天真的做出了东西：</p>
+    <ul>
+      <li>低分辨率先验证——银河带在噪点里<span class="cy">涌现</span>，密度是背景的 10.4 倍；</li>
+      <li>高分辨率全天星图，124 万颗恒星，暗尘埃裂缝清清楚楚；</li>
+      <li>HDR 线性星图，动态范围做到 <span class="cy">21510:1</span>（14.4 档光圈）。</li>
+    </ul>
+
+    <div class="pull">最打动我的，是那套「翻车式」的做法：真实感不是一次画对的，是一次次翻车逼出来的。</div>
+
+    <div class="duo">
+      <figure><img src="images/origin-naive.jpg" alt="naive"><figcaption>最初的 naive 版本——星点堆在一起</figcaption></figure>
+      <figure><img src="images/origin-full.jpg" alt="full"><figcaption>补齐机制后——银河终于「像真的」</figcaption></figure>
+    </div>
+    <figure><img src="images/origin-bortle.jpg" alt="bortle"><figcaption>光污染阶梯：从城市到荒野，同一片天空的差别</figcaption></figure>
+
+    <p><strong>但是。</strong></p>
+    <p>复现归复现，我想做的其实是另一件事：一个<strong>谁都能打开、能自己拖动探索</strong>的星空网页。6 月 16 日我正式建了 <code>cosmic-photo-explorer</code> 这个仓库，还从鸭哥的文章里提炼出 7 个可复用的方法论。可真到要把它变成能用的产品那一步——</p>
+    <div class="pull small">我不会用。</div>
+    <p>计划里假设能直接复用鸭哥那套「离线渲染」的管线，结果那条路根本走不通：渲染是给出海报的，不是给人实时拖动的。项目卡在这里，「Phase 1 完成」其实是虚的。6 月 23 日只留下一个安全备份快照，然后……就搁下了。一放，就是半个月。</p>
+  </section>
+
+  <div class="divider"></div>
+
+  <section>
+    <div class="chap"><span class="chip">7 月 2 日 · 傍晚</span><h2>第一幕 · 重启：换一条路</h2></div>
+    <p class="lead">The restart</p>
+    <p>7 月 2 日那个傍晚，趁着 <span class="em">Fable</span> 重启，我决定把这个搁置了半个月的老计划捡回来。</p>
+    <p>这次想通了一件关键的事：<strong>别再自己离线渲染了。</strong> 天上的图，让专业的巡天服务实时给——用 CDS 的 <span class="cy">Aladin Lite</span> 加公共 HiPS 瓦片，直接把 ESA Gaia DR3 的真实全天图铺成一个能拖能缩的底图。</p>
+    <p>先做了个最小验证，证明这条路真能跑通。然后，<strong>一个晚上，39 个提交</strong>，整个产品活了过来：</p>
+
+    <figure><img src="images/site-hero.jpg" alt="hero"><figcaption>网站的银河 hero——真实 Gaia 巡天底图，能拖能缩</figcaption></figure>
+
+    <ul>
+      <li><strong>可交互星图</strong>：真实的 Gaia 巡天底图，随手拖动、缩放；</li>
+      <li><strong>10 个叙事锚点</strong> + 夏季大三角连线 + 一键电影式导览；</li>
+      <li><strong>双眼巡天对比</strong>：放大到近景，两套巡天数据并排看；</li>
+      <li><strong>观测台门户</strong>：8 座望远镜，从哈勃、韦布到中国 FAST；</li>
+      <li><strong>NASA 图库检索</strong> + 站内灯箱查看；</li>
+      <li><strong>深空探测器图层</strong>：拿 JPL Horizons 真实数据，画出旅行者号们划过天空的轨迹；</li>
+      <li><strong>太阳系页面</strong>：能真正放大到月球、火星的地表；</li>
+      <li><strong>空间站页面</strong>：3D 国际空间站 + 天宫画廊；</li>
+      <li>还有几张<strong>诚实的边界卡片</strong>：Gaia 测的只是整个银河系的一小块。</li>
+    </ul>
+
+    <div class="duo">
+      <figure><img src="images/obs-jwst.jpg" alt="jwst"><figcaption>詹姆斯·韦布空间望远镜</figcaption></figure>
+      <figure><img src="images/obs-gaia.jpg" alt="gaia"><figcaption>Gaia 卫星本尊——这一切数据的源头</figcaption></figure>
+    </div>
+
+    <p>当晚就<span class="em">第一次部署上线</span> GitHub Pages，README 里郑重写上了对鸭哥的致谢——是他把我领进门的。</p>
+  </section>
+
+  <div class="divider"></div>
+
+  <section>
+    <div class="chap"><span class="chip">7 月 3 日</span><h2>第二幕 · 打磨成一个真正的成品</h2></div>
+    <p class="lead">The polish</p>
+    <p>上线只是开始。第二天一整天，是把它从「能看」磨到「像个正经产品」。</p>
+
+    <p><strong>整站双语。</strong> 写了一套 i18n 引擎，主站和所有子页面全部中英一键切换。中途踩了两个坑——移动端按钮不显示、静态子页面脚本路径在子目录下加载不到——都一一修掉、分别上线。</p>
+
+    <p><strong>太阳系升级成 3D。</strong> 画廊里的行星变成能 720° 旋转的球体；月球和火星更进一步，做成了<span class="cy">站在地表</span>的 360° 全景——真的像站在那片荒原上转一圈。</p>
+
+    <div class="duo">
+      <figure><img src="images/planet-jupiter.jpg" alt="jupiter"><figcaption>可 720° 旋转的木星</figcaption></figure>
+      <figure><img src="images/surface-mars.jpg" alt="mars"><figcaption>站在火星地表的 360° 全景</figcaption></figure>
+    </div>
+    <div class="duo">
+      <figure><img src="images/surface-moon.jpg" alt="moon"><figcaption>站在月球上环顾四周</figcaption></figure>
+      <figure><img src="images/station-tiangong.jpg" alt="tiangong"><figcaption>天宫空间站</figcaption></figure>
+    </div>
+
+    <p><strong>自托管迁移。</strong> 把 NASA 照片、3D 模型引擎全搬到本地，砍掉外部 CDN——万一哪天国内打不开，它照样能用。顺手把一张 15MB 的大图压到了 476KB。</p>
+
+    <p><strong>3D 星座——我最喜欢的一块。</strong> 一个星座根本不是「一个东西」：北斗七星那七颗，其实散在几十到一百多光年的不同距离上，只是<span class="cy">恰好从地球看过去</span>连成了勺子。我把每颗星放到它真实的三维位置，站在地球看是勺子；镜头一转，勺子就<span class="em">散架</span>了。先做了北斗，又用同样的方法加上猎户座、仙后座，配了切换器。</p>
+
+    <figure><img src="images/constellation-dipper.jpg" alt="dipper"><figcaption>北斗七星——从地球看是勺子，换个角度就散了</figcaption></figure>
+
+    <div class="bug">
+      <h3>🐛 刚刚的那个大 bug</h3>
+      <p>就在快收工的时候，出事了。主页那个可拖拽的银河大球<strong>卡死</strong>了——一碰整页锁死，按钮、滚轮全失灵，点了好几分钟才反应。</p>
+      <p>第一反应是押「静态银河秒开、想玩再点按钮」，做完直接被否——<strong>真实可交互的底图才是这个项目的灵魂</strong>，换成静态图等于把魂抽走了。而且按了按钮照样卡，说明根本没找到真凶。</p>
+      <p>回头重查，真凶是<strong>探测器轨迹带</strong>：5 条轨迹一共 16000 多个原始点，被当成实时折线，Aladin <strong>每一帧都在主线程上重新投影、重新描一遍</strong>——主线程被彻底钉死，整页冻住。</p>
+      <p class="fix">根治：Douglas-Peucker 保形抽稀，背景常驻只剩约 231 个顶点，既不卡、又不糊。可交互星图，重新做回默认。</p>
+    </div>
+
+    <p>顺手还调好了探测器的播放：卫星<span class="cy">贴身跟随</span>镜头、按角距离<span class="cy">匀速</span>推进、播放时把卫星<span class="cy">钉在画面正中</span>消掉拖影。至于「我们在地球上其实看到的是螺旋轨迹」这件反直觉的事，改成了右边一张静态科普卡慢慢讲。当天反复上线七八次，直到最后一版。剩下的体验微调，都记进了 v2。</p>
+  </section>
+
+  <div class="divider"></div>
+
+  <section>
+    <div class="chap"><span class="chip">尾声</span><h2>从「不会用」到「打开就能玩」</h2></div>
+    <p class="lead">The meaning</p>
+    <p>半个月前，我把鸭哥的项目下载回来，<span class="em">却不会用</span>。</p>
+    <p>现在，任何人打开这个网址，都能拖动一张十几亿颗真实恒星的星图，飞到火星地表转一圈，看北斗七星在眼前散架，中英文随手切换——<strong>而它是活的，是自己长出来的。</strong></p>
+    <div class="pull">真正做出来的从来不是那些渲染图。是「学会怎么把它建起来」这件事。鸭哥领进门，剩下的路，一步步自己走通了。</div>
+
+    <div class="cta">
+      <a href="https://masaharulab.github.io/cosmic-photo-explorer/">🌌 它现在就在这里，打开就能玩</a>
+      <span class="url">https://masaharulab.github.io/cosmic-photo-explorer/</span>
+    </div>
+
+    <div class="stats">
+      <div class="cell"><div class="k">总提交</div><div class="v"><b>85</b>个 commit</div></div>
+      <div class="cell"><div class="k">真正的工作日</div><div class="v"><b>3</b>天（6/16·7/2·7/3）</div></div>
+      <div class="cell"><div class="k">最后的爆发</div><div class="v">约 30 小时 <b>68</b>个提交</div></div>
+      <div class="cell"><div class="k">上线</div><div class="v">一晚首发，次日反复上线七八次</div></div>
+      <div class="cell"><div class="k">语言</div><div class="v">中 / 英 全站双语</div></div>
+      <div class="cell"><div class="k">领进门的人</div><div class="v">鸭哥（grapeot）· 致谢 🙏</div></div>
+    </div>
+
+    <p class="sign">—— 一份写给这个项目的成长纪念 · 2026 年 7 月</p>
+  </section>
+
+</div>
+</body>
+</html>
