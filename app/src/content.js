@@ -31,6 +31,15 @@ export const UI = {
     en: 'Drag the sky to explore freely; click a marker and the view glides to that region. The overview uses Gaia DR3, and close-ups switch automatically to DSS2.',
   },
 
+  // ---- Static landing / lazy sky-map ----
+  'sky.enter': { zh: '▶ 进入可交互天图', en: '▶ Enter interactive sky map' },
+  'sky.loading': { zh: '正在加载天图…', en: 'Loading sky map…' },
+  'sky.staticNote': {
+    zh: '默认显示离线银河全景图，秒开不卡。想自由拖拽探索真实天区，点上方按钮加载法国 CDS 实时天图。',
+    en: 'A static Milky Way panorama loads instantly by default. Tap the button above to load the live CDS sky map for free dragging and exploration.',
+  },
+  'sky.staticCredit': { zh: '银河全景：ESO / S. Brunier（CC BY 4.0）', en: 'Milky Way panorama: ESO / S. Brunier (CC BY 4.0)' },
+
   // ---- Survey chip ----
   'survey.dss2': { zh: 'DSS2 照片', en: 'DSS2 Photo' },
   'survey.gaia': { zh: 'Gaia 测量图', en: 'Gaia Map' },

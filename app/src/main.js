@@ -164,6 +164,14 @@ app.innerHTML = `
               <button class="survey-option" type="button" data-survey-choice="dss2" data-i18n="survey.dss2">DSS2 照片</button>
               <button class="survey-option" type="button" data-survey-choice="gaia" data-i18n="survey.gaia">Gaia 测量图</button>
             </div>
+            <div class="sky-static" data-sky-static>
+              <img class="sky-static-img" src="galaxy-panorama.jpg" alt="" />
+              <div class="sky-static-cta">
+                <button class="sky-enter-btn" type="button" data-sky-enter data-i18n="sky.enter">▶ 进入可交互天图</button>
+                <p class="sky-static-note" data-i18n="sky.staticNote">默认显示离线银河全景图，秒开不卡。想自由拖拽探索真实天区，点上方按钮加载法国 CDS 实时天图。</p>
+                <p class="sky-static-credit" data-i18n="sky.staticCredit">银河全景：ESO / S. Brunier（CC BY 4.0）</p>
+              </div>
+            </div>
           </div>
           <div class="hero-caption" data-hero-caption>
             <div class="hero-kicker" data-i18n="hero.kicker">真实天空 / 可交互巡天底图</div>
@@ -789,6 +797,12 @@ function selectAnchor(anchorId, options = {}) {
   syncProbeTimeline()
 
   if (moveSky) {
+    // First target click on the static landing page boots the live map, then
+    // flies to this anchor once it's up. tweenToView is a no-op while !aladin.
+    if (!aladin) {
+      ensureAladin({ flyTo: anchorId })
+      return
+    }
     surveyMode = 'auto'
     setStatus('status.zoomedTo', { name: L(anchor.label) })
     setNext('next.dragOrSwitch')
@@ -1032,6 +1046,59 @@ function addWinterTriangleOverlay() {
   ])
 }
 
+// Pin the Aladin version so a future CDS release can't silently change behaviour
+// under us (the `latest` alias used to auto-load and freeze the page).
+const ALADIN_SRC = 'https://aladin.cds.unistra.fr/AladinLite/api/v3/3.8.1/aladin.js'
+let aladinScriptPromise = null
+
+function loadAladinScript() {
+  if (window.A?.init) return Promise.resolve()
+  if (aladinScriptPromise) return aladinScriptPromise
+  aladinScriptPromise = new Promise((resolve, reject) => {
+    const script = document.createElement('script')
+    script.src = ALADIN_SRC
+    script.charset = 'utf-8'
+    script.onload = () => resolve()
+    script.onerror = () => {
+      aladinScriptPromise = null
+      reject(new Error(I18N.t('error.aladin')))
+    }
+    document.head.appendChild(script)
+  })
+  return aladinScriptPromise
+}
+
+// Lazily boot the live sky map. It stays unloaded on the landing page (a static
+// galaxy panorama shows instead) so the heavy CDS tile streaming can never peg
+// the main thread before the user opts in. `flyTo` re-points to a target once up.
+async function ensureAladin({ flyTo } = {}) {
+  if (aladin) {
+    if (flyTo) selectAnchor(flyTo)
+    return
+  }
+  const staticLayer = document.querySelector('[data-sky-static]')
+  const enterButton = document.querySelector('[data-sky-enter]')
+  if (enterButton) {
+    enterButton.disabled = true
+    enterButton.textContent = I18N.t('sky.loading')
+  }
+  try {
+    await loadAladinScript()
+    await initAladin()
+    addProbeRibbons()
+  } catch (error) {
+    if (enterButton) {
+      enterButton.disabled = false
+      enterButton.textContent = I18N.t('sky.enter')
+    }
+    setStatus('error.aladin')
+    return
+  }
+  if (staticLayer) staticLayer.classList.add('is-hidden')
+  const target = flyTo ?? selectedId
+  if (target) selectAnchor(target)
+}
+
 async function initAladin() {
   if (!window.A?.init) {
     throw new Error(I18N.t('error.aladin'))
@@ -1264,10 +1331,11 @@ async function init() {
   // localize their initial values explicitly (matters when loading in English).
   setStatus('status.overview')
   setNext('next.clickRegion')
-  await initAladin()
-  addProbeRibbons()
+  // Aladin is NOT booted here — the static galaxy shows until the user opts in
+  // via the enter button or by picking a target (both call ensureAladin()).
 }
 
+document.querySelector('[data-sky-enter]')?.addEventListener('click', () => ensureAladin())
 resetButton.addEventListener('click', resetView)
 tourButton.addEventListener('click', toggleTour)
 probePlayButton.addEventListener('click', toggleProbePlay)
