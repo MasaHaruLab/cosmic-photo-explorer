@@ -215,7 +215,7 @@ window.I18N.register({
   function start() {
     const THREE = window.THREE
     const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true })
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5))
     renderer.outputEncoding = THREE.sRGBEncoding
     const scene = new THREE.Scene()
     const camera = new THREE.PerspectiveCamera(46, 1, 0.1, 6000)
@@ -352,6 +352,14 @@ window.I18N.register({
     // Re-localize dynamic bits when the language flips.
     I18N.onChange(() => { refreshLabelText(); refreshList(); lastEarthState = null; updateStatus() })
 
+    // On-demand rendering: the scene is static unless the camera moves, so mark
+    // the view dirty on any real change and only draw then. Idle = zero draw
+    // calls, which stops the viewer from pinning a CPU core at 60 fps forever
+    // (the cause of the heat + jank).
+    let dirty = true
+    const markDirty = () => { dirty = true }
+    controls.addEventListener('change', markDirty)   // drag / zoom / damping steps / reset
+
     // Buttons.
     document.querySelector('[data-reset]').addEventListener('click', goEarthView)
     const slBtn = document.querySelector('[data-sightlines]')
@@ -359,6 +367,7 @@ window.I18N.register({
       sightlines.visible = !sightlines.visible
       slBtn.setAttribute('data-i18n', sightlines.visible ? 'con.sightlines.off' : 'con.sightlines.on')
       slBtn.textContent = I18N.t(sightlines.visible ? 'con.sightlines.off' : 'con.sightlines.on')
+      markDirty()   // visibility change needs one redraw
     })
 
     // Project a world point to screen pixels; returns null if behind the camera.
@@ -371,19 +380,15 @@ window.I18N.register({
 
     function resize() {
       const w = canvas.clientWidth, h = canvas.clientHeight
-      if (canvas.width !== w * renderer.getPixelRatio() || canvas.height !== h * renderer.getPixelRatio()) {
-        renderer.setSize(w, h, false)
-      }
+      renderer.setSize(w, h, false)
       camera.aspect = w / h
       camera.updateProjectionMatrix()
     }
-    window.addEventListener('resize', resize)
+    window.addEventListener('resize', () => { resize(); markDirty() })
 
-    function tick() {
-      resize()
-      controls.update()
-      updateStatus()
+    function draw() {
       const w = canvas.clientWidth, h = canvas.clientHeight
+      updateStatus()
       starLabels.forEach(({ el, s }) => {
         const p = toScreen(pos[s.id], w, h)
         if (p) { el.style.display = ''; el.style.left = p.x + 'px'; el.style.top = p.y + 'px' }
@@ -394,8 +399,14 @@ window.I18N.register({
       if (ep) { earthLabel.style.display = ''; earthLabel.style.left = ep.x + 'px'; earthLabel.style.top = ep.y + 'px' }
       else earthLabel.style.display = 'none'
       renderer.render(scene, camera)
+    }
+
+    function tick() {
+      controls.update()          // applies damping; emits 'change' → markDirty while moving
+      if (dirty) { dirty = false; draw() }
       requestAnimationFrame(tick)
     }
+    resize()
     tick()
   }
 })()
