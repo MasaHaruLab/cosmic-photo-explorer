@@ -144,6 +144,7 @@ app.innerHTML = `
       </div>
       <div class="topbar-actions">
         <div class="badge" data-i18n="nav.overview">银河总览</div>
+        <a class="badge badge-link" href="constellations.html" data-i18n="nav.constellations">星座 3D →</a>
         <a class="badge badge-link" href="solar.html" data-i18n="nav.solar">太阳系 →</a>
         <a class="badge badge-link" href="stations.html" data-i18n="nav.stations">空间站 →</a>
         <a class="badge badge-link" href="observatories.html" data-i18n="nav.observatories">观星台 →</a>

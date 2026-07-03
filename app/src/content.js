@@ -17,6 +17,7 @@ export const UI = {
     en: 'Step into the Milky Way through real survey data — take in the whole sky first, then zoom in to regions you can name.',
   },
   'nav.overview': { zh: '银河总览', en: 'Galaxy Overview' },
+  'nav.constellations': { zh: '星座 3D →', en: 'Constellations 3D →' },
   'nav.solar': { zh: '太阳系 →', en: 'Solar System →' },
   'nav.stations': { zh: '空间站 →', en: 'Space Stations →' },
   'nav.observatories': { zh: '观星台 →', en: 'Observatories →' },
