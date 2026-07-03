@@ -84,6 +84,13 @@
 
   .divider{height:1px; background:var(--line); margin:52px 0}
   .sign{color:var(--dim); font-size:14px; text-align:center; margin-top:38px; line-height:1.8}
+
+  .ref-lede{color:var(--mut); font-size:15px; margin-bottom:16px}
+  ul.ref{margin:0; padding:0; list-style:none}
+  ul.ref li{padding:11px 0 11px 2px; color:#cdd7f2; font-size:14.5px; line-height:1.7;
+            border-top:1px solid var(--line)}
+  ul.ref li:first-child{border-top:none}
+  ul.ref li .rl{color:var(--cyan); margin-right:4px}
 </style>
 </head>
 <body>
@@ -118,12 +125,12 @@
   <div class="divider"></div>
 
   <section>
-    <div class="chap"><span class="chip">重启</span><h2>换一条路，它就活了</h2></div>
-    <p>直到这几天，我才敢把它重新捡起来。这次我想通了一件事，天上的图不用我自己费劲去渲染，交给专业的巡天服务实时给就好。这条路一通，整个东西就活了过来。</p>
+    <div class="chap"><span class="chip">周四晚</span><h2>四个任务里的一个</h2></div>
+    <p>直到这周四晚上，我才把它重新捡起来。那天我几乎没停手，手里同时跑着四个任务，这张额外的银河系地图就是其中之一。这次我想通了一件事，天上的图不用我自己费劲去渲染，交给专业的巡天服务实时给就好。这条路一通，它一下就活了过来。</p>
 
     <figure><img src="images/site-hero.jpg" alt="hero"><figcaption>一张真实的 <span class="cy">Gaia</span> 巡天底图，能拖能缩</figcaption></figure>
 
-    <p>那天晚上我几乎没停手。一张能拖能缩的真实星图，十个可以一个个飞过去的星空地标，八座望远镜，从哈勃、韦布到咱们中国的 <span class="cy">FAST</span>，还有太阳系、空间站，一样样长了出来。当晚我就把它发布上线了，在网站说明里认认真真谢了鸭哥，最初的灵感是他的开源项目给的。</p>
+    <p>一张能拖能缩的真实星图，十个能一个个飞过去的星空地标，八座望远镜，从哈勃、韦布到咱们中国的 <span class="cy">FAST</span>，还有太阳系、空间站，一样样长了出来。当晚我就把它发上线了。灵感是鸭哥的开源项目给的。</p>
 
     <div class="duo">
       <figure><img src="images/obs-jwst.jpg" alt="jwst"><figcaption>詹姆斯·韦布空间望远镜</figcaption></figure>
@@ -134,8 +141,8 @@
   <div class="divider"></div>
 
   <section>
-    <div class="chap"><span class="chip">成品</span><h2>第二天，把它磨成正经东西</h2></div>
-    <p>上线只是开头。第二天我从早磨到晚，想让它像个正经东西。整站做成了中英双语，随手一点就切。太阳系里的行星变成能转的球，月球和火星还能站到地表上，转一圈，像真的踩在那片荒原上。</p>
+    <div class="chap"><span class="chip">周五</span><h2>上线以后，从早磨到晚</h2></div>
+    <p>上线以后的周五，我就没停下来加新东西，这里改改，那里改改，从早磨到晚。整站做成了中英双语，随手一点就切。太阳系里的行星变成能转的球，月球和火星还能站到地表上，转一圈，像真的踩在那片荒原上。</p>
 
     <div class="duo">
       <figure><img src="images/planet-jupiter.jpg" alt="jupiter"><figcaption>能转起来的木星</figcaption></figure>
@@ -176,6 +183,22 @@
     </div>
 
     <p class="sign">🌌 打开就能玩 · https://masaharulab.github.io/cosmic-photo-explorer/</p>
+  </section>
+
+  <div class="divider"></div>
+
+  <section>
+    <div class="chap"><span class="chip">数据与来源</span><h2>这些东西从哪来</h2></div>
+    <p class="ref-lede">这个探索器自己不拥有任何一颗星、任何一张照片。它做的，是把一批公开的天文数据和影像服务接到一起，配上中文叙事。用到的来源都摆在这儿，既是致谢，也方便你顺着去看原始的东西。</p>
+    <ul class="ref">
+      <li><span class="rl">天空底图</span>ESA Gaia DR3 全天图（十几亿颗恒星测光，经斯特拉斯堡天文数据中心 CDS 渲染成 HiPS）；近景为 DSS2 彩色巡天（STScI 数字化巡天底片，经 CDS）。查看器引擎 Aladin Lite v3，由 CDS 开发。</li>
+      <li><span class="rl">探测器轨迹</span>NASA / JPL-Caltech Horizons 星历系统。</li>
+      <li><span class="rl">照片与影像</span>NASA 图像与视频库、每日一图 APOD；月球（NASA LROC、嫦娥二号 7 米 DOM / 国家天文台）、火星（Viking、MGS MOLA / NASA·USGS）；地面全景（阿波罗 17 号 / NASA·JSC，毅力号 / NASA·JPL-Caltech）。</li>
+      <li><span class="rl">三维</span>可拖着转的行星球贴图 Solar System Scope（CC BY 4.0）、Three.js、Google model-viewer（均开源、自托管）。</li>
+      <li><span class="rl">天文台照片</span>ESO、NSF–DOE Vera C. Rubin Observatory / NOIRLab、Gemini / NOIRLab / NSF / AURA、ESA / ATG medialab、NASA 等，按各自授权署名。</li>
+      <li><span class="rl">灵感来源</span>鸭哥（grapeot）公开分享的、用 Gaia 数据做宇宙影像的工作流笔记与开源项目。</li>
+    </ul>
+    <p class="sign">完整逐条来源见站内「数据与来源」页。</p>
   </section>
 
 </div>
