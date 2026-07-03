@@ -1,8 +1,17 @@
 # HANDOFF
 
-Updated: 2026-07-03（整站双语 + 探测器模拟器全部落地，**仅本地提交，未部署，待授权**）
+Updated: 2026-07-03（整站双语 + 探测器模拟器 + 移动端切换钮修复，**全部已部署上线**）
 
-## ⭐ 本次会话新增（2026-07-03，master 已提交，尚未推 gh-pages）
+## ⭐ 移动端语言钮修复（2026-07-03，已部署 gh-pages 9cbf2c9）
+
+CEO 反馈手机上看不到中英切换钮（清缓存 + `?2` 仍无效）。根因 = 真 CSS bug，非缓存：
+`@media (max-width:900px)` 里 `.topbar-actions .badge:not(.badge-link){display:none}`
+把切换钮也藏了（切换钮是 `.badge.badge-toggle`，属于 `.badge` 但不是 `.badge-link`）。
+修复（139f74d）：选择器加 `:not(.badge-toggle)` 排除切换钮。浏览器选择器匹配确定性验证：
+旧选择器命中切换钮=true、新选择器命中=false，且 shipped CSS 已是新选择器。构建绿，
+已推 gh-pages（9cbf2c9），线上 ~30s 内验证新 bundle `index-DsMOhiRX.css` 生效。
+
+## ⭐ 双语引擎 + 模拟器（2026-07-03，已部署 gh-pages）
 
 CEO 睡前指令：全站中英双语（专业英译非机翻）+ 卫星轨迹点击播放模拟器 + 视差解释卡
 + 空间站详情，「后面全部直接走 不要停 / 你决定最佳方向不要最快方向 token 管够」。
