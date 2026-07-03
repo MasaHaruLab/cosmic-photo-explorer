@@ -109,6 +109,26 @@
     syncToggles()
   }
 
+  // Site-wide creator credit. Injected once on every page that loads this
+  // shared engine (the static pages and the bundled app all do), so the line
+  // stays identical everywhere and can't drift, and any future page gets it for
+  // free. It carries data-i18n so apply() re-localizes it on language toggle.
+  function mountCredit() {
+    if (document.querySelector('.site-credit')) return
+    register({
+      'credit.madeby': {
+        zh: '由 AmbrosiaZ 与 Claude Code 共同打造 · 2026',
+        en: 'Made by AmbrosiaZ & Claude Code · 2026',
+      },
+    })
+    const el = document.createElement('div')
+    el.className = 'site-credit'
+    el.setAttribute('data-i18n', 'credit.madeby')
+    el.style.cssText =
+      'text-align:center;padding:26px 16px 32px;font-size:12px;letter-spacing:.04em;opacity:.5'
+    document.body.appendChild(el)
+  }
+
   window.I18N = { t, register, getLang, setLang, toggle, onChange, apply, mountToggles }
 
   // Static pages register their dict in an inline <script> during parse, so by
@@ -117,6 +137,7 @@
   function boot() {
     document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en'
     mountToggles()
+    mountCredit()
     apply()
   }
   if (document.readyState === 'loading') {
