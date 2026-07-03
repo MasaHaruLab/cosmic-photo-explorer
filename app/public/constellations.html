@@ -352,13 +352,12 @@ window.I18N.register({
     // Re-localize dynamic bits when the language flips.
     I18N.onChange(() => { refreshLabelText(); refreshList(); lastEarthState = null; updateStatus() })
 
-    // On-demand rendering: the scene is static unless the camera moves, so mark
-    // the view dirty on any real change and only draw then. Idle = zero draw
-    // calls, which stops the viewer from pinning a CPU core at 60 fps forever
-    // (the cause of the heat + jank).
-    let dirty = true
-    const markDirty = () => { dirty = true }
-    controls.addEventListener('change', markDirty)   // drag / zoom / damping steps / reset
+    // Continuous render loop. The scene is trivial (a few draw calls), so always
+    // rendering is cheap — and unlike a dirty-flag gate it can never get stuck in
+    // a state where drags/buttons stop repainting. The browser already pauses rAF
+    // while the tab is hidden, so an idle background tab costs nothing anyway.
+    // markDirty is kept as a harmless no-op so existing call sites stay valid.
+    const markDirty = () => {}
 
     // Buttons.
     document.querySelector('[data-reset]').addEventListener('click', goEarthView)
@@ -402,8 +401,8 @@ window.I18N.register({
     }
 
     function tick() {
-      controls.update()          // applies damping; emits 'change' → markDirty while moving
-      if (dirty) { dirty = false; draw() }
+      controls.update()
+      draw()
       requestAnimationFrame(tick)
     }
     resize()
