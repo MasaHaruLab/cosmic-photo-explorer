@@ -666,7 +666,7 @@ h2 {
     height: 62vh;
   }
 
-  .topbar-actions .badge:not(.badge-link) {
+  .topbar-actions .badge:not(.badge-link):not(.badge-toggle) {
     display: none;
   }
 
