@@ -1,6 +1,39 @@
 # HANDOFF
 
-Updated: 2026-07-03（整站双语 + 探测器模拟器 + 移动端切换钮修复，**全部已部署上线**）
+Updated: 2026-07-03（自托管迁移 + 图片瘦身 + 创作者署名，源 master cf815af / 部署 gh-pages ddeb080，**已推送，Pages 构建中**）
+
+## ⭐ 自托管迁移 + 图片瘦身 + 创作者署名（2026-07-03，源 cf815af / 部署 ddeb080）
+
+CEO：尽量少依赖外部网站（in case 国内打不开 NASA），能搬的都搬到本地；把大图转 JPG；页脚署名。
+
+**三个原子提交（master）：**
+1. `c3f48a8 feat: 自托管 NASA 行星照片 + model-viewer`——两个可搬的外部运行时依赖搬本地：
+   - 7 张任务行星照片（水…冥）下载到 `public/planets/`，solar.html 画廊缩略图 + 灯箱从
+     images-assets.nasa.gov 改指本地；灯箱署名从一刀切「NASA/JPL-Caltech」改成**分行星准确署名**
+     （水=NASA/JHU-APL/Carnegie、土=…/SSI 等，`PHOTO_CREDITS` map）。土星/天王星无 ~large，用 ~orig。
+   - model-viewer 组件 vendored 到 `public/vendor/`，stations.html 从 unpkg 改指本地；reference.html
+     署名改成文件实际携带的 **BSD-3-Clause**（原写 Apache-2.0 不准）。
+   - **唯一剩下的外部嵌入 = Aladin Lite 天图（法国 CDS 斯特拉斯堡）**——月球/火星可拖转互动地图，
+     是**在线瓦片流服务**（HiPS，几十 GB–TB 数据），静态站装不下、天生只能连源站。已跟 CEO 解释。
+2. `f6080da perf: Bortle 讲解图 15MB→476KB，删 8.7MB 孤儿`——`bortle_scale.png`（3240×5760，占全站 1/3）
+   降到 900×1600 JPEG q85 = 476KB 肉眼无损（瓦片标签仍清晰），main.js 改指 .jpg。`bortle_demo.png`
+   （8.7MB，全站零引用的孤儿）删除（git 可恢复）。**dist 从 43MB → 20MB。**
+3. `cf815af feat: 全站创作者署名`——共享 i18n.js 的 boot() 注入一次
+   「由 AmbrosiaZ 与 Claude Code 共同打造 · 2026」/「Made by AmbrosiaZ & Claude Code · 2026」，
+   带 data-i18n 随语言翻转；所有页（静态 + 打包 app 都 load 同一个 i18n.js）一致、未来页免费继承。
+
+**子路径真浏览器实测全通**（localhost dist）：7 张行星照片本地全 servable（满分辨率）、灯箱本地大图 +
+分行星署名正确（冥王星 NASA/JHU-APL/SwRI 已核）；stations 3D ISS 模型从本地 vendor+glb 完整加载渲染
+（截图确认）；bortle JPG 加载；署名两语翻转、EN 模式全站零 CJK 残留；无任何 images-assets/unpkg 外链。
+
+**部署**：master 已推 origin；dist rsync→gh-pages（**注意保住 `.nojekyll`**，rsync --delete 会误删，已补回）；
+ddeb080 已 push。Pages 构建比往常慢（无 error），构建完 live URL：
+https://masaharulab.github.io/cosmic-photo-explorer/ ——需 CDN 传播后复验（planets/vendor/bortle.jpg 200、
+老 bortle.png 404、i18n.js 含 AmbrosiaZ）。
+
+**注（「鸭哥」= grapeot）**：CEO 口中「鸭哥项目」= 本项目（reference.html 灵感来源署名 grapeot/鸭哥）。
+
+## ⭐ 行星画廊 720°（2026-07-03）— Increment A 可旋转 3D 行星球，已部署 gh-pages 4037429
 
 ## ⭐ 行星画廊 720°（2026-07-03）— Increment A 可旋转 3D 行星球，已部署 gh-pages 4037429
 
