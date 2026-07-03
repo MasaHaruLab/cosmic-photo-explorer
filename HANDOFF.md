@@ -1,6 +1,42 @@
 # HANDOFF
 
-Updated: 2026-07-03（3D 星座深度查看器「北斗七星」，源 master cb8ae61 / 部署 gh-pages 5ec33ca，**已推送，Pages 构建慢**）
+Updated: 2026-07-03（**主页「大球」解卡：静态银河秒开 + 按钮才加载 Aladin**，源 master de2dda9 / 部署 gh-pages 3e5030e，**已推送，Pages 构建慢 + 新西兰边缘缓存约 10 分钟**）
+
+## ⭐ 主页银河「大球」解卡 —— 静态默认 + 懒加载 Aladin（2026-07-03，源 de2dda9 / 部署 3e5030e）
+
+CEO：主页那个可拖拽的银河「大球」今天下午开始不动了，整个浏览器卡死（按键/滚动全失灵、点击几分钟后才响应）。
+根因：`index.html` 每次进主页都同步加载法国 CDS 的 Aladin Lite 天图，它的实时 HiPS 瓦片流会把主线程钉在 100%
+→ 前台整页冻住（我们自托管的 Three.js 页面「北斗七星」「太阳系」始终丝滑，反证问题只在 Aladin）。
+CEO 拍板：**落地页默认放自托管静态银河图秒开，想玩再点按钮加载可交互天图**（呼应「能搬都搬本地 in case 国内打不开」）。
+
+**改动（master de2dda9，5 文件 + 1 图）：**
+- `index.html`：**删掉** head 里同步加载 aladin.js 的 `<script>`（`latest` 别名）——不再自动加载/卡死。
+- `public/galaxy-panorama.jpg`：ESO / S. Brunier 银河 360° 全景（CC BY 4.0，540KB，1280×1024，自托管）。
+- `src/main.js`：hero 内加 `.sky-static` 覆盖层（静态图 + 「▶ 进入可交互天图」按钮 + CC BY 署名）；新增
+  `ensureAladin()` + `loadAladinScript()`——**动态注入版本锁定的 `3.8.1/aladin.js`**（不用 `latest`），
+  boot 天图、隐藏静态层、飞到选中目标；`init()` 里删掉开机 `initAladin()`；`selectAnchor` 在 `!aladin`
+  时改调 `ensureAladin({flyTo})`；右侧目标列表点击也会触发加载。`applySkyView/tweenToView/refreshSkyState`
+  本就 `if(!aladin) return`，所以天图没加载时整页其余功能照常。
+- `src/content.js`：`sky.enter/loading/staticNote/staticCredit` 中英双语（EN 零 CJK）。
+- `src/style.css`：`.sky-static` 系列（电蓝霓虹按钮，z-index:3 盖住未定位的锚点标记）。
+
+**验证（localhost 生产构建，网络/全局/DOM 事实——隐藏标签页也可靠）：**
+① 落地：`window.A` 未加载、`#sky-view` 空、静态图 1280px 完成渲染、按钮就位、54 个目标按钮 → **卡死源默认消失**。
+② 点按钮：注入 `3.8.1/aladin.js`、boot 天图（~4.3s）、静态层隐藏、`#sky-view` 挂 13 节点 → 懒加载路径 works。
+⚠️ **无法在自动化里判的**：加载后前台拖拽天图的「手感」（隐藏标签页 rAF 暂停=假绿灯，见记忆
+`feedback_hidden_tab_verification_is_fake_green`）——但这已不在关键路径（默认根本不加载）。**已 `open` 本地生产
+构建到 CEO 默认浏览器让她前台自测**；live 版等 Pages+边缘缓存 catch up。
+
+**待办**：CEO 前台确认解卡 → 若 OK 结案；其余静态页无此问题（本就自托管 Three.js）。
+
+## ⭐ 3D 星座深度查看器 —— 北斗七星「障眼法」（2026-07-03，源 cb8ae61 / 部署 5ec33ca）
+
+CEO：把星座标出来，星座其实是立体的——点名字飞到地球视角看见整个星座，一转视角连线的「形状」就散开，
+看见星星真实的前后关系。「线还连着更直观」。「go 做一个 + 提取 skill 其它复利套用」。
+
+**新页 `public/constellations.html`（自包含，首个星座 = 北斗七星）**：
+- 七颗星按 Hipparcos 真实 (RA,Dec,距离) 摆进 3D 空间（80–124 光年）。**相机在原点=地球** → 七星投影成
+  熟悉的勺子；拖动环绕 → 形状散开，两端天枢(123ly)、摇光(104ly)先甩出去（真天文：它们不属于大熊座移动星群）。
 
 ## ⭐ 3D 星座深度查看器 —— 北斗七星「障眼法」（2026-07-03，源 cb8ae61 / 部署 5ec33ca）
 
