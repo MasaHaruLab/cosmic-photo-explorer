@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<style>
+  :root{
+    --bg:#070a14; --panel:#0e1424; --ink:#e8edfb; --mut:#93a1c4; --dim:#6b789d;
+    --cyan:#5ad2ff; --blue:#6f8cff; --gold:#ffd479; --amber:#ff9d5c;
+    --line:rgba(120,150,220,.18);
+  }
+  *{box-sizing:border-box; margin:0; padding:0}
+  html{-webkit-print-color-adjust:exact; print-color-adjust:exact}
+  body{background:#000; font-family:"PingFang SC","Hiragino Sans GB",system-ui,sans-serif; color:var(--ink)}
+  .deck{width:1080px}
+  .card{width:1080px; height:1350px; overflow:hidden; position:relative;
+        display:flex; flex-direction:column; justify-content:flex-end;
+        background:
+          radial-gradient(900px 600px at 80% -6%, rgba(90,120,255,.16), transparent 60%),
+          radial-gradient(700px 500px at 6% 10%, rgba(90,210,255,.10), transparent 55%),
+          linear-gradient(180deg,#05060d,#0a0e1a 45%,#070a14);
+        padding:74px 72px}
+  h1,h2{font-family:"Noto Serif CJK SC","Songti SC","STSong",serif; font-weight:700; line-height:1.3}
+  .chip{align-self:flex-start; font-size:25px; letter-spacing:.14em; color:#05060d; font-weight:700;
+        background:linear-gradient(90deg,var(--cyan),var(--blue)); padding:9px 24px; border-radius:999px;
+        margin-bottom:30px}
+  .card h2{font-size:60px; margin-bottom:34px; letter-spacing:.01em}
+  .card p{font-size:33px; line-height:1.78; color:#dbe3f7}
+  .cy{color:var(--cyan)} .gd{color:var(--gold)}
+  .pic{position:absolute; left:0; right:0; top:0; height:600px; overflow:hidden}
+  .pic img{width:100%; height:100%; object-fit:cover}
+  .pic::after{content:""; position:absolute; inset:0;
+    background:linear-gradient(180deg, rgba(7,10,20,.15) 0%, rgba(7,10,20,.55) 70%, #070a14 100%)}
+  .card.has-pic{padding-top:640px; justify-content:flex-start}
+  .cap{color:var(--dim); font-size:24px; margin-top:22px; font-style:normal}
+
+  /* cover */
+  .cover{justify-content:flex-end}
+  .cover .bg{position:absolute; inset:0}
+  .cover .bg img{width:100%; height:100%; object-fit:cover; opacity:.6}
+  .cover::after{content:""; position:absolute; inset:0;
+    background:linear-gradient(180deg, rgba(5,6,13,.35) 0%, rgba(5,6,13,.55) 55%, rgba(7,10,20,.97) 100%)}
+  .cover .in{position:relative; z-index:2}
+  .cover .eyebrow{color:var(--cyan); font-size:28px; letter-spacing:.3em; margin-bottom:26px; font-weight:600}
+  .cover h1{font-size:82px; line-height:1.26; margin-bottom:30px; text-shadow:0 2px 30px rgba(0,0,0,.6)}
+  .cover .sub{font-size:32px; color:#cdd7f2; line-height:1.6}
+
+  /* bug */
+  .card.bug h2{color:var(--amber)}
+
+  /* cta */
+  .cta{justify-content:center; align-items:center; text-align:center}
+  .cta .big{font-family:"Noto Serif CJK SC","Songti SC",serif; font-size:70px; color:#fff; margin-bottom:34px}
+  .cta .btn{display:inline-block; color:#05060d; font-weight:700; font-size:34px;
+            background:linear-gradient(90deg,var(--cyan),var(--blue)); padding:22px 46px; border-radius:999px}
+  .cta .url{color:var(--mut); font-size:28px; margin-top:30px; word-break:break-all}
+  .cta .tags{color:var(--dim); font-size:27px; margin-top:44px; line-height:1.9}
+  .num{position:absolute; top:64px; right:74px; z-index:5; color:var(--dim); font-size:26px;
+       font-family:"Noto Serif CJK SC",serif; letter-spacing:.1em}
+</style>
+</head>
+<body>
+<div class="deck">
+
+  <!-- 1 封面 -->
+  <div class="card cover">
+    <div class="bg"><img src="images/origin-milkyway.jpg" alt=""></div>
+    <div class="in">
+      <div class="eyebrow">写给 AI 营</div>
+      <h1>三个月前我还不会用，<br>现在它上线了</h1>
+      <div class="sub">一个下载下来却完全不会用的开源项目，<br>到它以另一个面孔上线。</div>
+    </div>
+  </div>
+
+  <!-- 2 缘起 -->
+  <div class="card has-pic">
+    <div class="num">2 / 9</div>
+    <div class="pic"><img src="images/origin-full.jpg" alt=""></div>
+    <div class="chip">缘起</div>
+    <h2>被一张银河图击中</h2>
+    <p>半个多月前，我刷到鸭哥的一个项目。他把卫星测到的十几亿颗真实恒星，一层一层，还原成我们肉眼看见的那条银河。我当时就愣住了，立刻把他的代码下载回来，想自己也做一个。结果呢，下回来，我不会用。</p>
+  </div>
+
+  <!-- 3 周四晚 -->
+  <div class="card has-pic">
+    <div class="num">3 / 9</div>
+    <div class="pic"><img src="images/site-hero.jpg" alt=""></div>
+    <div class="chip">周四晚</div>
+    <h2>四个任务里的一个</h2>
+    <p>直到这周四晚上，我才把它重新捡起来。那天我几乎没停手，手里同时跑着四个任务，这张额外的银河系地图就是其中之一。换了条路，天上的图交给专业巡天服务实时给，它一下就活了。当晚就发上线了。<span class="cy">灵感是鸭哥的开源项目给的。</span></p>
+  </div>
+
+  <!-- 4 周五 -->
+  <div class="card has-pic">
+    <div class="num">4 / 9</div>
+    <div class="pic"><img src="images/surface-mars.jpg" alt=""></div>
+    <div class="chip">周五</div>
+    <h2>上线以后，从早磨到晚</h2>
+    <p>上线以后的周五，我没停下来加新东西，这里改改，那里改改，从早磨到晚。整站做成了中英双语，行星能转起来，月球和火星还能站到地表上，转一圈，像真的踩在那片荒原上。</p>
+  </div>
+
+  <!-- 5 太阳系 -->
+  <div class="card has-pic">
+    <div class="num">5 / 9</div>
+    <div class="pic"><img src="images/planet-jupiter.jpg" alt=""></div>
+    <div class="chip">太阳系</div>
+    <h2>站到星球的表面</h2>
+    <p>太阳系那一页，行星是能拖着转的球。月球和火星更进一步，做成了站在地表的 360° 全景，像真的站在那片荒原上，慢慢转一圈，抬头看天。</p>
+  </div>
+
+  <!-- 6 星座 -->
+  <div class="card has-pic">
+    <div class="num">6 / 9</div>
+    <div class="pic"><img src="images/constellation-dipper.jpg" alt=""></div>
+    <div class="chip">我最喜欢的</div>
+    <h2>会散架的星座</h2>
+    <p><span class="cy">北斗七星</span>那七颗星，其实根本不在一起，散在几十到一百多光年的不同地方，只是恰好从地球看过去，才连成一把勺子。我把每颗星放回真实的位置，镜头一转，勺子就散了。后来又加了猎户座、仙后座。</p>
+  </div>
+
+  <!-- 7 大bug -->
+  <div class="card bug">
+    <div class="num">7 / 9</div>
+    <div class="chip">惊魂一刻</div>
+    <h2>一个吓人的大 bug</h2>
+    <p>快收工时，主页那个星球突然卡死，一碰整个页面就锁住。我想走捷径换成一张静态图，被否了，能拖能动的真星图才是命根子。回头一点点查，真凶是探测器轨迹一万六千多个点，每一帧都在重算，把页面拖死了。砍下来就顺了。</p>
+    <p style="margin-top:28px">这种时候我特别庆幸，这三个月不是白练的，我居然能自己把它找出来、修好。</p>
+  </div>
+
+  <!-- 8 写在最后 -->
+  <div class="card">
+    <div class="num">8 / 9</div>
+    <div class="chip">写在最后</div>
+    <h2>它终于以另一个面孔上线</h2>
+    <p>从把鸭哥的开源项目下载下来、却完全不会用，到把这个老计划重新拾起来上线，这一路，得益于过去三个月在营里<span class="gd">兴起老师</span>的细致讲解，给我打下了坚实的基础，一个一个补上了我的基础漏洞；也得益于群里那些优秀的小伙伴，一直互相激励。</p>
+  </div>
+
+  <!-- 8 CTA -->
+  <div class="card cta">
+    <div class="big">打开就能玩</div>
+    <div class="btn">masaharulab.github.io<br>/cosmic-photo-explorer</div>
+    <div class="tags">星图 · 太阳系 · 空间站<br>三维星座 · 中英双语</div>
+  </div>
+
+</div>
+</body>
+</html>
