@@ -164,13 +164,9 @@ app.innerHTML = `
               <button class="survey-option" type="button" data-survey-choice="dss2" data-i18n="survey.dss2">DSS2 照片</button>
               <button class="survey-option" type="button" data-survey-choice="gaia" data-i18n="survey.gaia">Gaia 测量图</button>
             </div>
-            <div class="sky-static" data-sky-static>
-              <img class="sky-static-img" src="galaxy-panorama.jpg" alt="" />
-              <div class="sky-static-cta">
-                <button class="sky-enter-btn" type="button" data-sky-enter data-i18n="sky.enter">▶ 进入可交互天图</button>
-                <p class="sky-static-note" data-i18n="sky.staticNote">默认显示离线银河全景图，秒开不卡。想自由拖拽探索真实天区，点上方按钮加载法国 CDS 实时天图。</p>
-                <p class="sky-static-credit" data-i18n="sky.staticCredit">银河全景：ESO / S. Brunier（CC BY 4.0）</p>
-              </div>
+            <div class="sky-loading" data-sky-loading>
+              <div class="sky-loading-spinner" aria-hidden="true"></div>
+              <p data-i18n="sky.loading">正在加载天图…</p>
             </div>
           </div>
           <div class="hero-caption" data-hero-caption>
@@ -209,6 +205,7 @@ app.innerHTML = `
               <button class="ghost-button" type="button" data-probe-parallax data-i18n="probe.parallaxBtn" aria-expanded="false">为什么是弹簧形？</button>
             </div>
             <div class="explainer-card parallax-card" data-parallax-card hidden>
+              <p class="parallax-lead" data-i18n-html="parallax.lead"><strong>你知道吗？</strong>地图上卫星飞的是它真实的直线轨道，但我们从地球看到的其实是一条螺旋。</p>
               <svg class="parallax-diagram" viewBox="0 0 320 132" role="img" aria-label="Parallax diagram">
                 <line x1="52" y1="66" x2="300" y2="66" stroke="rgba(255,255,255,0.16)" stroke-dasharray="2 4" />
                 <ellipse cx="52" cy="66" rx="26" ry="40" fill="none" stroke="rgba(157,184,255,0.4)" stroke-width="1" />
@@ -393,14 +390,8 @@ function interpolateLog(start, end, progress) {
   return Math.exp(Math.log(start) + (Math.log(end) - Math.log(start)) * progress)
 }
 
-function catmullRom(p0, p1, p2, p3, t) {
-  const t2 = t * t
-  const t3 = t2 * t
-  return 0.5 * (2 * p1 + (-p0 + p2) * t + (2 * p0 - 5 * p1 + 4 * p2 - p3) * t2 + (-p0 + 3 * p1 - 3 * p2 + p3) * t3)
-}
-
-// RA wraps at 360°; unwrap into a continuous run before spline interpolation so
-// a probe crossing 0h doesn't smear a horizontal streak across the sky.
+// RA wraps at 360°; unwrap into a continuous run before decimation so a probe
+// crossing 0h doesn't smear a horizontal streak across the sky.
 function unwrapRaPath(points) {
   const out = []
   let prev = null
@@ -416,45 +407,142 @@ function unwrapRaPath(points) {
   return out
 }
 
-function segmentTurnDeg(a, b, c) {
-  const v1x = b[0] - a[0]
-  const v1y = b[1] - a[1]
-  const v2x = c[0] - b[0]
-  const v2y = c[1] - b[1]
-  const d1 = Math.hypot(v1x, v1y)
-  const d2 = Math.hypot(v2x, v2y)
-  if (d1 === 0 || d2 === 0) return 0
-  const cos = (v1x * v2x + v1y * v2y) / (d1 * d2)
-  return (Math.acos(Math.max(-1, Math.min(1, cos))) * 180) / Math.PI
-}
-
-// The baked Horizons paths are dense on the near-straight outbound drift but
-// still show facets at the tight parallax loops (biggest early, when the probe
-// is close). Catmull-Rom passes through the real samples; we only subdivide
-// where the track actually bends, so smoothing the loops costs few extra points.
-function smoothProbePath(points) {
-  if (!Array.isArray(points) || points.length < 4) return points
-  const p = unwrapRaPath(points)
-  const out = [[normalizeRa(p[0][0]), p[0][1]]]
-  for (let i = 0; i < p.length - 1; i += 1) {
-    const p0 = p[i - 1] ?? p[i]
-    const p1 = p[i]
-    const p2 = p[i + 1]
-    const p3 = p[i + 2] ?? p[i + 1]
-    const turnBefore = i > 0 ? segmentTurnDeg(p[i - 1], p1, p2) : 0
-    const turnAfter = i < p.length - 2 ? segmentTurnDeg(p1, p2, p[i + 2]) : 0
-    const turn = Math.max(turnBefore, turnAfter)
-    const segLen = Math.hypot(p2[0] - p1[0], p2[1] - p1[1])
-    let steps = 1
-    if (turn > 4 && segLen > 0.02) steps = Math.min(10, Math.ceil(turn / 2.5))
-    for (let s = 1; s <= steps; s += 1) {
-      const t = s / steps
-      const ra = catmullRom(p0[0], p1[0], p2[0], p3[0], t)
-      const dec = catmullRom(p0[1], p1[1], p2[1], p3[1], t)
-      out.push([normalizeRa(ra), dec])
+// The baked Horizons paths are dense (1500–4000 points each). Drawn as a live
+// polyline, Aladin re-projects and re-strokes EVERY vertex EVERY frame on the main
+// thread — 16k+ vertices/frame pegged the thread and froze the whole page on any
+// drag. So we simplify — but NOT uniformly: a probe's apparent sky-path carries
+// yearly parallax coils (Earth's orbit swings the view in a small loop each year),
+// the scientific payload of this view, and uniform decimation aliased those smooth
+// coils into zigzags. Douglas–Peucker instead drops points on straight runs and
+// KEEPS the ones that define each coil — faithful shape at a fraction of the cost.
+function simplifyRDP(pts, eps) {
+  if (pts.length < 3) return pts.slice()
+  const keep = new Uint8Array(pts.length)
+  keep[0] = 1
+  keep[pts.length - 1] = 1
+  const stack = [[0, pts.length - 1]]
+  while (stack.length) {
+    const [a, b] = stack.pop()
+    const ax = pts[a][0]
+    const ay = pts[a][1]
+    const dx = pts[b][0] - ax
+    const dy = pts[b][1] - ay
+    const len2 = dx * dx + dy * dy || 1e-9
+    let maxD = 0
+    let idx = -1
+    for (let i = a + 1; i < b; i += 1) {
+      const t = ((pts[i][0] - ax) * dx + (pts[i][1] - ay) * dy) / len2
+      const cx = ax + t * dx
+      const cy = ay + t * dy
+      const d = Math.hypot(pts[i][0] - cx, pts[i][1] - cy)
+      if (d > maxD) {
+        maxD = d
+        idx = i
+      }
+    }
+    if (maxD > eps && idx !== -1) {
+      keep[idx] = 1
+      stack.push([a, idx], [idx, b])
     }
   }
+  const out = []
+  for (let i = 0; i < pts.length; i += 1) if (keep[i]) out.push(pts[i])
   return out
+}
+
+// Earth's parallax repeats once a year, so averaging the apparent path over a full
+// year cancels the yearly loop and leaves the probe's true outward drift — the
+// straight-ish line it actually flies. Same samples, same clock as the apparent
+// path, so a marker on each stays time-synchronised no matter how they curve.
+function deParallax(unwrapped) {
+  const win = Math.max(3, Math.round(365.25 / PROBE_STEP_DAYS))
+  const half = Math.floor(win / 2)
+  const n = unwrapped.length
+  const out = new Array(n)
+  for (let i = 0; i < n; i += 1) {
+    let sr = 0
+    let sd = 0
+    let c = 0
+    for (let j = i - half; j <= i + half; j += 1) {
+      if (j >= 0 && j < n) {
+        sr += unwrapped[j][0]
+        sd += unwrapped[j][1]
+        c += 1
+      }
+    }
+    out[i] = [sr / c, sd / c]
+  }
+  return out
+}
+
+const nRa = (p) => [normalizeRa(p[0]), p[1]]
+
+// Position along an unwrapped path at fraction 0..1, linearly interpolated so the
+// two markers advance by the SAME time even where the drawn polylines differ.
+function pointAtFraction(unwrapped, fraction) {
+  const t = Math.max(0, Math.min(1, fraction)) * (unwrapped.length - 1)
+  const i = Math.floor(t)
+  const f = t - i
+  const a = unwrapped[i]
+  const b = unwrapped[Math.min(i + 1, unwrapped.length - 1)]
+  return [normalizeRa(a[0] + (b[0] - a[0]) * f), a[1] + (b[1] - a[1]) * f]
+}
+
+// The de-parallaxed drift is smooth, so a modest RDP tolerance tracks it faithfully.
+const REAL_EPS = 0.04
+
+// Precompute once: the full-res drift (exact marker positions) and its RDP-
+// simplified polyline (the cheap drawn line). Parallax removal averages the
+// apparent path over a year; the apparent spiral itself is only ever an
+// illustration in the side panel now, so it isn't retained per probe.
+//
+// Also precompute cumulative ANGULAR distance along the drift. Playing by time
+// looks uneven — the probe whips across the sky during its early planetary
+// encounters, then crawls once it's far — so we drive the animation by arc length
+// instead, giving a constant on-screen pace (and no fast early pan to smear the
+// satellite into afterimages).
+function buildProbeGeometry(probe) {
+  const realFull = deParallax(unwrapRaPath(probe.path))
+  probe.realFull = realFull
+  probe.realLine = simplifyRDP(realFull, REAL_EPS).map(nRa)
+  const cum = new Array(realFull.length)
+  cum[0] = 0
+  for (let i = 1; i < realFull.length; i += 1) {
+    const [ra0, dec0] = realFull[i - 1]
+    const [ra1, dec1] = realFull[i]
+    const dRa = (ra1 - ra0) * Math.cos((((dec0 + dec1) / 2) * Math.PI) / 180)
+    cum[i] = cum[i - 1] + Math.hypot(dRa, dec1 - dec0)
+  }
+  probe.cumAngular = cum
+  probe.totalAngular = cum[cum.length - 1] || 1
+}
+
+// Map a time-fraction (0..1 along the samples) to its arc-length position 0..1,
+// and back. These let play advance at constant angular speed while the timeline
+// slider and date label still read in real (uniform-time) terms.
+function arcAtFraction(probe, fraction) {
+  const cum = probe.cumAngular
+  const t = Math.max(0, Math.min(1, fraction)) * (cum.length - 1)
+  const i = Math.floor(t)
+  const f = t - i
+  const a = cum[i]
+  const b = cum[Math.min(i + 1, cum.length - 1)]
+  return (a + (b - a) * f) / probe.totalAngular
+}
+function fractionAtArc(probe, u) {
+  const cum = probe.cumAngular
+  const target = Math.max(0, Math.min(1, u)) * probe.totalAngular
+  let lo = 0
+  let hi = cum.length - 1
+  while (lo < hi) {
+    const mid = (lo + hi) >> 1
+    if (cum[mid] < target) lo = mid + 1
+    else hi = mid
+  }
+  if (lo === 0) return 0
+  const prev = cum[lo - 1]
+  const span = cum[lo] - prev || 1
+  return (lo - 1 + (target - prev) / span) / (cum.length - 1)
 }
 
 function getAladinCenter() {
@@ -563,6 +651,11 @@ function refreshSkyState() {
   syncCurrentView()
   setSurveyForFov()
   updateHotspotPositions()
+  // Keep the travelling markers pinned to the sky as the user pans/zooms.
+  const probe = probePaths.find((item) => item.id === selectedId)
+  if (probe && !probeTimeline.hidden) {
+    updateProbeMarkers(probe, Number(timelineRange.value) / Number(timelineRange.max))
+  }
 }
 
 function renderPanel(anchor) {
@@ -957,7 +1050,19 @@ function setManualSurvey(choice) {
 function bindAladinEvents() {
   aladin.on('positionChanged', refreshSkyState)
   aladin.on('zoomChanged', refreshSkyState)
-  window.addEventListener('resize', updateHotspotPositions)
+  window.addEventListener('resize', () => {
+    updateHotspotPositions()
+    const probe = probePaths.find((item) => item.id === selectedId)
+    if (probe && !probeTimeline.hidden) {
+      updateProbeMarkers(probe, Number(timelineRange.value) / Number(timelineRange.max))
+    }
+  })
+  const host = document.querySelector('#sky-view')
+  if (host) {
+    host.addEventListener('mousedown', onSkyDown, true)
+    host.addEventListener('mouseup', onSkyUp, true)
+    host.addEventListener('mousemove', onRibbonHover)
+  }
 }
 
 function toggleBortleCard() {
@@ -1076,27 +1181,17 @@ async function ensureAladin({ flyTo } = {}) {
     if (flyTo) selectAnchor(flyTo)
     return
   }
-  const staticLayer = document.querySelector('[data-sky-static]')
-  const enterButton = document.querySelector('[data-sky-enter]')
-  if (enterButton) {
-    enterButton.disabled = true
-    enterButton.textContent = I18N.t('sky.loading')
-  }
+  const loadingLayer = document.querySelector('[data-sky-loading]')
   try {
     await loadAladinScript()
     await initAladin()
     addProbeRibbons()
   } catch (error) {
-    if (enterButton) {
-      enterButton.disabled = false
-      enterButton.textContent = I18N.t('sky.enter')
-    }
     setStatus('error.aladin')
     return
   }
-  if (staticLayer) staticLayer.classList.add('is-hidden')
-  const target = flyTo ?? selectedId
-  if (target) selectAnchor(target)
+  if (loadingLayer) loadingLayer.classList.add('is-hidden')
+  if (flyTo) selectAnchor(flyTo)
 }
 
 async function initAladin() {
@@ -1153,18 +1248,27 @@ function probesToAnchors(probes) {
 }
 
 const probeOverlays = new Map()
-const truncatedProbes = new Set()
 const PROBE_STEP_DAYS = 5
 
-// Render from the smoothed spline; keep the raw path for date math.
+// The map shows the real outward drift (orange, the path it actually flies). The
+// faint background lines are that same drift line, so the idle map reads as a clean
+// chart of where the probes really went; the apparent spiral is explained as a
+// static diagram in the side panel rather than drawn (dizzying) in motion here.
+const REAL_COLOR = 'rgba(255, 150, 60, 0.95)'
+const PROBE_BG_COLOR = 'rgba(214, 226, 255, 0.26)'
+
+// Background + hit-test both ride the smooth drift line: a clean arc is an easy
+// click target and cheap to keep drawn for all five probes at once.
 function ribbonOf(probe) {
-  return probe.smoothPath ?? probe.path
+  return probe.realLine ?? probe.path
 }
+
+let selectedProbeOverlay = null
 
 function addProbeRibbons() {
   for (const probe of probePaths) {
     try {
-      const overlay = window.A.graphicOverlay({ color: 'rgba(214, 226, 255, 0.34)', lineWidth: 1 })
+      const overlay = window.A.graphicOverlay({ color: PROBE_BG_COLOR, lineWidth: 1 })
       aladin.addOverlay(overlay)
       if (typeof window.A.polyline === 'function') {
         overlay.add(window.A.polyline(ribbonOf(probe), { ...overlayHighlight }))
@@ -1174,31 +1278,237 @@ function addProbeRibbons() {
       // Ribbons are decoration; anchors still work without the overlay API.
     }
   }
+  // The bright pair for the SELECTED probe — real drift + apparent coil. Redrawn
+  // only when the selection changes (never per frame), so it never re-pegs the
+  // thread the way the old dense live ribbons did.
+  try {
+    selectedProbeOverlay = window.A.graphicOverlay({ color: 'rgba(255,255,255,0.9)', lineWidth: 2 })
+    aladin.addOverlay(selectedProbeOverlay)
+  } catch {
+    selectedProbeOverlay = null
+  }
+  // A dedicated top overlay for the hover glow, kept separate from the probe
+  // overlays so it never collides with the selection redraw.
+  try {
+    ribbonHoverOverlay = window.A.graphicOverlay({ color: 'rgba(150, 200, 255, 0.95)', lineWidth: 2.5 })
+    aladin.addOverlay(ribbonHoverOverlay)
+  } catch {
+    ribbonHoverOverlay = null
+  }
+  ensureMarkerLayer()
 }
 
-// fraction is 0..1 along the whole track; the ribbon is drawn from launch up to
-// that point, with a marker at the leading edge.
-function drawProbeRibbon(probe, fraction) {
-  const overlay = probeOverlays.get(probe.id)
-  if (!overlay) return
+// Draw (or clear) the bright real+apparent pair for the selected probe. Static —
+// the animation only moves the two DOM markers along these fixed lines.
+function renderSelectedProbe(probe) {
+  if (!selectedProbeOverlay) return
   try {
-    const ribbon = ribbonOf(probe)
-    const index = Math.max(1, Math.round(fraction * (ribbon.length - 1)))
-    overlay.removeAll()
-    overlay.add(window.A.polyline(ribbon.slice(0, index + 1), { ...overlayHighlight }))
-    const atEnd = index >= ribbon.length - 1
-    if (!atEnd && typeof window.A.circle === 'function') {
-      const [ra, dec] = ribbon[index]
-      overlay.add(window.A.circle(ra, dec, 0.5, { color: 'rgba(157, 184, 255, 0.9)', ...overlayHighlight }))
-    }
-    if (atEnd) {
-      truncatedProbes.delete(probe.id)
-    } else {
-      truncatedProbes.add(probe.id)
+    selectedProbeOverlay.removeAll()
+    if (probe && typeof window.A.polyline === 'function') {
+      // Only the real (near-straight) trajectory on the map — the apparent spiral
+      // is dizzying in motion, so it lives as a static explainer diagram in the
+      // side panel instead. Here the satellite just glides its true path.
+      selectedProbeOverlay.add(window.A.polyline(probe.realLine, { color: REAL_COLOR, lineWidth: 2.6 }))
     }
   } catch {
-    // Timeline is decoration on top of decoration; never break selection.
+    // Selection highlight is decoration; never break the panel.
   }
+}
+
+// --- Two travelling markers (DOM/SVG over the canvas) --------------------------
+// The satellite icon rides the real drift line; a gold dot rides the apparent
+// path; a faint dashed link between them IS the parallax offset at that instant.
+// They're plain SVG positioned by world2pix each frame — far cheaper than redrawing
+// Aladin overlays, and lets us use a real icon at a legible size.
+let markerLayer = null
+let realMarkerEl = null
+
+function ensureMarkerLayer() {
+  if (markerLayer) return
+  const scene = document.querySelector('[data-hero-scene]')
+  if (!scene) return
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
+  svg.setAttribute('class', 'probe-marker-layer')
+  svg.dataset.probeMarkers = ''
+  svg.innerHTML = `
+    <defs>
+      <filter id="probe-glow" x="-120%" y="-120%" width="340%" height="340%">
+        <feGaussianBlur stdDeviation="3" result="b" />
+        <feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
+      </filter>
+    </defs>
+    <g data-real-marker filter="url(#probe-glow)">
+      <rect x="-20" y="-4" width="12.5" height="8" rx="1.5" fill="rgba(120,200,255,0.92)" stroke="#eaf6ff" stroke-width="0.9" />
+      <rect x="7.5" y="-4" width="12.5" height="8" rx="1.5" fill="rgba(120,200,255,0.92)" stroke="#eaf6ff" stroke-width="0.9" />
+      <line x1="-7.5" y1="0" x2="-5.5" y2="0" stroke="#ff9a3c" stroke-width="1.4" />
+      <line x1="5.5" y1="0" x2="7.5" y2="0" stroke="#ff9a3c" stroke-width="1.4" />
+      <rect x="-5.5" y="-5.5" width="11" height="11" rx="2.2" fill="#ffd9a0" stroke="#ff9a3c" stroke-width="1.6" />
+      <circle cx="0" cy="0" r="2.1" fill="#fff3e0" />
+    </g>`
+  scene.appendChild(svg)
+  markerLayer = svg
+  realMarkerEl = svg.querySelector('[data-real-marker]')
+  hideProbeMarkers()
+}
+
+function hideProbeMarkers() {
+  if (markerLayer) markerLayer.style.display = 'none'
+}
+
+// Reposition the satellite to the probe's real (near-straight) position at the
+// given time fraction. During play the camera is centred on that same point every
+// frame, so we pin the icon to the exact view centre rather than re-deriving it
+// through world2pix — that avoids a per-frame projection/camera lag that smeared
+// the fast-moving icon into several afterimages. When idle/scrubbing the camera is
+// still, so world2pix is exact and lets the icon sit off-centre or hide off-screen.
+function updateProbeMarkers(probe, fraction) {
+  if (!markerLayer || !aladin || typeof aladin.world2pix !== 'function') return
+  if (!probe || !probe.realFull) {
+    hideProbeMarkers()
+    return
+  }
+  const host = document.querySelector('#sky-view')
+  let px
+  let py
+  if (probePlaying && host) {
+    const rect = host.getBoundingClientRect()
+    px = rect.width / 2
+    py = rect.height / 2
+  } else {
+    const re = pointAtFraction(probe.realFull, fraction)
+    const rePx = aladin.world2pix(re[0], re[1])
+    if (!rePx) {
+      hideProbeMarkers()
+      return
+    }
+    px = rePx[0]
+    py = rePx[1]
+  }
+  markerLayer.style.display = ''
+  realMarkerEl.setAttribute('transform', `translate(${px}, ${py})`)
+}
+
+// A faint coordinate grid for reference while a probe is selected, so you can tell
+// where on the sky it is. Off in the overview so the clean landing map stays clean.
+let probeGridOn = false
+function setProbeGrid(on) {
+  if (!aladin || on === probeGridOn) return
+  probeGridOn = on
+  try {
+    if (typeof aladin.setCooGrid === 'function') {
+      aladin.setCooGrid({ enabled: on, color: 'rgba(130,170,230,0.22)', labelSize: 10 })
+    } else if (on && typeof aladin.showCooGrid === 'function') {
+      aladin.showCooGrid()
+    } else if (!on && typeof aladin.hideCooGrid === 'function') {
+      aladin.hideCooGrid()
+    }
+  } catch {
+    // Grid is optional reference decoration.
+  }
+}
+
+// The apparent arc spans ~half the sky, but the parallax wobble we want to show is
+// under a degree — 500× smaller. No single static frame can hold both scales, so
+// during play we RIDE ALONG: keep the smooth (real) position centred at a wobble-
+// visible zoom. The apparent dot then loops around that centre (Earth's parallax)
+// while the sky slides past, delivering "watch it travel launch→today" AND "see the
+// two lines are one object" at once.
+const FOLLOW_FOV = 20
+function followProbe(probe, fraction) {
+  if (!aladin || !probe.realFull) return
+  const re = pointAtFraction(probe.realFull, fraction)
+  try {
+    aladin.gotoRaDec(re[0], re[1])
+  } catch {
+    // Follow is a nicety; markers/timeline still update from the current view.
+  }
+}
+
+function setProbeFov(fov) {
+  if (!aladin) return
+  const setFov = typeof aladin.setFoV === 'function' ? aladin.setFoV : aladin.setFov
+  try {
+    if (typeof setFov === 'function') setFov.call(aladin, fov)
+  } catch {
+    // no-op
+  }
+}
+
+// --- Clicking a trajectory ribbon: name the probe + play its fly-through -------
+// The ribbons are thin, so we hit-test by proximity: convert the click to sky
+// coordinates and find the nearest ribbon vertex within a slice of the field of
+// view. That makes a whole line an easy target instead of a 1px stroke.
+let ribbonHoverOverlay = null
+let ribbonHoverPending = false
+
+// Hit-test in PIXEL space. Aladin's world2pix (ICRS ra/dec → screen) is reliable
+// and matches how the ribbons are drawn; pix2world, by contrast, returns a
+// different coordinate frame that never lined up with the ribbon points. So we
+// project each ribbon vertex to the screen and measure pixel distance to the
+// pointer — which also gives an intuitive, fov-independent hit radius.
+function probeRibbonAtEvent(event) {
+  if (!aladin || typeof aladin.world2pix !== 'function') return null
+  const host = document.querySelector('#sky-view')
+  const rect = host.getBoundingClientRect()
+  const cx = event.clientX - rect.left
+  const cy = event.clientY - rect.top
+  let best = null
+  let bestD = 14 // px hit radius — makes a whole thin line easy to grab
+  for (const probe of probePaths) {
+    for (const point of ribbonOf(probe)) {
+      const px = aladin.world2pix(point[0], point[1])
+      if (!px) continue
+      const d = Math.hypot(px[0] - cx, px[1] - cy)
+      if (d < bestD) {
+        bestD = d
+        best = probe
+      }
+    }
+  }
+  return best
+}
+
+// Aladin handles the canvas mouse-up itself and swallows the synthesized `click`,
+// so we reconstruct a click from mousedown→mouseup. Listening in the CAPTURE phase
+// means we run before Aladin's own handlers can stop the event.
+let skyPointerDown = null
+function onSkyDown(event) {
+  skyPointerDown = { x: event.clientX, y: event.clientY, t: performance.now() }
+}
+function onSkyUp(event) {
+  if (!skyPointerDown) return
+  const moved = Math.hypot(event.clientX - skyPointerDown.x, event.clientY - skyPointerDown.y)
+  const dt = performance.now() - skyPointerDown.t
+  skyPointerDown = null
+  if (moved > 6 || dt > 500) return // a drag/pan, not a click
+  const probe = probeRibbonAtEvent(event)
+  if (!probe) return
+  // Keep the wide view (moveSky:false) so the whole arc stays framed while the
+  // marker walks it; selectAnchor still opens the probe's info panel + timeline.
+  selectAnchor(probe.id, { moveSky: false })
+  startProbePlay()
+}
+
+function onRibbonHover(event) {
+  if (ribbonHoverPending) return
+  ribbonHoverPending = true
+  requestAnimationFrame(() => {
+    ribbonHoverPending = false
+    const probe = probeRibbonAtEvent(event)
+    const host = document.querySelector('#sky-view')
+    if (host) host.style.cursor = probe ? 'pointer' : ''
+    if (!ribbonHoverOverlay) return
+    ribbonHoverOverlay.removeAll()
+    if (probe && typeof window.A.polyline === 'function') {
+      ribbonHoverOverlay.add(window.A.polyline(ribbonOf(probe), { color: 'rgba(150, 200, 255, 0.95)', lineWidth: 2.5 }))
+    }
+  })
+}
+
+// The two lines are drawn once (statically) on selection; a time step just moves
+// the two markers along them, so the whole track stays visible while they travel.
+function drawProbeRibbon(probe, fraction) {
+  updateProbeMarkers(probe, fraction)
 }
 
 function probeDateAtFraction(probe, fraction) {
@@ -1221,20 +1531,22 @@ function updateTimeline() {
 
 function syncProbeTimeline() {
   stopProbePlay()
-  // Restore any ribbon left truncated by a previous drag/play.
-  for (const id of [...truncatedProbes]) {
-    if (id === selectedId) continue
-    const probe = probePaths.find((item) => item.id === id)
-    if (probe) drawProbeRibbon(probe, 1)
-  }
   const probe = probePaths.find((item) => item.id === selectedId)
+  renderSelectedProbe(probe || null)
   if (!probe) {
+    hideProbeMarkers()
+    setProbeGrid(false)
     probeTimeline.hidden = true
     parallaxCard.hidden = true
     parallaxButton.setAttribute('aria-expanded', 'false')
     return
   }
+  setProbeGrid(true)
   probeTimeline.hidden = false
+  // Auto-open the "why a spiral?" explainer so the diagram is seen, not hidden
+  // behind a button — it carries the parallax story the map no longer animates.
+  parallaxCard.hidden = false
+  parallaxButton.setAttribute('aria-expanded', 'true')
   timelineRange.value = timelineRange.max
   updateTimeline()
 }
@@ -1246,13 +1558,16 @@ timelineRange.addEventListener('input', () => {
   timelineFramePending = true
   requestAnimationFrame(() => {
     timelineFramePending = false
+    // Scrubbing rides along too, so the pair never scrolls off-screen mid-drag.
+    const probe = probePaths.find((item) => item.id === selectedId)
+    if (probe) followProbe(probe, Number(timelineRange.value) / Number(timelineRange.max))
     updateTimeline()
   })
 })
 
 // Play simulator: sweep the whole track from launch to today so the trajectory
 // draws itself out, then settle at the present position.
-const PROBE_PLAY_DURATION = 9000
+const PROBE_PLAY_DURATION = 84000
 let probePlaying = false
 let probePlayToken = 0
 
@@ -1270,24 +1585,36 @@ function stopProbePlay() {
 function startProbePlay() {
   const probe = probePaths.find((item) => item.id === selectedId)
   if (!probe) return
-  probePlaying = true
-  setProbePlayLabel()
-  const token = (probePlayToken += 1)
   const max = Number(timelineRange.max)
   const atEnd = Number(timelineRange.value) >= max
   const startFraction = atEnd ? 0 : Number(timelineRange.value) / max
+  // A fresh full play-through zooms in and rides along; resuming a paused scrub
+  // keeps the current zoom so we don't yank the view mid-inspection.
+  if (atEnd) setProbeFov(FOLLOW_FOV)
+  followProbe(probe, startFraction)
+  setProbeGrid(true)
+  probePlaying = true
+  setProbePlayLabel()
+  const token = (probePlayToken += 1)
   const startedAt = performance.now()
+  // Advance by arc length (constant angular speed), not by time — see
+  // buildProbeGeometry. startU is the arc position of a resumed scrub.
+  const startU = arcAtFraction(probe, startFraction)
   function step(now) {
     if (token !== probePlayToken) return
     const progress = Math.min((now - startedAt) / PROBE_PLAY_DURATION, 1)
-    const fraction = startFraction + (1 - startFraction) * progress
+    const u = startU + (1 - startU) * progress
+    const fraction = fractionAtArc(probe, u)
     timelineRange.value = String(Math.round(fraction * max))
+    followProbe(probe, fraction) // ride along: keep the satellite centred as it travels
     updateTimeline()
     if (progress < 1) {
       requestAnimationFrame(step)
     } else {
       probePlaying = false
       setProbePlayLabel()
+      // Settle the icon onto its exact projected spot now the camera has stopped.
+      updateProbeMarkers(probe, fraction)
     }
   }
   requestAnimationFrame(step)
@@ -1314,7 +1641,7 @@ async function init() {
   try {
     const probes = await (await fetch(probesUrl)).json()
     for (const probe of probes) {
-      probe.smoothPath = smoothProbePath(probe.path)
+      buildProbeGeometry(probe)
     }
     probePaths = probes
     anchors.push(...probesToAnchors(probes))
@@ -1331,11 +1658,12 @@ async function init() {
   // localize their initial values explicitly (matters when loading in English).
   setStatus('status.overview')
   setNext('next.clickRegion')
-  // Aladin is NOT booted here — the static galaxy shows until the user opts in
-  // via the enter button or by picking a target (both call ensureAladin()).
+  // Boot the live sky map immediately — the probe-ribbon overload that used to
+  // peg the main thread is fixed (ribbons decimated), so the interactive map is
+  // safe to be the default landing experience again.
+  await ensureAladin()
 }
 
-document.querySelector('[data-sky-enter]')?.addEventListener('click', () => ensureAladin())
 resetButton.addEventListener('click', resetView)
 tourButton.addEventListener('click', toggleTour)
 probePlayButton.addEventListener('click', toggleProbePlay)

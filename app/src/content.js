@@ -31,14 +31,8 @@ export const UI = {
     en: 'Drag the sky to explore freely; click a marker and the view glides to that region. The overview uses Gaia DR3, and close-ups switch automatically to DSS2.',
   },
 
-  // ---- Static landing / lazy sky-map ----
-  'sky.enter': { zh: '▶ 进入可交互天图', en: '▶ Enter interactive sky map' },
+  // ---- Sky-map loading state ----
   'sky.loading': { zh: '正在加载天图…', en: 'Loading sky map…' },
-  'sky.staticNote': {
-    zh: '默认显示离线银河全景图，秒开不卡。想自由拖拽探索真实天区，点上方按钮加载法国 CDS 实时天图。',
-    en: 'A static Milky Way panorama loads instantly by default. Tap the button above to load the live CDS sky map for free dragging and exploration.',
-  },
-  'sky.staticCredit': { zh: '银河全景：ESO / S. Brunier（CC BY 4.0）', en: 'Milky Way panorama: ESO / S. Brunier (CC BY 4.0)' },
 
   // ---- Survey chip ----
   'survey.dss2': { zh: 'DSS2 照片', en: 'DSS2 Photo' },
@@ -64,7 +58,7 @@ export const UI = {
   // ---- Probe time machine ----
   'probe.play': { zh: '▶ 从头播放', en: '▶ Play from launch' },
   'probe.playing': { zh: '⏸ 暂停', en: '⏸ Pause' },
-  'probe.parallaxBtn': { zh: '为什么是弹簧形？', en: 'Why the spring shape?' },
+  'probe.parallaxBtn': { zh: '你知道吗？为什么是螺旋', en: 'Did you know? Why a spiral' },
   'probe.dateLabel': { zh: '{date} · 它当时在天上的这个方向', en: '{date} · where it appeared in the sky then' },
   'probe.todayLabel': { zh: '今天 · 距离约 {dist} AU', en: 'Today · about {dist} AU away' },
   'probe.detailsSuffix': {
@@ -73,6 +67,10 @@ export const UI = {
   },
 
   // ---- Parallax explainer ----
+  'parallax.lead': {
+    zh: '你知道吗？地图上卫星飞的是它<strong>真实的直线轨道</strong>。但我们在地球上亲眼看到它划过天空的轨迹，其实是一条<strong>螺旋（弹簧形）</strong>——原因就在下面这张图里。',
+    en: 'Did you know? On the map the probe flies its <strong>real, near-straight path</strong>. But the track we actually watch it trace across the sky from Earth is a <strong>spiral (a spring)</strong> — the diagram below shows why.',
+  },
   'parallax.jan': { zh: '1月', en: 'Jan' },
   'parallax.jul': { zh: '7月', en: 'Jul' },
   'parallax.apparent': { zh: '表观：弹簧', en: 'Apparent: a spring' },
