@@ -8,16 +8,13 @@
 <script>
 // Page dictionary — { zh, en } pairs, human-written English. Registered during
 // head parse, applied by i18n.js on DOMContentLoaded. See TRANSLATION-GUIDE.md.
+// Per-constellation copy (title/lede/about/source) lives in CONSTELLATIONS below
+// and is rendered dynamically, so only the shared chrome is registered here.
 window.I18N.register({
   'con.pageTitle': { zh: '星座的真相 · 星空照片探索器', en: 'The truth about constellations · Cosmic Photo Explorer' },
   'con.eyebrow': { zh: '解释层 / 星座其实是障眼法', en: 'Explainer / A constellation is a trick of perspective' },
-  'con.title': { zh: '北斗七星：一个只属于地球的形状', en: 'The Big Dipper: a shape that only exists from Earth' },
-  'con.lede': {
-    zh: '从地球看，这七颗星连成一把勺子。但它们其实前后散布在 80 到 124 光年之间，根本不在一块儿——这个「勺子」只是我们这个视角的巧合。拖动鼠标离开地球，看它当场散架。',
-    en: 'From Earth these seven stars line up into a ladle. But they are actually scattered between 80 and 124 light-years away — nowhere near each other. The "ladle" is a coincidence of our single viewpoint. Drag to leave Earth and watch it fall apart.',
-  },
-  'con.status.earth': { zh: '✨ 这就是你从地球看到的北斗七星', en: '✨ This is the Big Dipper as you see it from Earth' },
-  'con.status.off': { zh: '🌀 你已离开地球视角 —— 看，它们前后差着几十光年', en: '🌀 You have left Earth — see, they are tens of light-years apart in depth' },
+  'con.status.earth': { zh: '✨ 这就是你从地球看到的样子', en: '✨ This is exactly how it looks from Earth' },
+  'con.status.off': { zh: '🌀 你已离开地球视角 —— 看，它们前后差着几十上百光年', en: '🌀 You have left Earth — see how far apart they are in depth' },
   'con.reset': { zh: '🌍 回到地球视角', en: '🌍 Back to Earth’s view' },
   'con.sightlines.on': { zh: '显示到地球的视线', en: 'Show sightlines to Earth' },
   'con.sightlines.off': { zh: '隐藏视线', en: 'Hide sightlines' },
@@ -25,16 +22,7 @@ window.I18N.register({
   'con.unit': { zh: '光年', en: 'ly' },
   'con.earth': { zh: '地球（你在这里）', en: 'Earth (you are here)' },
   'con.about.h': { zh: '这是怎么回事', en: 'What you are looking at' },
-  'con.about.p1': {
-    zh: '北斗七星是大熊座的一部分。它看起来像个整体，其实两端的天枢和摇光离我们最远（约 124 和 104 光年），中间五颗挤在 80 光年附近——它们甚至不属于同一个星群。所以你一转视角，两端就最先「甩」出去。',
-    en: 'The Big Dipper is part of Ursa Major. It looks like one object, but its two ends — Dubhe and Alkaid — are the farthest (about 124 and 104 ly), while the middle five cluster near 80 ly and do not even belong to the same star group. So as you rotate, the two ends swing out first.',
-  },
-  'con.about.p2': {
-    zh: '这七颗星还各自朝不同方向运动。大约五万年后，这把勺子会明显变形——星座并不是永恒的图案，只是此时此地、从地球看过去的一张快照。',
-    en: 'The seven stars also drift in different directions. In about 50,000 years the ladle will visibly deform — a constellation is not an eternal pattern, just a snapshot from here and now, seen from Earth.',
-  },
-  'con.stars.h': { zh: '七颗星与它们的距离', en: 'The seven stars and their distances' },
-  'con.source': { zh: '恒星坐标与距离：Hipparcos 星表（ESA）。渲染：Three.js（自托管）。', en: 'Star positions & distances: Hipparcos catalogue (ESA). Rendering: Three.js (self-hosted).' },
+  'con.pick': { zh: '换一个星座', en: 'Switch constellation' },
   'nav.home': { zh: '← 回到星空探索器', en: '← Back to the explorer' },
   'nav.solar': { zh: '太阳系 →', en: 'Solar System →' },
   'nav.stations': { zh: '空间站 →', en: 'Space Stations →' },
@@ -93,6 +81,14 @@ window.I18N.register({
   .starlist .dist { color: var(--cyan); white-space: nowrap; }
   .source { font-size: 11px; color: var(--dim); margin-top: 12px; }
 
+  /* Constellation picker */
+  .con-picker { display: flex; flex-wrap: wrap; gap: 7px; margin: 0 0 14px; }
+  .con-pick-btn { font: inherit; font-size: 12.5px; cursor: pointer; color: var(--dim);
+    background: rgba(157,184,255,0.06); border: 1px solid var(--line); border-radius: 999px;
+    padding: 4px 13px; transition: border-color .15s, color .15s, background .15s; }
+  .con-pick-btn:hover { border-color: var(--accent); color: var(--text); }
+  .con-pick-btn.active { color: var(--bg); background: var(--accent); border-color: var(--accent); font-weight: 600; }
+
   /* Bottom controls + live status */
   .dock { position: absolute; left: 50%; bottom: 22px; transform: translateX(-50%);
     display: flex; flex-direction: column; align-items: center; gap: 10px; width: min(560px, calc(100vw - 36px)); }
@@ -121,8 +117,9 @@ window.I18N.register({
 
   <div class="panel">
     <div class="eyebrow" data-i18n="con.eyebrow">解释层 / 星座其实是障眼法</div>
-    <h1 data-i18n="con.title">北斗七星：一个只属于地球的形状</h1>
-    <p class="lede" data-i18n="con.lede">从地球看，这七颗星连成一把勺子……</p>
+    <h1 data-con-title>星座的真相</h1>
+    <p class="lede" data-con-lede></p>
+    <div class="con-picker" data-con-picker></div>
     <nav>
       <a class="back" href="./" data-i18n="nav.home">← 回到星空探索器</a>
       <a class="back" href="solar.html" data-i18n="nav.solar">太阳系 →</a>
@@ -131,13 +128,12 @@ window.I18N.register({
     </nav>
     <div class="section">
       <h2 data-i18n="con.about.h">这是怎么回事</h2>
-      <p data-i18n="con.about.p1"></p>
-      <p data-i18n="con.about.p2"></p>
+      <div data-con-about></div>
     </div>
     <div class="section">
-      <h2 data-i18n="con.stars.h">七颗星与它们的距离</h2>
+      <h2 data-con-stars-h></h2>
       <ul class="starlist" id="starlist"></ul>
-      <p class="source" data-i18n="con.source"></p>
+      <p class="source" data-con-source></p>
     </div>
     <!-- Host the shared creator credit here so it sits in the panel instead of
          floating over the immersive canvas; i18n.js sees it and skips its own. -->
@@ -158,23 +154,123 @@ window.I18N.register({
 (function () {
   'use strict'
 
-  // --- Big Dipper (北斗七星), part of Ursa Major. Positions & distances from the
-  //     Hipparcos catalogue. ra/dec in degrees (J2000), dist in light-years,
-  //     mag = apparent visual magnitude (smaller = brighter). ---
-  const STARS = [
-    { id: 'dubhe',  zh: '天枢', west: 'Dubhe',  bayer: 'α', ra: 165.932, dec: 61.751, dist: 123.0, mag: 1.79 },
-    { id: 'merak',  zh: '天璇', west: 'Merak',  bayer: 'β', ra: 165.460, dec: 56.383, dist: 79.7,  mag: 2.37 },
-    { id: 'phecda', zh: '天玑', west: 'Phecda', bayer: 'γ', ra: 178.458, dec: 53.695, dist: 83.2,  mag: 2.44 },
-    { id: 'megrez', zh: '天权', west: 'Megrez', bayer: 'δ', ra: 183.857, dec: 57.033, dist: 80.5,  mag: 3.31 },
-    { id: 'alioth', zh: '玉衡', west: 'Alioth', bayer: 'ε', ra: 193.507, dec: 55.960, dist: 82.6,  mag: 1.77 },
-    { id: 'mizar',  zh: '开阳', west: 'Mizar',  bayer: 'ζ', ra: 200.981, dec: 54.925, dist: 82.9,  mag: 2.04 },
-    { id: 'alkaid', zh: '摇光', west: 'Alkaid', bayer: 'η', ra: 206.885, dec: 49.313, dist: 103.9, mag: 1.86 },
+  // --- Datasets. ra/dec in degrees (J2000), dist in light-years, mag = apparent
+  //     visual magnitude (smaller = brighter → rendered bigger). Big Dipper is
+  //     verified from Hipparcos; Orion's belt and a few others carry large parallax
+  //     uncertainty and are flagged as illustrative in each source line. ---
+  const CONSTELLATIONS = [
+    {
+      id: 'dipper',
+      name: { zh: '北斗七星', en: 'Big Dipper' },
+      title: { zh: '北斗七星：一个只属于地球的形状', en: 'The Big Dipper: a shape that only exists from Earth' },
+      lede: {
+        zh: '从地球看，这七颗星连成一把勺子。但它们其实前后散布在 80 到 124 光年之间，根本不在一块儿——这个「勺子」只是我们这个视角的巧合。拖动鼠标离开地球，看它当场散架。',
+        en: 'From Earth these seven stars line up into a ladle. But they are actually scattered between 80 and 124 light-years away — nowhere near each other. The "ladle" is a coincidence of our single viewpoint. Drag to leave Earth and watch it fall apart.',
+      },
+      about: [
+        {
+          zh: '北斗七星是大熊座的一部分。它看起来像个整体，其实两端的天枢和摇光离我们最远（约 123 和 104 光年），中间五颗挤在 80 光年附近——它们甚至不属于同一个星群。所以你一转视角，两端就最先「甩」出去。',
+          en: 'The Big Dipper is part of Ursa Major. It looks like one object, but its two ends — Dubhe and Alkaid — are the farthest (about 123 and 104 ly), while the middle five cluster near 80 ly and do not even belong to the same star group. So as you rotate, the two ends swing out first.',
+        },
+        {
+          zh: '这七颗星还各自朝不同方向运动。大约五万年后，这把勺子会明显变形——星座并不是永恒的图案，只是此时此地、从地球看过去的一张快照。',
+          en: 'The seven stars also drift in different directions. In about 50,000 years the ladle will visibly deform — a constellation is not an eternal pattern, just a snapshot from here and now, seen from Earth.',
+        },
+      ],
+      source: {
+        zh: '恒星坐标与距离：Hipparcos 星表（ESA）。渲染：Three.js（自托管）。',
+        en: 'Star positions & distances: Hipparcos catalogue (ESA). Rendering: Three.js (self-hosted).',
+      },
+      stars: [
+        { id: 'dubhe',  zh: '天枢', west: 'Dubhe',  bayer: 'α', ra: 165.932, dec: 61.751, dist: 123.0, mag: 1.79 },
+        { id: 'merak',  zh: '天璇', west: 'Merak',  bayer: 'β', ra: 165.460, dec: 56.383, dist: 79.7,  mag: 2.37 },
+        { id: 'phecda', zh: '天玑', west: 'Phecda', bayer: 'γ', ra: 178.458, dec: 53.695, dist: 83.2,  mag: 2.44 },
+        { id: 'megrez', zh: '天权', west: 'Megrez', bayer: 'δ', ra: 183.857, dec: 57.033, dist: 80.5,  mag: 3.31 },
+        { id: 'alioth', zh: '玉衡', west: 'Alioth', bayer: 'ε', ra: 193.507, dec: 55.960, dist: 82.6,  mag: 1.77 },
+        { id: 'mizar',  zh: '开阳', west: 'Mizar',  bayer: 'ζ', ra: 200.981, dec: 54.925, dist: 82.9,  mag: 2.04 },
+        { id: 'alkaid', zh: '摇光', west: 'Alkaid', bayer: 'η', ra: 206.885, dec: 49.313, dist: 103.9, mag: 1.86 },
+      ],
+      links: [
+        ['dubhe', 'merak'], ['merak', 'phecda'], ['phecda', 'megrez'], ['megrez', 'dubhe'],
+        ['megrez', 'alioth'], ['alioth', 'mizar'], ['mizar', 'alkaid'],
+      ],
+    },
+    {
+      id: 'orion',
+      name: { zh: '猎户座', en: 'Orion' },
+      title: { zh: '猎户座：最会「散架」的星座', en: 'Orion: the constellation that shatters hardest' },
+      lede: {
+        zh: '那条著名的「猎户腰带」三颗星，看着一样亮、排成一线。可它们前后差着近一千光年——只有从地球这一个角度才凑成一条带子。拖动离开地球，看它炸开。',
+        en: 'The three stars of Orion’s famous Belt look evenly bright and neatly in a row. Yet they are strung out across nearly a thousand light-years — a "belt" only from this one Earthly angle. Drag away from Earth and watch it blow apart.',
+      },
+      about: [
+        {
+          zh: '腰带三星参宿三、参宿二、参宿一分别约 1200、2000、1260 光年，看似并排，深度却天差地别。再加上参宿四（约 550 光年）和参宿七（约 860 光年），整个猎户其实纵深上千光年。',
+          en: 'The three Belt stars — Mintaka, Alnilam, Alnitak — sit at roughly 1200, 2000 and 1260 ly. They look side by side but lie at wildly different depths. Add Betelgeuse (~550 ly) and Rigel (~860 ly) and the whole figure spans over a thousand light-years front to back.',
+        },
+        {
+          zh: '正因为这些星前后跨度极大，只要视角稍稍偏离地球，猎户座就会比北斗七星散得更彻底——它是「星座只是障眼法」最好的例子。',
+          en: 'Because the stars are spread so deeply, even a small move off Earth scatters Orion far more completely than the Big Dipper — the best demonstration that a constellation is only a trick of perspective.',
+        },
+      ],
+      source: {
+        zh: '恒星坐标：Hipparcos 星表（ESA）。腰带等远星的距离由视差测得、误差较大，此处为示意值。渲染：Three.js（自托管）。',
+        en: 'Positions: Hipparcos catalogue (ESA). Distances to the far belt stars carry large parallax uncertainty and are shown here as illustrative values. Rendering: Three.js (self-hosted).',
+      },
+      stars: [
+        { id: 'betelgeuse', zh: '参宿四', west: 'Betelgeuse', bayer: 'α', ra: 88.793, dec: 7.407,  dist: 548,  mag: 0.50 },
+        { id: 'rigel',      zh: '参宿七', west: 'Rigel',      bayer: 'β', ra: 78.634, dec: -8.202, dist: 863,  mag: 0.13 },
+        { id: 'bellatrix',  zh: '参宿五', west: 'Bellatrix',  bayer: 'γ', ra: 81.283, dec: 6.350,  dist: 250,  mag: 1.64 },
+        { id: 'mintaka',    zh: '参宿三', west: 'Mintaka',    bayer: 'δ', ra: 83.002, dec: -0.299, dist: 1200, mag: 2.23 },
+        { id: 'alnilam',    zh: '参宿二', west: 'Alnilam',    bayer: 'ε', ra: 84.053, dec: -1.202, dist: 2000, mag: 1.69 },
+        { id: 'alnitak',    zh: '参宿一', west: 'Alnitak',    bayer: 'ζ', ra: 85.190, dec: -1.943, dist: 1260, mag: 1.77 },
+        { id: 'saiph',      zh: '参宿六', west: 'Saiph',      bayer: 'κ', ra: 86.939, dec: -9.670, dist: 650,  mag: 2.07 },
+      ],
+      links: [
+        ['betelgeuse', 'bellatrix'], ['betelgeuse', 'alnitak'], ['bellatrix', 'mintaka'],
+        ['mintaka', 'alnilam'], ['alnilam', 'alnitak'],
+        ['alnitak', 'saiph'], ['mintaka', 'rigel'],
+      ],
+    },
+    {
+      id: 'cassiopeia',
+      name: { zh: '仙后座', en: 'Cassiopeia' },
+      title: { zh: '仙后座：天上的那个「W」', en: 'Cassiopeia: the "W" in the sky' },
+      lede: {
+        zh: '五颗星连成一个醒目的 W。可它们从 54 到 550 光年前后散布，这个 W 同样只是地球视角的巧合。转一转，它就扭曲变形。',
+        en: 'Five stars trace a bright "W". Yet they lie scattered from 54 to 550 light-years away — the W, too, is just a coincidence of Earth’s viewpoint. Orbit a little and it warps out of shape.',
+      },
+      about: [
+        {
+          zh: '最近的王良一约 54 光年，最远的策约 550 光年，相差十倍。它们凑成 W 纯属方向上的巧合，深度上根本不相干。',
+          en: 'The nearest, Caph, is about 54 ly away; the farthest, Navi, about 550 ly — a tenfold difference. Their "W" is pure directional coincidence; in depth they are unrelated.',
+        },
+        {
+          zh: '转动视角，W 就会扭曲变形——它不是一个天体，只是五颗互不相干的星在此刻排成的形状。',
+          en: 'Rotate the view and the W distorts — it is not one object, just five unrelated stars that happen to line up into a shape right now.',
+        },
+      ],
+      source: {
+        zh: '恒星坐标：Hipparcos 星表（ESA）。部分恒星距离由视差测得、误差较大，此处为示意值。渲染：Three.js（自托管）。',
+        en: 'Positions: Hipparcos catalogue (ESA). Some distances carry large parallax uncertainty and are shown here as illustrative values. Rendering: Three.js (self-hosted).',
+      },
+      stars: [
+        { id: 'segin',   zh: '阁道二', west: 'Segin',   bayer: 'ε', ra: 28.599, dec: 63.670, dist: 410, mag: 3.35 },
+        { id: 'ruchbah', zh: '阁道三', west: 'Ruchbah', bayer: 'δ', ra: 21.454, dec: 60.235, dist: 99,  mag: 2.68 },
+        { id: 'gamma',   zh: '策',     west: 'Navi',    bayer: 'γ', ra: 14.177, dec: 60.717, dist: 550, mag: 2.47 },
+        { id: 'schedar', zh: '王良四', west: 'Schedar', bayer: 'α', ra: 10.127, dec: 56.537, dist: 228, mag: 2.24 },
+        { id: 'caph',    zh: '王良一', west: 'Caph',    bayer: 'β', ra: 2.295,  dec: 59.150, dist: 54,  mag: 2.28 },
+      ],
+      links: [ ['segin', 'ruchbah'], ['ruchbah', 'gamma'], ['gamma', 'schedar'], ['schedar', 'caph'] ],
+    },
   ]
-  // Stick-figure connectivity: bowl (quadrilateral) + handle.
-  const LINKS = [
-    ['dubhe', 'merak'], ['merak', 'phecda'], ['phecda', 'megrez'], ['megrez', 'dubhe'],
-    ['megrez', 'alioth'], ['alioth', 'mizar'], ['mizar', 'alkaid'],
-  ]
+
+  // All figures share the Big-Dipper-tuned constants (sprite sizes, orbit limits,
+  // background, thresholds). To make that possible we uniformly scale each figure's
+  // 3D positions so its centroid sits at the same working radius — this preserves
+  // every star's DIRECTION from Earth and their relative depths (so the perspective
+  // illusion stays faithful), while the side panel keeps showing the real distances.
+  const WORK_RADIUS = 90
 
   const canvas = document.getElementById('sky')
   const labelLayer = document.getElementById('labels')
@@ -220,13 +316,7 @@ window.I18N.register({
     const scene = new THREE.Scene()
     const camera = new THREE.PerspectiveCamera(46, 1, 0.1, 6000)
 
-    // Positions + centroid (the point we orbit around).
-    const pos = {}
-    const centroid = new THREE.Vector3()
-    STARS.forEach((s) => { pos[s.id] = toVec3(THREE, s); centroid.add(pos[s.id]) })
-    centroid.multiplyScalar(1 / STARS.length)
-
-    // Faint background starfield for depth.
+    // Faint background starfield for depth (shared across figures).
     const bgGeo = new THREE.BufferGeometry()
     const bgN = 500, bgArr = new Float32Array(bgN * 3)
     let seed = 7
@@ -248,36 +338,9 @@ window.I18N.register({
     )
     scene.add(earth)
 
-    // The seven stars (additive-blended sprites, sized by brightness).
     const tex = starSprite(THREE)
-    STARS.forEach((s) => {
-      const mat = new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending })
-      const sp = new THREE.Sprite(mat)
-      const size = 2 + (3.4 - s.mag) * 1.0   // brighter (lower mag) → bigger
-      sp.scale.set(size, size, 1)
-      sp.position.copy(pos[s.id])
-      scene.add(sp)
-    })
 
-    // Constellation lines — always connected. Static in 3D; the "shape" only
-    // changes because the camera moves.
-    const linePts = []
-    LINKS.forEach(([a, b]) => { linePts.push(pos[a].x, pos[a].y, pos[a].z, pos[b].x, pos[b].y, pos[b].z) })
-    const lineGeo = new THREE.BufferGeometry()
-    lineGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(linePts), 3))
-    const lines = new THREE.LineSegments(lineGeo, new THREE.LineBasicMaterial({ color: 0x37e0ff, transparent: true, opacity: 0.8 }))
-    scene.add(lines)
-
-    // Sightlines from Earth (origin) to each star — toggleable depth cue.
-    const sightPts = []
-    STARS.forEach((s) => { sightPts.push(0, 0, 0, pos[s.id].x, pos[s.id].y, pos[s.id].z) })
-    const sightGeo = new THREE.BufferGeometry()
-    sightGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(sightPts), 3))
-    const sightlines = new THREE.LineSegments(sightGeo, new THREE.LineBasicMaterial({ color: 0x37e0ff, transparent: true, opacity: 0.22 }))
-    sightlines.visible = false
-    scene.add(sightlines)
-
-    // Controls: orbit around the constellation centroid.
+    // Controls: orbit around the (current) constellation centroid.
     const controls = new THREE.OrbitControls(camera, renderer.domElement)
     controls.enableDamping = true
     controls.dampingFactor = 0.08
@@ -285,13 +348,92 @@ window.I18N.register({
     controls.enablePan = false
     controls.minDistance = 28
     controls.maxDistance = 320
-    controls.target.copy(centroid)
+
+    // --- Per-figure state, rebuilt on every switch ---
+    const conGroup = new THREE.Group()
+    scene.add(conGroup)
+    let activeCon = null
+    let pos = {}                 // scaled positions by star id
+    const centroid = new THREE.Vector3()
+    let starLabels = []          // { s, el, nm, d }
+    let sightlines = null
+    let showSightlines = false
+
+    const earthLabel = document.createElement('div'); earthLabel.className = 'earth-label'
+    labelLayer.appendChild(earthLabel)
+
+    function disposeFigure() {
+      conGroup.children.slice().forEach((o) => {
+        if (o.geometry) o.geometry.dispose()
+        if (o.material) o.material.dispose()
+      })
+      conGroup.clear()
+      starLabels.forEach(({ el }) => el.remove())
+      starLabels = []
+      sightlines = null
+    }
+
+    function buildFigure(con) {
+      disposeFigure()
+      activeCon = con
+
+      // Raw positions + centroid, then a uniform scale to the shared working radius.
+      const raw = {}
+      centroid.set(0, 0, 0)
+      con.stars.forEach((s) => { raw[s.id] = toVec3(THREE, s); centroid.add(raw[s.id]) })
+      centroid.multiplyScalar(1 / con.stars.length)
+      const k = WORK_RADIUS / (centroid.length() || 1)
+      pos = {}
+      con.stars.forEach((s) => { pos[s.id] = raw[s.id].clone().multiplyScalar(k) })
+      centroid.multiplyScalar(k)
+
+      // Stars (additive sprites, sized by brightness).
+      con.stars.forEach((s) => {
+        const mat = new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending })
+        const sp = new THREE.Sprite(mat)
+        const size = 2 + (3.4 - s.mag) * 1.0
+        sp.scale.set(size, size, 1)
+        sp.position.copy(pos[s.id])
+        conGroup.add(sp)
+      })
+
+      // Constellation lines — always connected; only the camera moves.
+      const linePts = []
+      con.links.forEach(([a, b]) => { linePts.push(pos[a].x, pos[a].y, pos[a].z, pos[b].x, pos[b].y, pos[b].z) })
+      const lineGeo = new THREE.BufferGeometry()
+      lineGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(linePts), 3))
+      conGroup.add(new THREE.LineSegments(lineGeo, new THREE.LineBasicMaterial({ color: 0x37e0ff, transparent: true, opacity: 0.8 })))
+
+      // Sightlines from Earth (origin) to each star — toggleable depth cue.
+      const sightPts = []
+      con.stars.forEach((s) => { sightPts.push(0, 0, 0, pos[s.id].x, pos[s.id].y, pos[s.id].z) })
+      const sightGeo = new THREE.BufferGeometry()
+      sightGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(sightPts), 3))
+      sightlines = new THREE.LineSegments(sightGeo, new THREE.LineBasicMaterial({ color: 0x37e0ff, transparent: true, opacity: 0.22 }))
+      sightlines.visible = showSightlines
+      conGroup.add(sightlines)
+
+      // Star labels (crisp HTML, projected each frame).
+      starLabels = con.stars.map((s) => {
+        const el = document.createElement('div'); el.className = 'star-label'
+        el.innerHTML = '<b></b><span class="d"></span>'
+        labelLayer.appendChild(el)
+        return { s, el, nm: el.querySelector('b'), d: el.querySelector('.d') }
+      })
+
+      controls.target.copy(centroid)
+      goEarthView()
+      refreshLabelText()
+      refreshList()
+      lastEarthState = null
+      updateStatus()
+    }
 
     function goEarthView() {
-      // Camera exactly at Earth → the seven stars project into the real ladle.
-      // First update with damping off flushes any leftover orbit momentum
-      // (sphericalDelta) so the snap-back is clean; then place the camera at the
-      // origin and update once more with the delta already zeroed.
+      // Camera exactly at Earth → the stars project into the real figure. First
+      // update with damping off flushes leftover orbit momentum (sphericalDelta) so
+      // the snap-back is clean; then place the camera at the origin and update again
+      // with the delta already zeroed.
       const damp = controls.enableDamping
       controls.enableDamping = false
       controls.update()
@@ -300,17 +442,6 @@ window.I18N.register({
       controls.update()
       controls.enableDamping = damp
     }
-    goEarthView()
-
-    // HTML labels for the stars + Earth (crisp text, projected each frame).
-    const starLabels = STARS.map((s) => {
-      const el = document.createElement('div'); el.className = 'star-label'
-      el.innerHTML = '<b></b><span class="d"></span>'
-      labelLayer.appendChild(el)
-      return { s, el, nm: el.querySelector('b'), d: el.querySelector('.d') }
-    })
-    const earthLabel = document.createElement('div'); earthLabel.className = 'earth-label'
-    labelLayer.appendChild(earthLabel)
 
     function refreshLabelText() {
       const zh = I18N.getLang() === 'zh'
@@ -321,15 +452,35 @@ window.I18N.register({
       })
       earthLabel.textContent = I18N.t('con.earth')
     }
-    refreshLabelText()
 
-    // Side panel star list.
+    // Side panel copy (title/lede/about/heading/source) for the active figure.
+    const titleEl = document.querySelector('[data-con-title]')
+    const ledeEl = document.querySelector('[data-con-lede]')
+    const aboutEl = document.querySelector('[data-con-about]')
+    const starsHEl = document.querySelector('[data-con-stars-h]')
+    const sourceEl = document.querySelector('[data-con-source]')
     const listEl = document.getElementById('starlist')
+    const pickerEl = document.querySelector('[data-con-picker]')
+
+    function pick(o) { return I18N.getLang() === 'zh' ? o.zh : o.en }
+
+    function renderCopy() {
+      if (!activeCon) return
+      const zh = I18N.getLang() === 'zh'
+      titleEl.textContent = pick(activeCon.title)
+      ledeEl.textContent = pick(activeCon.lede)
+      aboutEl.innerHTML = activeCon.about.map((p) => '<p>' + pick(p) + '</p>').join('')
+      const n = activeCon.stars.length
+      starsHEl.textContent = zh ? (n + ' 颗星与它们的距离') : ('The ' + n + ' stars and their distances')
+      sourceEl.textContent = pick(activeCon.source)
+    }
+
     function refreshList() {
+      if (!activeCon) return
       const zh = I18N.getLang() === 'zh'
       const unit = I18N.t('con.unit')
       listEl.innerHTML = ''
-      STARS.forEach((s) => {
+      activeCon.stars.forEach((s) => {
         const li = document.createElement('li')
         li.innerHTML = '<span class="nm">' + (zh ? s.zh : s.west) +
           '<span>' + (zh ? s.west : s.zh) + ' ' + s.bayer + '</span></span>' +
@@ -337,36 +488,48 @@ window.I18N.register({
         listEl.appendChild(li)
       })
     }
-    refreshList()
+
+    function renderPicker() {
+      pickerEl.innerHTML = ''
+      CONSTELLATIONS.forEach((con) => {
+        const b = document.createElement('button')
+        b.type = 'button'
+        b.className = 'con-pick-btn' + (activeCon && con.id === activeCon.id ? ' active' : '')
+        b.textContent = pick(con.name)
+        b.addEventListener('click', () => {
+          if (!activeCon || con.id !== activeCon.id) switchTo(con)
+        })
+        pickerEl.appendChild(b)
+      })
+    }
+
+    function switchTo(con) {
+      buildFigure(con)
+      renderCopy()
+      renderPicker()
+    }
 
     // Live status: are we still (near) Earth's viewpoint?
     let lastEarthState = null
     function updateStatus() {
-      const nearEarth = camera.position.length() < 14   // ly from origin
+      const nearEarth = camera.position.length() < 14
       if (nearEarth !== lastEarthState) {
         lastEarthState = nearEarth
         statusEl.textContent = I18N.t(nearEarth ? 'con.status.earth' : 'con.status.off')
       }
     }
 
-    // Re-localize dynamic bits when the language flips.
-    I18N.onChange(() => { refreshLabelText(); refreshList(); lastEarthState = null; updateStatus() })
-
-    // Continuous render loop. The scene is trivial (a few draw calls), so always
-    // rendering is cheap — and unlike a dirty-flag gate it can never get stuck in
-    // a state where drags/buttons stop repainting. The browser already pauses rAF
-    // while the tab is hidden, so an idle background tab costs nothing anyway.
-    // markDirty is kept as a harmless no-op so existing call sites stay valid.
-    const markDirty = () => {}
+    // Re-localize everything dynamic when the language flips.
+    I18N.onChange(() => { renderCopy(); renderPicker(); refreshLabelText(); refreshList(); lastEarthState = null; updateStatus() })
 
     // Buttons.
     document.querySelector('[data-reset]').addEventListener('click', goEarthView)
     const slBtn = document.querySelector('[data-sightlines]')
     slBtn.addEventListener('click', () => {
-      sightlines.visible = !sightlines.visible
-      slBtn.setAttribute('data-i18n', sightlines.visible ? 'con.sightlines.off' : 'con.sightlines.on')
-      slBtn.textContent = I18N.t(sightlines.visible ? 'con.sightlines.off' : 'con.sightlines.on')
-      markDirty()   // visibility change needs one redraw
+      showSightlines = !showSightlines
+      if (sightlines) sightlines.visible = showSightlines
+      slBtn.setAttribute('data-i18n', showSightlines ? 'con.sightlines.off' : 'con.sightlines.on')
+      slBtn.textContent = I18N.t(showSightlines ? 'con.sightlines.off' : 'con.sightlines.on')
     })
 
     // Project a world point to screen pixels; returns null if behind the camera.
@@ -383,7 +546,7 @@ window.I18N.register({
       camera.aspect = w / h
       camera.updateProjectionMatrix()
     }
-    window.addEventListener('resize', () => { resize(); markDirty() })
+    window.addEventListener('resize', resize)
 
     function draw() {
       const w = canvas.clientWidth, h = canvas.clientHeight
@@ -400,11 +563,18 @@ window.I18N.register({
       renderer.render(scene, camera)
     }
 
+    // Continuous render loop. The scene is trivial (a few draw calls), so always
+    // rendering is cheap — and unlike a dirty-flag gate it can never get stuck in a
+    // state where drags/buttons stop repainting. The browser pauses rAF while the
+    // tab is hidden, so an idle background tab costs nothing anyway.
     function tick() {
       controls.update()
       draw()
       requestAnimationFrame(tick)
     }
+
+    // Boot on the Big Dipper.
+    switchTo(CONSTELLATIONS[0])
     resize()
     tick()
   }
