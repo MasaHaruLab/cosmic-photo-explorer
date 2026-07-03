@@ -58,6 +58,11 @@ window.I18N.register({
   'solar.globe.photo': { zh: '看任务原片', en: 'Mission photo' },
   'solar.globe.close': { zh: '关闭', en: 'Close' },
   'solar.globe.loading': { zh: '加载贴图…', en: 'Loading texture…' },
+  'solar.pano.hint': { zh: '拖动环顾四周 · 会自动缓慢转', en: 'Drag to look around · slowly auto-pans' },
+  'solar.moon.pano': { zh: '🥾 站上月球表面 · 360°', en: '🥾 Stand on the Moon · 360°' },
+  'solar.mars.pano': { zh: '🥾 站上火星表面 · 360°', en: '🥾 Stand on Mars · 360°' },
+  'solar.pano.moon.cap': { zh: '月球 · 阿波罗 17 号着陆点全景 · NASA/JSC', en: 'The Moon · Apollo 17 landing-site panorama · NASA/JSC' },
+  'solar.pano.mars.cap': { zh: '火星 · 毅力号着陆点全景 · NASA/JPL-Caltech', en: 'Mars · Perseverance landing-site panorama · NASA/JPL-Caltech' },
   'solar.lightboxAlt': { zh: '行星大图', en: 'Planet, enlarged' },
 
   'solar.footer': { zh: '月球底图：NASA LROC WAC（CDS HiPS）、嫦娥二号 7 米 DOM（中国国家天文台 / China-VO）。火星底图：Viking MDIM21、MGS MOLA（NASA / USGS，经 CDS HiPS）。行星照片：NASA/JPL-Caltech 等任务原片（公有领域），点击大图可见任务信息。可旋转行星球体贴图：Solar System Scope（CC BY 4.0）。', en: 'Moon base maps: NASA LROC WAC (CDS HiPS), Chang’e-2 7 m DOM (National Astronomical Observatories of China / China-VO). Mars base maps: Viking MDIM21, MGS MOLA (NASA / USGS, via CDS HiPS). Planet photos: original mission imagery from NASA/JPL-Caltech and others (public domain); click any image for mission details. Spinnable planet-globe textures: Solar System Scope (CC BY 4.0).' },
@@ -111,6 +116,14 @@ window.I18N.register({
   .spot:hover, .layer:hover { border-color: var(--accent); }
   .layer.is-active { background: var(--accent); color: var(--bg); font-weight: 600; }
   .note { font-size: 12.5px; color: var(--dim); margin: 6px 2px 0; }
+  .pano-cta { margin: 10px 2px 0; }
+  .pano-btn {
+    font: inherit; font-size: 13.5px; cursor: pointer; color: var(--accent);
+    background: rgba(157,184,255,0.09); border: 1px solid rgba(157,184,255,0.4);
+    border-radius: 999px; padding: 8px 18px; letter-spacing: 0.02em;
+    transition: background 160ms ease, border-color 160ms ease;
+  }
+  .pano-btn:hover { background: rgba(157,184,255,0.18); border-color: rgba(157,184,255,0.7); }
   .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; margin-top: 16px; }
   .gallery figure {
     margin: 0; background: var(--panel); border: 1px solid var(--line); border-radius: 12px;
@@ -204,6 +217,9 @@ window.I18N.register({
       <button class="layer" data-body="moon" data-survey="https://hips.china-vo.org/change2-moon-7m-dom" data-i18n="solar.moon.change2">嫦娥二号</button>
     </div>
   </div>
+  <div class="pano-cta">
+    <button class="pano-btn" type="button" data-pano="textures/moon_pano.jpg" data-cap="solar.pano.moon.cap" data-bg="#000000" data-i18n="solar.moon.pano">🥾 站上月球表面 · 360°</button>
+  </div>
 
   <h2 data-i18n="solar.mars.h2">火星</h2>
   <p class="note" data-i18n="solar.mars.note">默认底图：Viking 彩色全图（真实颜色感的锈红火星）。切换 MOLA 彩色高程能看出山有多高、谷有多深——蓝色低、红色高。</p>
@@ -219,6 +235,9 @@ window.I18N.register({
       <button class="layer is-active" data-body="mars" data-survey="https://alasky.cds.unistra.fr/Planets/Mars_Viking_MDIM21" data-i18n="solar.mars.viking">Viking 彩色</button>
       <button class="layer" data-body="mars" data-survey="https://alasky.cds.unistra.fr/Planets/Mars_MOLA" data-i18n="solar.mars.mola">MOLA 高程</button>
     </div>
+  </div>
+  <div class="pano-cta">
+    <button class="pano-btn" type="button" data-pano="textures/mars_pano_pia24422.jpg" data-cap="solar.pano.mars.cap" data-bg="#8a5a3c" data-i18n="solar.mars.pano">🥾 站上火星表面 · 360°</button>
   </div>
 
   <h2 data-i18n="solar.gallery.h2">行星画廊</h2>
@@ -316,6 +335,8 @@ window.I18N.register({
   const canvas = document.querySelector('[data-globe-canvas]')
   const globeCap = document.querySelector('[data-globe-cap]')
   const globeLoading = document.querySelector('[data-globe-loading]')
+  const globeHint = document.querySelector('.globe-hint')
+  const globePhotoBtn = document.querySelector('[data-globe-photo]')
   let three = null
   let currentFig = null
   let threeReady = null
@@ -354,7 +375,8 @@ window.I18N.register({
     controls.enableDamping = true; controls.dampingFactor = 0.09; controls.rotateSpeed = 0.5
     controls.minDistance = 1.5; controls.maxDistance = 6
     controls.autoRotate = true; controls.autoRotateSpeed = 0.55
-    three = { renderer, scene, camera, controls, sphere, tilt, ringMesh: null, texCache: {}, raf: 0, loader: new THREE.TextureLoader() }
+    three = { renderer, scene, camera, controls, sphere, tilt, ringMesh: null, texCache: {}, raf: 0,
+              loader: new THREE.TextureLoader(), mode: 'globe', panoMesh: null, lon: 0, lat: 0, latMax: 45, dragging: false, px: 0, py: 0 }
   }
 
   function makeRing(tex) {
@@ -378,9 +400,20 @@ window.I18N.register({
     three.camera.aspect = 1; three.camera.updateProjectionMatrix()
   }
 
+  function updatePanoCamera() {
+    three.lat = Math.max(-three.latMax, Math.min(three.latMax, three.lat))
+    const phi = THREE.MathUtils.degToRad(90 - three.lat), theta = THREE.MathUtils.degToRad(three.lon)
+    three.camera.lookAt(Math.sin(phi) * Math.cos(theta), Math.cos(phi), Math.sin(phi) * Math.sin(theta))
+  }
+
   function tick() {
     three.raf = requestAnimationFrame(tick)
-    three.controls.update()
+    if (three.mode === 'pano') {
+      if (!three.dragging) three.lon += 0.03   // gentle auto-pan when idle
+      updatePanoCamera()
+    } else {
+      three.controls.update()
+    }
     three.renderer.render(three.scene, three.camera)
   }
 
@@ -393,6 +426,14 @@ window.I18N.register({
     globeLoading.hidden = false; globeLoading.textContent = window.I18N.t('solar.globe.loading')
     await ensureThree()
     if (!three) buildScene()
+    // (re)enter globe mode — undo anything panorama mode changed
+    three.mode = 'globe'
+    three.controls.enabled = true
+    three.scene.background = null
+    three.camera.fov = 42; three.camera.up.set(0, 1, 0)
+    if (three.panoMesh) three.panoMesh.visible = false
+    globePhotoBtn.style.display = ''
+    globeHint.setAttribute('data-i18n', 'solar.globe.hint'); globeHint.textContent = window.I18N.t('solar.globe.hint')
     resize()
     three.camera.position.set(0, 0, 3.2); three.controls.target.set(0, 0, 0)
     three.controls.autoRotate = true; three.controls.update()
@@ -425,6 +466,63 @@ window.I18N.register({
   function closeGlobe() {
     globebox.hidden = true
     if (three && three.raf) { cancelAnimationFrame(three.raf); three.raf = 0 }
+  }
+
+  // ---------- surface panorama (stand on Moon / Mars, look around) ----------
+  // The pano image is 360° horizontal but only ~vaov° vertical; wrap it on a sphere BAND
+  // (a barrel), camera at the centre. vaov is derived from each image's aspect ratio.
+  function buildPanoBand(vaov) {
+    if (three.panoMesh) { three.scene.remove(three.panoMesh); three.panoMesh.geometry.dispose() }
+    const thetaStart = THREE.MathUtils.degToRad((180 - vaov) / 2)
+    const geo = new THREE.SphereGeometry(10, 64, 40, 0, Math.PI * 2, thetaStart, THREE.MathUtils.degToRad(vaov))
+    geo.scale(-1, 1, 1)   // view from inside, un-mirrored
+    three.panoMesh = new THREE.Mesh(geo, new THREE.MeshBasicMaterial())
+    three.scene.add(three.panoMesh)
+    return three.panoMesh
+  }
+
+  async function openPano(btn) {
+    currentFig = null
+    globeCap.textContent = window.I18N.t(btn.dataset.cap)
+    globebox.hidden = false
+    globeLoading.hidden = false; globeLoading.textContent = window.I18N.t('solar.globe.loading')
+    globePhotoBtn.style.display = 'none'
+    globeHint.setAttribute('data-i18n', 'solar.pano.hint'); globeHint.textContent = window.I18N.t('solar.pano.hint')
+    await ensureThree()
+    if (!three) buildScene()
+    three.mode = 'pano'
+    three.controls.enabled = false
+    three.sphere.visible = false
+    if (three.ringMesh) three.ringMesh.visible = false
+    three.camera.position.set(0, 0, 0); three.camera.up.set(0, 1, 0); three.camera.fov = 72
+    three.lon = 0; three.lat = 6; three.dragging = false   // open just above the horizon (trims the nadir gap)
+    three.scene.background = new THREE.Color(btn.dataset.bg || '#000000')
+    resize()
+    const url = btn.dataset.pano
+    const apply = (tex) => {
+      tex.encoding = THREE.sRGBEncoding
+      const vaov = 360 * tex.image.height / tex.image.width   // horizontal is 360°, so vertical follows the aspect
+      three.latMax = Math.max(8, vaov / 2 - 2)
+      const mesh = buildPanoBand(vaov)
+      mesh.material.map = tex; mesh.material.needsUpdate = true; mesh.visible = true
+      globeLoading.hidden = true
+    }
+    if (three.texCache[url]) apply(three.texCache[url])
+    else three.loader.load(url, (t) => { three.texCache[url] = t; apply(t) }, undefined, () => { globeLoading.textContent = '⚠︎' })
+    if (!three.raf) tick()
+  }
+
+  // manual look-around for panorama mode (OrbitControls stays disabled while mode === 'pano')
+  canvas.addEventListener('pointerdown', (e) => { if (three && three.mode === 'pano') { three.dragging = true; three.px = e.clientX; three.py = e.clientY } })
+  window.addEventListener('pointermove', (e) => {
+    if (!three || three.mode !== 'pano' || !three.dragging) return
+    three.lon -= (e.clientX - three.px) * 0.12
+    three.lat += (e.clientY - three.py) * 0.12
+    three.px = e.clientX; three.py = e.clientY
+  })
+  window.addEventListener('pointerup', () => { if (three) three.dragging = false })
+  for (const btn of document.querySelectorAll('.pano-btn')) {
+    btn.addEventListener('click', () => openPano(btn))
   }
 
   // gallery routing: globe-enabled figures spin in 3D; Pluto (photo-only) opens the flat photo
