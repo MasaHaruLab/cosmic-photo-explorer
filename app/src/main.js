@@ -242,7 +242,7 @@ app.innerHTML = `
             <div class="panel-copy" data-apod-content>正在向 NASA 查询今天的天文图…</div>
           </div>
           <div class="explainer-card" data-bortle-card hidden>
-            <img src="explainers/bortle_scale.png" data-i18n-attr="alt:img.bortleAlt" alt="Bortle 光污染等级示意图" />
+            <img src="explainers/bortle_scale.jpg" data-i18n-attr="alt:img.bortleAlt" alt="Bortle 光污染等级示意图" />
             <p data-i18n="bortle.text">Bortle 标尺用 1 到 9 级描述夜空黑暗程度，级别越高，城市灯光对星空的遮蔽越明显。今天许多人看不到照片里的银河，主要不是银河消失了，而是城市光污染把它淹没在夜空背景里。</p>
           </div>
           <div class="explainer-card" data-galaxy-card hidden>
