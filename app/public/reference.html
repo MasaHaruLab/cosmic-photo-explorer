@@ -50,11 +50,17 @@ window.I18N.register({
   'ref.mars.t': { zh: '火星表面全图', en: 'Martian surface mosaics' },
   'ref.mars.d': { zh: '火星查看器的两套底图：Viking 彩色全图（近真实色），以及火星全球勘测者 MOLA 激光高程彩图（蓝低红高）。', en: 'The two base maps in the Mars viewer: the Viking color mosaic (near-true color) and the Mars Global Surveyor MOLA laser-altimetry color map (blue low, red high).' },
   'ref.mars.c': { zh: 'Viking MDIM21、MGS MOLA：NASA / USGS，经 CDS HiPS。', en: 'Viking MDIM21, MGS MOLA: NASA / USGS, via CDS HiPS.' },
+  'ref.globetex.t': { zh: '可旋转行星球体贴图', en: 'Spinnable planet-globe textures' },
+  'ref.globetex.d': { zh: '太阳系页行星画廊里点开就能拖着转的 3D 行星球，表面贴的是 Solar System Scope 制作的等距圆柱（equirectangular）全球贴图——本身基于各任务的真实测绘数据。冥王星只被新视野号飞掠过一面，未做球体，保留任务原片。', en: "The 3D planet globes you can grab and spin in the Solar System page's gallery are wrapped in equirectangular global maps made by Solar System Scope — themselves built on real mission survey data. New Horizons only imaged one side of Pluto up close, so it has no globe and keeps its mission photo." },
+  'ref.globetex.c': { zh: '贴图：Solar System Scope（CC BY 4.0）。', en: 'Textures: Solar System Scope (CC BY 4.0).' },
 
   'ref.model.h': { zh: '三维模型', en: '3D models' },
   'ref.mv.t': { zh: 'model-viewer 组件', en: 'model-viewer component' },
   'ref.mv.d': { zh: '空间站页里可拖动旋转的三维模型由 Google 开源的 model-viewer 网页组件渲染。', en: "The draggable 3D model on the Space Stations page is rendered by Google's open-source model-viewer web component." },
   'ref.mv.c': { zh: '© Google（开源，Apache-2.0 许可）', en: '© Google (open source, Apache-2.0 licensed)' },
+  'ref.threejs.t': { zh: 'Three.js', en: 'Three.js' },
+  'ref.threejs.d': { zh: '太阳系页里可拖着转、带土星环的 3D 行星球，由开源 WebGL 库 Three.js 渲染（自托管）。', en: 'The draggable 3D planet globes on the Solar System page — rings and all — are rendered with the open-source WebGL library Three.js (self-hosted).' },
+  'ref.threejs.c': { zh: '© three.js authors（MIT 许可）', en: '© three.js authors (MIT licensed)' },
   'ref.iss3d.t': { zh: '国际空间站三维模型', en: 'International Space Station 3D model' },
   'ref.iss3d.d': { zh: 'NASA 官方发布的国际空间站 glTF 模型；为了能在网页里点开就转，本站用 Draco + WebP 把它从约 44 MB 压到约 3 MB，几何和贴图保持完好。', en: "NASA's officially published glTF model of the ISS. So it loads and spins right in the browser, this site compressed it from about 44 MB to about 3 MB with Draco + WebP, keeping the geometry and textures intact." },
   'ref.iss3d.c': { zh: 'NASA（公有领域）；本站自托管压缩版（NASA 原始 glTF 的 CORS 仅放行自家域）。', en: "NASA (public domain); self-hosted compressed copy on this site (NASA's original glTF only allows CORS from its own domain)." },
@@ -214,6 +220,12 @@ window.I18N.register({
       <p class="credit" data-i18n="ref.mars.c">Viking MDIM21、MGS MOLA：NASA / USGS，经 CDS HiPS。</p>
       <a class="open" href="https://astrogeology.usgs.gov/" target="_blank" rel="noopener" data-i18n="ref.open">打开来源 →</a>
     </div>
+    <div class="src">
+      <h3 data-i18n="ref.globetex.t">可旋转行星球体贴图</h3>
+      <p data-i18n="ref.globetex.d">太阳系页行星画廊里点开就能拖着转的 3D 行星球，表面贴的是 Solar System Scope 制作的等距圆柱（equirectangular）全球贴图——本身基于各任务的真实测绘数据。冥王星只被新视野号飞掠过一面，未做球体，保留任务原片。</p>
+      <p class="credit" data-i18n="ref.globetex.c">贴图：Solar System Scope（CC BY 4.0）。</p>
+      <a class="open" href="https://www.solarsystemscope.com/textures/" target="_blank" rel="noopener" data-i18n="ref.open">打开来源 →</a>
+    </div>
   </section>
 
   <section class="group">
@@ -223,6 +235,12 @@ window.I18N.register({
       <p data-i18n="ref.mv.d">空间站页里可拖动旋转的三维模型由 Google 开源的 model-viewer 网页组件渲染。</p>
       <p class="credit" data-i18n="ref.mv.c">© Google（开源，Apache-2.0 许可）</p>
       <a class="open" href="https://modelviewer.dev/" target="_blank" rel="noopener" data-i18n="ref.open">打开来源 →</a>
+    </div>
+    <div class="src">
+      <h3 data-i18n="ref.threejs.t">Three.js</h3>
+      <p data-i18n="ref.threejs.d">太阳系页里可拖着转、带土星环的 3D 行星球，由开源 WebGL 库 Three.js 渲染（自托管）。</p>
+      <p class="credit" data-i18n="ref.threejs.c">© three.js authors（MIT 许可）</p>
+      <a class="open" href="https://threejs.org/" target="_blank" rel="noopener" data-i18n="ref.open">打开来源 →</a>
     </div>
     <div class="src">
       <h3 data-i18n="ref.iss3d.t">国际空间站三维模型</h3>

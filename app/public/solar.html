@@ -39,7 +39,7 @@ window.I18N.register({
   'solar.mars.mola': { zh: 'MOLA 高程', en: 'MOLA elevation' },
 
   'solar.gallery.h2': { zh: '行星画廊', en: 'Planet gallery' },
-  'solar.gallery.note': { zh: '每张都是任务原片，点开看大图。奥林帕斯山比珠峰高两倍半；土星那张是卡西尼躲进土星影子里回望拍下的。', en: "Every image is an original mission photo — click to enlarge. Olympus Mons is two and a half times the height of Everest; the Saturn shot was taken by Cassini looking back from inside Saturn's shadow." },
+  'solar.gallery.note': { zh: '点开任意一颗行星，用手指或鼠标把它转起来——360° 随你看。想看任务原片，球里点「看任务原片」。（冥王星只被新视野号飞掠过一面，保留原片。）', en: "Open any planet and spin it with your finger or mouse — a full 360° to explore. Want the original mission photo? Tap 'Mission photo' inside the globe. (New Horizons only saw one side of Pluto up close, so it stays a photo.)" },
   'solar.mercury.name': { zh: '水星', en: 'Mercury' },
   'solar.mercury.sub': { zh: '信使号全球拼图', en: 'MESSENGER global mosaic' },
   'solar.venus.name': { zh: '金星', en: 'Venus' },
@@ -54,9 +54,13 @@ window.I18N.register({
   'solar.neptune.sub': { zh: '旅行者 2 号最后的全貌照', en: "Voyager 2's last full portrait" },
   'solar.pluto.name': { zh: '冥王星', en: 'Pluto' },
   'solar.pluto.sub': { zh: '新视野号 · 心形平原', en: 'New Horizons · the heart-shaped plain' },
+  'solar.globe.hint': { zh: '拖动旋转 · 滚轮或双指缩放', en: 'Drag to rotate · scroll or pinch to zoom' },
+  'solar.globe.photo': { zh: '看任务原片', en: 'Mission photo' },
+  'solar.globe.close': { zh: '关闭', en: 'Close' },
+  'solar.globe.loading': { zh: '加载贴图…', en: 'Loading texture…' },
   'solar.lightboxAlt': { zh: '行星大图', en: 'Planet, enlarged' },
 
-  'solar.footer': { zh: '月球底图：NASA LROC WAC（CDS HiPS）、嫦娥二号 7 米 DOM（中国国家天文台 / China-VO）。火星底图：Viking MDIM21、MGS MOLA（NASA / USGS，经 CDS HiPS）。行星照片：NASA/JPL-Caltech 等任务原片（公有领域），点击大图可见任务信息。', en: 'Moon base maps: NASA LROC WAC (CDS HiPS), Chang’e-2 7 m DOM (National Astronomical Observatories of China / China-VO). Mars base maps: Viking MDIM21, MGS MOLA (NASA / USGS, via CDS HiPS). Planet photos: original mission imagery from NASA/JPL-Caltech and others (public domain); click any image for mission details.' },
+  'solar.footer': { zh: '月球底图：NASA LROC WAC（CDS HiPS）、嫦娥二号 7 米 DOM（中国国家天文台 / China-VO）。火星底图：Viking MDIM21、MGS MOLA（NASA / USGS，经 CDS HiPS）。行星照片：NASA/JPL-Caltech 等任务原片（公有领域），点击大图可见任务信息。可旋转行星球体贴图：Solar System Scope（CC BY 4.0）。', en: 'Moon base maps: NASA LROC WAC (CDS HiPS), Chang’e-2 7 m DOM (National Astronomical Observatories of China / China-VO). Mars base maps: Viking MDIM21, MGS MOLA (NASA / USGS, via CDS HiPS). Planet photos: original mission imagery from NASA/JPL-Caltech and others (public domain); click any image for mission details. Spinnable planet-globe textures: Solar System Scope (CC BY 4.0).' },
 })
 </script>
 <style>
@@ -124,6 +128,50 @@ window.I18N.register({
   .lightbox img { max-width: 92vw; max-height: 80vh; border-radius: 8px; }
   .lightbox .cap { color: var(--dim); font-size: 13px; }
   footer { color: var(--dim); font-size: 12px; margin-top: 44px; border-top: 1px solid var(--line); padding-top: 16px; }
+  .gallery figure { position: relative; }
+  .gallery figure.has-globe { cursor: grab; }
+  .globe-badge {
+    position: absolute; top: 8px; right: 8px; z-index: 2; pointer-events: none;
+    font-size: 10.5px; font-weight: 700; letter-spacing: 0.06em; color: var(--accent);
+    background: rgba(4,6,12,0.72); border: 1px solid rgba(157,184,255,0.5);
+    border-radius: 999px; padding: 3px 9px; backdrop-filter: blur(4px);
+  }
+  .globebox {
+    position: fixed; inset: 0; z-index: 60;
+    background: radial-gradient(ellipse at center, #0a1022 0%, #04060c 72%);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .globebox[hidden] { display: none; }
+  .globebox canvas { display: block; touch-action: none; cursor: grab; }
+  .globebox canvas:active { cursor: grabbing; }
+  .globe-ui {
+    position: absolute; left: 0; right: 0; bottom: 0; pointer-events: none;
+    display: flex; flex-direction: column; align-items: center; gap: 7px;
+    padding: 20px 16px 26px;
+    background: linear-gradient(to top, rgba(4,6,12,0.88), transparent);
+  }
+  .globe-cap { font-size: 16px; font-weight: 600; color: var(--text); text-align: center; }
+  .globe-cap .sub { color: var(--dim); font-weight: 400; font-size: 13px; }
+  .globe-hint { font-size: 12px; color: var(--dim); letter-spacing: 0.04em; }
+  .globe-actions { display: flex; gap: 10px; margin-top: 4px; pointer-events: auto; }
+  .globe-btn {
+    font: inherit; font-size: 13px; cursor: pointer; color: var(--accent);
+    background: rgba(157,184,255,0.1); border: 1px solid rgba(157,184,255,0.4);
+    border-radius: 999px; padding: 7px 18px;
+    transition: background 160ms ease, border-color 160ms ease;
+  }
+  .globe-btn:hover { background: rgba(157,184,255,0.2); border-color: rgba(157,184,255,0.7); }
+  .globe-close {
+    position: absolute; top: 16px; right: 18px; z-index: 2; pointer-events: auto;
+    width: 40px; height: 40px; border-radius: 999px; cursor: pointer; font-size: 20px; line-height: 1;
+    color: var(--text); background: rgba(11,16,28,0.7); border: 1px solid var(--line);
+  }
+  .globe-close:hover { border-color: var(--accent); }
+  .globe-loading {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+    color: var(--dim); font-size: 13px; letter-spacing: 0.08em;
+  }
+  .globe-loading[hidden] { display: none; }
   @media (max-width: 900px) { .viewer { height: 340px; } }
 </style>
 <script src="https://aladin.cds.unistra.fr/AladinLite/api/v3/latest/aladin.js" charset="utf-8"></script>
@@ -176,18 +224,31 @@ window.I18N.register({
   <h2 data-i18n="solar.gallery.h2">行星画廊</h2>
   <p class="note" data-i18n="solar.gallery.note">每张都是任务原片，点开看大图。奥林帕斯山比珠峰高两倍半；土星那张是卡西尼躲进土星影子里回望拍下的。</p>
   <div class="gallery" data-gallery>
-    <figure data-id="PIA15162"><img loading="lazy" src="https://images-assets.nasa.gov/image/PIA15162/PIA15162~medium.jpg" data-i18n-attr="alt:solar.mercury.name" alt="水星"><figcaption><span data-i18n="solar.mercury.name">水星</span><span class="sub" data-i18n="solar.mercury.sub">信使号全球拼图</span></figcaption></figure>
-    <figure data-id="PIA00104"><img loading="lazy" src="https://images-assets.nasa.gov/image/PIA00104/PIA00104~medium.jpg" data-i18n-attr="alt:solar.venus.name" alt="金星"><figcaption><span data-i18n="solar.venus.name">金星</span><span class="sub" data-i18n="solar.venus.sub">麦哲伦号雷达成像</span></figcaption></figure>
-    <figure data-id="PIA22946"><img loading="lazy" src="https://images-assets.nasa.gov/image/PIA22946/PIA22946~medium.jpg" data-i18n-attr="alt:solar.jupiter.name" alt="木星"><figcaption><span data-i18n="solar.jupiter.name">木星</span><span class="sub" data-i18n="solar.jupiter.sub">朱诺号「大理石木星」</span></figcaption></figure>
-    <figure data-id="PIA08329"><img loading="lazy" src="https://images-assets.nasa.gov/image/PIA08329/PIA08329~medium.jpg" data-i18n-attr="alt:solar.saturn.name" alt="土星"><figcaption><span data-i18n="solar.saturn.name">土星</span><span class="sub" data-i18n="solar.saturn.sub">卡西尼号 · 在土星的阴影里</span></figcaption></figure>
-    <figure data-id="PIA18182"><img loading="lazy" src="https://images-assets.nasa.gov/image/PIA18182/PIA18182~medium.jpg" data-i18n-attr="alt:solar.uranus.name" alt="天王星"><figcaption><span data-i18n="solar.uranus.name">天王星</span><span class="sub" data-i18n="solar.uranus.sub">旅行者 2 号 · 唯一到访者</span></figcaption></figure>
-    <figure data-id="PIA01492"><img loading="lazy" src="https://images-assets.nasa.gov/image/PIA01492/PIA01492~medium.jpg" data-i18n-attr="alt:solar.neptune.name" alt="海王星"><figcaption><span data-i18n="solar.neptune.name">海王星</span><span class="sub" data-i18n="solar.neptune.sub">旅行者 2 号最后的全貌照</span></figcaption></figure>
+    <figure class="has-globe" data-id="PIA15162" data-globe="textures/2k_mercury.jpg"><span class="globe-badge">360°</span><img loading="lazy" src="https://images-assets.nasa.gov/image/PIA15162/PIA15162~medium.jpg" data-i18n-attr="alt:solar.mercury.name" alt="水星"><figcaption><span data-i18n="solar.mercury.name">水星</span><span class="sub" data-i18n="solar.mercury.sub">信使号全球拼图</span></figcaption></figure>
+    <figure class="has-globe" data-id="PIA00104" data-globe="textures/2k_venus_surface.jpg"><span class="globe-badge">360°</span><img loading="lazy" src="https://images-assets.nasa.gov/image/PIA00104/PIA00104~medium.jpg" data-i18n-attr="alt:solar.venus.name" alt="金星"><figcaption><span data-i18n="solar.venus.name">金星</span><span class="sub" data-i18n="solar.venus.sub">麦哲伦号雷达成像</span></figcaption></figure>
+    <figure class="has-globe" data-id="PIA22946" data-globe="textures/2k_jupiter.jpg"><span class="globe-badge">360°</span><img loading="lazy" src="https://images-assets.nasa.gov/image/PIA22946/PIA22946~medium.jpg" data-i18n-attr="alt:solar.jupiter.name" alt="木星"><figcaption><span data-i18n="solar.jupiter.name">木星</span><span class="sub" data-i18n="solar.jupiter.sub">朱诺号「大理石木星」</span></figcaption></figure>
+    <figure class="has-globe" data-id="PIA08329" data-globe="textures/2k_saturn.jpg" data-ring="textures/2k_saturn_ring_alpha.png"><span class="globe-badge">360°</span><img loading="lazy" src="https://images-assets.nasa.gov/image/PIA08329/PIA08329~medium.jpg" data-i18n-attr="alt:solar.saturn.name" alt="土星"><figcaption><span data-i18n="solar.saturn.name">土星</span><span class="sub" data-i18n="solar.saturn.sub">卡西尼号 · 在土星的阴影里</span></figcaption></figure>
+    <figure class="has-globe" data-id="PIA18182" data-globe="textures/2k_uranus.jpg"><span class="globe-badge">360°</span><img loading="lazy" src="https://images-assets.nasa.gov/image/PIA18182/PIA18182~medium.jpg" data-i18n-attr="alt:solar.uranus.name" alt="天王星"><figcaption><span data-i18n="solar.uranus.name">天王星</span><span class="sub" data-i18n="solar.uranus.sub">旅行者 2 号 · 唯一到访者</span></figcaption></figure>
+    <figure class="has-globe" data-id="PIA01492" data-globe="textures/2k_neptune.jpg"><span class="globe-badge">360°</span><img loading="lazy" src="https://images-assets.nasa.gov/image/PIA01492/PIA01492~medium.jpg" data-i18n-attr="alt:solar.neptune.name" alt="海王星"><figcaption><span data-i18n="solar.neptune.name">海王星</span><span class="sub" data-i18n="solar.neptune.sub">旅行者 2 号最后的全貌照</span></figcaption></figure>
     <figure data-id="PIA19952"><img loading="lazy" src="https://images-assets.nasa.gov/image/PIA19952/PIA19952~medium.jpg" data-i18n-attr="alt:solar.pluto.name" alt="冥王星"><figcaption><span data-i18n="solar.pluto.name">冥王星</span><span class="sub" data-i18n="solar.pluto.sub">新视野号 · 心形平原</span></figcaption></figure>
   </div>
 
   <div class="lightbox" data-lightbox hidden>
     <img data-lightbox-img data-i18n-attr="alt:solar.lightboxAlt" alt="行星大图">
     <div class="cap" data-lightbox-cap></div>
+  </div>
+
+  <div class="globebox" data-globebox hidden>
+    <canvas data-globe-canvas></canvas>
+    <button class="globe-close" type="button" data-globe-close aria-label="Close">×</button>
+    <div class="globe-loading" data-globe-loading data-i18n="solar.globe.loading">加载贴图…</div>
+    <div class="globe-ui">
+      <div class="globe-cap" data-globe-cap></div>
+      <div class="globe-hint" data-i18n="solar.globe.hint">拖动旋转 · 滚轮或双指缩放</div>
+      <div class="globe-actions">
+        <button class="globe-btn" type="button" data-globe-photo data-i18n="solar.globe.photo">看任务原片</button>
+      </div>
+    </div>
   </div>
 
   <footer data-i18n="solar.footer">
@@ -234,22 +295,151 @@ window.I18N.register({
     }
   })
 
+  // ---------- mission-photo lightbox ----------
   const lightbox = document.querySelector('[data-lightbox]')
   const lightboxImg = document.querySelector('[data-lightbox-img]')
   const lightboxCap = document.querySelector('[data-lightbox-cap]')
-  for (const fig of document.querySelectorAll('[data-gallery] figure')) {
-    fig.addEventListener('click', () => {
-      const id = fig.dataset.id
-      lightboxImg.src = `https://images-assets.nasa.gov/image/${id}/${id}~large.jpg`
-      lightboxImg.onerror = () => { lightboxImg.onerror = null; lightboxImg.src = `https://images-assets.nasa.gov/image/${id}/${id}~medium.jpg` }
-      const name = fig.querySelector('figcaption span').textContent
-      const sub = fig.querySelector('figcaption .sub').textContent
-      lightboxCap.textContent = `${name} · ${sub} · NASA/JPL-Caltech`
-      lightbox.hidden = false
-    })
+  function openPhoto(fig) {
+    const id = fig.dataset.id
+    lightboxImg.src = `https://images-assets.nasa.gov/image/${id}/${id}~large.jpg`
+    lightboxImg.onerror = () => { lightboxImg.onerror = null; lightboxImg.src = `https://images-assets.nasa.gov/image/${id}/${id}~medium.jpg` }
+    const name = fig.querySelector('figcaption span').textContent
+    const sub = fig.querySelector('figcaption .sub').textContent
+    lightboxCap.textContent = `${name} · ${sub} · NASA/JPL-Caltech`
+    lightbox.hidden = false
   }
-  lightbox.addEventListener('click', () => { lightbox.hidden = true; lightboxImg.src = '' })
-  window.addEventListener('keydown', (e) => { if (e.key === 'Escape') { lightbox.hidden = true; lightboxImg.src = '' } })
+  function closePhoto() { lightbox.hidden = true; lightboxImg.src = '' }
+  lightbox.addEventListener('click', closePhoto)
+
+  // ---------- spinnable 3D globe (Three.js, lazy-loaded on first open) ----------
+  const globebox = document.querySelector('[data-globebox]')
+  const canvas = document.querySelector('[data-globe-canvas]')
+  const globeCap = document.querySelector('[data-globe-cap]')
+  const globeLoading = document.querySelector('[data-globe-loading]')
+  let three = null
+  let currentFig = null
+  let threeReady = null
+
+  function ensureThree() {
+    if (threeReady) return threeReady
+    const load = (src) => new Promise((res, rej) => {
+      const s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = rej
+      document.head.appendChild(s)
+    })
+    threeReady = load('vendor/three.min.js').then(() => load('vendor/OrbitControls.js'))
+    return threeReady
+  }
+
+  function buildScene() {
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true })
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+    renderer.outputEncoding = THREE.sRGBEncoding
+    const scene = new THREE.Scene()
+    const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 100)
+    camera.position.set(0, 0, 3.2)
+    scene.add(camera)
+    scene.add(new THREE.AmbientLight(0xffffff, 0.42))
+    const headlight = new THREE.DirectionalLight(0xffffff, 0.95)
+    headlight.position.set(0.4, 0.3, 1)   // fixed relative to camera → facing side always lit
+    camera.add(headlight)
+    const tilt = new THREE.Group(); scene.add(tilt)
+    const sphere = new THREE.Mesh(
+      new THREE.SphereGeometry(1, 64, 48),
+      new THREE.MeshStandardMaterial({ roughness: 1, metalness: 0 })
+    )
+    sphere.visible = false
+    tilt.add(sphere)
+    const controls = new THREE.OrbitControls(camera, renderer.domElement)
+    controls.enablePan = false
+    controls.enableDamping = true; controls.dampingFactor = 0.09; controls.rotateSpeed = 0.5
+    controls.minDistance = 1.5; controls.maxDistance = 6
+    controls.autoRotate = true; controls.autoRotateSpeed = 0.55
+    three = { renderer, scene, camera, controls, sphere, tilt, ringMesh: null, texCache: {}, raf: 0, loader: new THREE.TextureLoader() }
+  }
+
+  function makeRing(tex) {
+    const inner = 1.28, outer = 2.28
+    const geo = new THREE.RingGeometry(inner, outer, 128)
+    const pos = geo.attributes.position, uv = geo.attributes.uv, v = new THREE.Vector3()
+    for (let i = 0; i < pos.count; i++) {   // remap UVs so the 1-D ring strip runs inner→outer
+      v.fromBufferAttribute(pos, i)
+      uv.setXY(i, (v.length() - inner) / (outer - inner), 0.5)
+    }
+    tex.encoding = THREE.sRGBEncoding
+    const mesh = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ map: tex, transparent: true, side: THREE.DoubleSide, opacity: 0.92, depthWrite: false }))
+    mesh.rotation.x = Math.PI / 2
+    return mesh
+  }
+
+  function resize() {
+    if (!three) return
+    const size = Math.min(window.innerWidth * 0.92, window.innerHeight * 0.82, 720)
+    three.renderer.setSize(size, size)
+    three.camera.aspect = 1; three.camera.updateProjectionMatrix()
+  }
+
+  function tick() {
+    three.raf = requestAnimationFrame(tick)
+    three.controls.update()
+    three.renderer.render(three.scene, three.camera)
+  }
+
+  async function openGlobe(fig) {
+    currentFig = fig
+    const name = fig.querySelector('figcaption span').textContent
+    const sub = fig.querySelector('figcaption .sub').textContent
+    globeCap.innerHTML = `${name}<span class="sub"> · ${sub}</span>`
+    globebox.hidden = false
+    globeLoading.hidden = false; globeLoading.textContent = window.I18N.t('solar.globe.loading')
+    await ensureThree()
+    if (!three) buildScene()
+    resize()
+    three.camera.position.set(0, 0, 3.2); three.controls.target.set(0, 0, 0)
+    three.controls.autoRotate = true; three.controls.update()
+    three.sphere.visible = false
+    const isSaturn = !!fig.dataset.ring
+    // Tilt around X opens the ring plane toward the camera (a proper ellipse, not edge-on);
+    // a little Z keeps it from lying dead-horizontal. Other planets get a gentle lean.
+    three.tilt.rotation.set(THREE.MathUtils.degToRad(isSaturn ? 26.7 : 10), 0, THREE.MathUtils.degToRad(isSaturn ? 6 : 0))
+    if (three.ringMesh) three.ringMesh.visible = false
+    if (isSaturn) {
+      const rurl = fig.dataset.ring
+      const showRing = (rtex) => {
+        if (!three.ringMesh) { three.ringMesh = makeRing(rtex); three.tilt.add(three.ringMesh) }
+        three.ringMesh.visible = true
+      }
+      if (three.texCache[rurl]) showRing(three.texCache[rurl])
+      else three.loader.load(rurl, (t) => { three.texCache[rurl] = t; showRing(t) })
+    }
+    const url = fig.dataset.globe
+    const applyTex = (tex) => {
+      tex.encoding = THREE.sRGBEncoding
+      three.sphere.material.map = tex; three.sphere.material.needsUpdate = true
+      three.sphere.visible = true; globeLoading.hidden = true
+    }
+    if (three.texCache[url]) applyTex(three.texCache[url])
+    else three.loader.load(url, (t) => { three.texCache[url] = t; applyTex(t) }, undefined, () => { globeLoading.textContent = '⚠︎' })
+    if (!three.raf) tick()
+  }
+
+  function closeGlobe() {
+    globebox.hidden = true
+    if (three && three.raf) { cancelAnimationFrame(three.raf); three.raf = 0 }
+  }
+
+  // gallery routing: globe-enabled figures spin in 3D; Pluto (photo-only) opens the flat photo
+  for (const fig of document.querySelectorAll('[data-gallery] figure')) {
+    fig.addEventListener('click', () => { fig.dataset.globe ? openGlobe(fig) : openPhoto(fig) })
+  }
+  document.querySelector('[data-globe-close]').addEventListener('click', closeGlobe)
+  document.querySelector('[data-globe-photo]').addEventListener('click', () => { if (currentFig) { closeGlobe(); openPhoto(currentFig) } })
+  globebox.addEventListener('click', (e) => { if (e.target === globebox) closeGlobe() })
+  window.addEventListener('resize', resize)
+  window.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape') return
+    if (!globebox.hidden) closeGlobe()
+    else if (!lightbox.hidden) closePhoto()
+  })
 </script>
 </body>
 </html>
