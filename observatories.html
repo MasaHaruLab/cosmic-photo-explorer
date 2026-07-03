@@ -3,7 +3,115 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>观星台 · 星空照片探索器</title>
+<title data-i18n="obs.pageTitle">观星台 · 星空照片探索器</title>
+<script src="/i18n.js"></script>
+<script>
+// Page dictionary — every translatable string as a { zh, en } pair. Registered
+// during head parse, before i18n.js boots on DOMContentLoaded. English is
+// human-written (see TRANSLATION-GUIDE.md), not machine-translated.
+window.I18N.register({
+  'obs.pageTitle': { zh: '观星台 · 星空照片探索器', en: 'Observatories · Cosmic Photo Explorer' },
+  'obs.eyebrow': { zh: '解释层 / 地面上的眼睛', en: 'Explainer / Eyes on the ground' },
+  'obs.title': { zh: '观星台：那些正在替我们看宇宙的地方', en: 'Observatories: the places watching the universe for us' },
+  'obs.lede': { zh: '你在探索器里看到的每一张照片、每一颗被测量的星，背后都有一座真实存在的天文台。它们大多有非常好的官网——只是我们从来不知道它们的存在。', en: "Every photo you see in the explorer, every star that's been measured, has a real observatory behind it. Most of them have excellent websites — we just never knew they existed." },
+  'nav.home': { zh: '← 回到星空探索器', en: '← Back to the Explorer' },
+  'nav.solar': { zh: '太阳系 →', en: 'Solar System →' },
+  'nav.stations': { zh: '空间站 →', en: 'Space Stations →' },
+  'nav.reference': { zh: '来源 →', en: 'Sources →' },
+  'obs.visit': { zh: '打开官网 →', en: 'Open site →' },
+  'obs.news': { zh: '最新动态', en: 'Latest news' },
+  'obs.gallery': { zh: '图片库', en: 'Image gallery' },
+  'obs.contest': { zh: '摄影大赛', en: 'Photo contest' },
+
+  'obs.rubin.alt': { zh: 'Vera C. Rubin 天文台', en: 'Vera C. Rubin Observatory' },
+  'obs.rubin.credit': { zh: '图：NSF–DOE Vera C. Rubin Observatory / NOIRLab（CC BY 4.0）', en: 'Image: NSF–DOE Vera C. Rubin Observatory / NOIRLab (CC BY 4.0)' },
+  'obs.rubin.h2': { zh: '薇拉·鲁宾天文台 Vera C. Rubin Observatory', en: 'Vera C. Rubin Observatory' },
+  'obs.rubin.meta': { zh: '智利 · 帕琼山 · 美国国家科学基金会 & 能源部', en: 'Chile · Cerro Pachón · US NSF & Dept. of Energy' },
+  'obs.rubin.body': { zh: '就在 2026 年 6 月 30 日——两天前——它正式启动了为期十年的 LSST 巡天：用全世界最大的数码相机（32 亿像素）每隔约 40 秒拍一张深空照片，十年内把整个南天扫描数百遍，等于给宇宙拍一部超长电影。', en: 'On 30 June 2026 — just days ago — it began its ten-year LSST survey: using the largest digital camera on Earth (3.2 gigapixels) to take a deep-sky photo roughly every 40 seconds, scanning the entire southern sky hundreds of times over a decade — in effect filming an ultra-long movie of the universe.' },
+  'obs.rubin.hook': { zh: '为什么值得盯着它：未来十年天文学的大新闻，很大概率从这里出来。', en: "Why keep an eye on it: over the next decade, a large share of astronomy's big news will likely break here." },
+
+  'obs.vlt.alt': { zh: 'ESO 甚大望远镜', en: 'ESO Very Large Telescope' },
+  'obs.vlt.credit': { zh: '图：ESO（CC BY 4.0）', en: 'Image: ESO (CC BY 4.0)' },
+  'obs.vlt.h2': { zh: '甚大望远镜 VLT · 帕瑞纳天文台', en: 'Very Large Telescope (VLT) · Paranal Observatory' },
+  'obs.vlt.meta': { zh: '智利 · 阿塔卡马沙漠 · 欧洲南方天文台（ESO）', en: 'Chile · Atacama Desert · European Southern Observatory (ESO)' },
+  'obs.vlt.body': { zh: '四台 8.2 米望远镜并排立在沙漠山顶，可以各自观测，也可以联合成干涉仪。照片里射向天空的橙色激光是人造导星——在高层大气里点一颗“假星”，用来实时校正大气抖动，让地面望远镜拍出接近太空的清晰度。', en: "Four 8.2-metre telescopes stand side by side on a desert summit; they can observe on their own or combine into an interferometer. The orange laser shooting skyward in the photo is an artificial guide star — it lights a 'fake star' high in the atmosphere to correct atmospheric turbulence in real time, letting a ground telescope reach near-space sharpness." },
+  'obs.vlt.hook': { zh: '为什么值得知道：人类第一张系外行星的直接影像、银心黑洞周围恒星的轨道测量，都有它的份。ESO 官网的图片库是天文摄影的宝库，绝大多数图都可以自由使用。', en: "Why it matters: the first direct image of an exoplanet, and the orbital measurements of stars around the Milky Way's central black hole, both owe something to it. ESO's online image library is a treasure trove of astrophotography, almost all of it free to use." },
+
+  'obs.alma.alt': { zh: 'ALMA 天线阵与银河', en: 'The ALMA antenna array beneath the Milky Way' },
+  'obs.alma.credit': { zh: '图：ESO / B. Tafreshi（CC BY 4.0）', en: 'Image: ESO / B. Tafreshi (CC BY 4.0)' },
+  'obs.alma.h2': { zh: '阿塔卡马大型毫米波阵 ALMA', en: 'Atacama Large Millimeter Array (ALMA)' },
+  'obs.alma.meta': { zh: '智利 · 查南托高原（海拔约 5000 米）· 国际合作', en: 'Chile · Chajnantor Plateau (~5,000 m) · international collaboration' },
+  'obs.alma.body': { zh: '66 面天线在世界上最干燥的高原上组成一台“化整为零”的望远镜。它看的不是可见光，而是毫米波——尘埃云挡得住星光，挡不住毫米波，所以它专门负责看恒星和行星正在诞生的地方。', en: "Sixty-six antennas on the driest plateau on Earth act as one 'divide-and-conquer' telescope. It sees not visible light but millimetre waves — dust clouds block starlight but not millimetre waves, so its job is to watch the places where stars and planets are being born." },
+  'obs.alma.hook': { zh: '为什么值得知道：那张著名的“原行星盘同心圆沟槽”照片（正在成形的太阳系）就是它拍的。', en: 'Why it matters: that famous photo of concentric grooves in a protoplanetary disk — a solar system in the making — was taken here.' },
+
+  'obs.fast.alt': { zh: 'FAST 500 米口径球面射电望远镜航拍', en: 'Aerial view of FAST, the 500-metre spherical radio telescope' },
+  'obs.fast.credit': { zh: '图：SCJiang，Wikimedia Commons（CC BY-SA 4.0）', en: 'Image: SCJiang, Wikimedia Commons (CC BY-SA 4.0)' },
+  'obs.fast.h2': { zh: '中国天眼 FAST', en: "FAST — the 'China Sky Eye'" },
+  'obs.fast.meta': { zh: '中国 · 贵州平塘 · 中国科学院国家天文台', en: 'China · Pingtang, Guizhou · National Astronomical Observatories, CAS' },
+  'obs.fast.body': { zh: '口径 500 米、挂在喀斯特洼地里的全球最大单口径射电望远镜。它不拍照片，而是“听”宇宙的无线电——尤其擅长找脉冲星：恒星死亡后留下的、以毫秒级精度旋转的致密残骸，可以当宇宙里的时钟用。', en: "At 500 metres across and set into a karst sinkhole, it is the largest single-dish radio telescope in the world. It doesn't take pictures — it 'listens' to the universe's radio waves, and it excels at finding pulsars: dense stellar remnants left after a star's death that spin with millisecond precision, usable as clocks scattered across the cosmos." },
+  'obs.fast.hook': { zh: '为什么值得知道：它已经发现了上千颗新脉冲星，是这个领域最高产的设备。', en: 'Why it matters: it has already discovered over a thousand new pulsars — the most prolific instrument in the field.' },
+
+  'obs.keck.alt': { zh: '凯克天文台双圆顶', en: 'The twin domes of Keck Observatory' },
+  'obs.keck.credit': { zh: '图：NASA/JPL-Caltech（公有领域）', en: 'Image: NASA/JPL-Caltech (public domain)' },
+  'obs.keck.h2': { zh: '凯克天文台 W. M. Keck Observatory', en: 'W. M. Keck Observatory' },
+  'obs.keck.meta': { zh: '美国 · 夏威夷冒纳凯亚火山（海拔约 4200 米）', en: "USA · Mauna Kea, Hawai'i (~4,200 m)" },
+  'obs.keck.body': { zh: '两台 10 米望远镜，主镜由 36 块六边形镜片拼成——这个“分段镜”方案当年是豪赌，如今成了所有超大望远镜（包括韦布空间望远镜）的标准做法。', en: "Two 10-metre telescopes, each primary mirror built from 36 hexagonal segments — a 'segmented mirror' gamble at the time that has since become the standard for every giant telescope, the Webb Space Telescope included." },
+  'obs.keck.hook': { zh: '为什么值得知道：银河系中心黑洞的诺贝尔奖级观测，一半功劳在这里。', en: "Why it matters: half the credit for the Nobel-winning observations of the Milky Way's central black hole belongs here." },
+
+  'obs.subaru.alt': { zh: '昴星团望远镜圆顶', en: 'The dome of the Subaru Telescope' },
+  'obs.subaru.credit': { zh: '图：International Gemini Observatory / NOIRLab / NSF / AURA（CC BY 4.0）', en: 'Image: International Gemini Observatory / NOIRLab / NSF / AURA (CC BY 4.0)' },
+  'obs.subaru.h2': { zh: '昴星团望远镜 Subaru Telescope', en: 'Subaru Telescope' },
+  'obs.subaru.meta': { zh: '美国 · 夏威夷冒纳凯亚 · 日本国立天文台', en: "USA · Mauna Kea, Hawai'i · National Astronomical Observatory of Japan" },
+  'obs.subaru.body': { zh: '8.2 米的单块主镜，名字就来自你在探索器里能拉近的昴星团（M45）。它的超广视场相机特别擅长一次拍下大片天区，是研究宇宙大尺度结构的主力。', en: "A single 8.2-metre primary mirror, named after the very Pleiades (M45) you can zoom into in the explorer — 'Subaru' is the Japanese name for that cluster. Its ultra-wide-field camera excels at capturing large swaths of sky at once, a workhorse for studying the large-scale structure of the universe." },
+  'obs.subaru.hook': { zh: '为什么值得知道：官网有中文之外少见的细致科普（日/英双语），器材控会看得很开心。', en: 'Why it matters: its site offers unusually thorough popular science (in Japanese and English) — gear enthusiasts will love it.' },
+
+  'obs.palomar.alt': { zh: '帕洛马天文台海尔望远镜圆顶', en: 'The dome of the Hale Telescope at Palomar Observatory' },
+  'obs.palomar.credit': { zh: '图：NASA/JPL-Caltech（公有领域）', en: 'Image: NASA/JPL-Caltech (public domain)' },
+  'obs.palomar.h2': { zh: '帕洛马天文台 Palomar Observatory', en: 'Palomar Observatory' },
+  'obs.palomar.meta': { zh: '美国 · 加州 · 加州理工学院', en: 'USA · California · Caltech' },
+  'obs.palomar.body': { zh: '1948 年建成的 5 米海尔望远镜，在之后将近半个世纪里都是世界最大的光学望远镜。你在探索器近景里看到的 DSS2 巡天照片，很大一部分就来自帕洛马的巡天底片——你其实一直在看它的作品。', en: "The 5-metre Hale Telescope, completed in 1948, remained the largest optical telescope in the world for nearly half a century. Much of the DSS2 survey imagery you see in the explorer's close-ups comes from Palomar's survey plates — you've been looking at its work all along." },
+  'obs.palomar.hook': { zh: '为什么值得知道：类星体、棕矮星这些名词，都是在这里第一次变成“看到的东西”。', en: "Why it matters: quasars and brown dwarfs first became 'things we could see' right here." },
+
+  'obs.greenwich.alt': { zh: '弗拉姆斯蒂德宫与格林威治报时球', en: 'Flamsteed House and the Greenwich time ball' },
+  'obs.greenwich.credit': { zh: '图：Acabashi，Wikimedia Commons（CC BY-SA 4.0）', en: 'Image: Acabashi, Wikimedia Commons (CC BY-SA 4.0)' },
+  'obs.greenwich.h2': { zh: '格林威治皇家天文台 Royal Observatory Greenwich', en: 'Royal Observatory Greenwich' },
+  'obs.greenwich.meta': { zh: '英国 · 伦敦 · 1675 年创立', en: 'UK · London · founded 1675' },
+  'obs.greenwich.body': { zh: '本初子午线（经度 0°）就从它的院子里穿过。它早已不做前沿观测，但全世界的时间和经度都曾以它为准——今天你手机里的时区系统，源头就在这座小山上。', en: "The Prime Meridian (0° longitude) runs right through its courtyard. It stopped doing frontline observation long ago, yet the world's time and longitude were once set by it — the time-zone system in your phone traces back to this small hill." },
+  'obs.greenwich.hook': { zh: '为什么值得知道：每年的“年度天文摄影师”大赛由它主办，获奖图库美得惊人。', en: 'Why it matters: it hosts the annual Astronomy Photographer of the Year competition, whose winning gallery is stunning.' },
+
+  'obs.eyebrow2': { zh: '太空里的眼睛', en: 'Eyes in space' },
+  'obs.title2': { zh: '大气层之上，还有一支舰队', en: 'Above the atmosphere, a fleet of its own' },
+  'obs.lede2': { zh: '地面望远镜隔着大气看宇宙，这几台干脆飞了上去。你在探索器里点开的每一颗星，背后都有它们的份。', en: 'Ground telescopes peer at the universe through the atmosphere; these ones simply flew above it. Every star you open in the explorer owes something to them.' },
+
+  'obs.gaia.alt': { zh: 'Gaia 卫星艺术想象图', en: "Artist's impression of the Gaia satellite" },
+  'obs.gaia.credit': { zh: '图：ESA / ATG medialab；背景 ESO / S. Brunier（CC BY 4.0）', en: 'Image: ESA / ATG medialab; background ESO / S. Brunier (CC BY 4.0)' },
+  'obs.gaia.h2': { zh: '盖亚 Gaia', en: 'Gaia' },
+  'obs.gaia.meta': { zh: '欧洲空间局 · 日地拉格朗日 L2 点 · 2013–2025', en: 'European Space Agency · Sun–Earth L2 point · 2013–2025' },
+  'obs.gaia.body': { zh: '这个网站的主底图就是它画的。它在轨十一年，把十几亿颗恒星的位置、距离和运动测到了前所未有的精度——等于给银河系拍了第一张真正的三维证件照。卫星本尊已于 2025 年 3 月光荣退役，但它的遗产还在增值：完整版星表 DR4 将于 2026 年 12 月 2 日发布，天文学家已经排好队了。', en: 'The base map of this entire site is its work. Over eleven years in orbit it measured the positions, distances and motions of well over a billion stars to unprecedented precision — the first true three-dimensional ID photo of the Milky Way. The satellite itself was honourably retired in March 2025, but its legacy keeps compounding: the full DR4 catalogue arrives on 2 December 2026, and astronomers are already queuing up.' },
+  'obs.gaia.hook': { zh: '为什么值得知道：你在探索器总览里看到的每一粒光点，都是它认真量过的一颗星。', en: 'Why it matters: every speck of light in the explorer overview is a star it carefully measured.' },
+
+  'obs.hubble.alt': { zh: '哈勃空间望远镜在轨照片', en: 'The Hubble Space Telescope in orbit' },
+  'obs.hubble.credit': { zh: '图：NASA（公有领域，2009 年航天飞机维修任务实拍）', en: 'Image: NASA (public domain, taken during the 2009 shuttle servicing mission)' },
+  'obs.hubble.h2': { zh: '哈勃空间望远镜 Hubble', en: 'Hubble Space Telescope' },
+  'obs.hubble.meta': { zh: 'NASA / ESA · 近地轨道 · 1990 年至今', en: 'NASA / ESA · low Earth orbit · 1990–present' },
+  'obs.hubble.body': { zh: '在轨三十多年，人类对宇宙的想象有一大半是它给的：深空场里数千个星系挤在一小块黑天里、创生之柱、超新星测出的宇宙加速膨胀。它每 95 分钟绕地球一圈——所以它没法被钉在我们的天图上，它看哪儿全凭排班表。', en: "In more than thirty years aloft, it has given us over half of what we picture when we imagine the universe: thousands of galaxies crowded into a tiny patch of black sky in the Deep Field, the Pillars of Creation, the accelerating expansion of the cosmos measured from supernovae. It circles Earth every 95 minutes — so it can't be pinned to our sky map; what it looks at is entirely up to its schedule." },
+  'obs.hubble.hook': { zh: '为什么值得知道：它证明了一件事——把望远镜送出大气层，值回所有代价。', en: 'Why it matters: it proved one thing — putting a telescope above the atmosphere is worth every cost.' },
+
+  'obs.jwst.alt': { zh: '韦布空间望远镜艺术图', en: "Artist's rendering of the Webb Space Telescope" },
+  'obs.jwst.credit': { zh: '图：NASA（CC BY 2.0，艺术想象图）', en: "Image: NASA (CC BY 2.0, artist's impression)" },
+  'obs.jwst.h2': { zh: '韦布空间望远镜 JWST', en: 'James Webb Space Telescope (JWST)' },
+  'obs.jwst.meta': { zh: 'NASA / ESA / CSA · 日地拉格朗日 L2 点 · 2021 年至今', en: 'NASA / ESA / CSA · Sun–Earth L2 point · 2021–present' },
+  'obs.jwst.body': { zh: '哈勃的继任者，一面 6.5 米的金色蜂巢镜，专看红外——宇宙最早的星光飞了一百多亿年，早被拉伸成红外线，只有它接得住。它和 Gaia 曾是 L2 点的邻居，都躲在地球影子附近那片又冷又安静的太空里工作。', en: "Hubble's successor, a 6.5-metre golden honeycomb mirror built to see infrared — the earliest starlight in the universe has travelled for over thirteen billion years and been stretched into infrared, and only Webb can catch it. It and Gaia were once neighbours at L2, both working in that cold, quiet patch of space near Earth's shadow." },
+  'obs.jwst.hook': { zh: '为什么值得知道：现在新闻里“史上最远星系”的纪录，基本都是它刷新的。', en: "Why it matters: nearly every 'most distant galaxy ever' record in the news these days is one it set." },
+
+  'obs.dampe.h2': { zh: '悟空号 DAMPE 暗物质粒子探测卫星', en: 'Wukong (DAMPE) — Dark Matter Particle Explorer' },
+  'obs.dampe.meta': { zh: '中国科学院紫金山天文台 · 太阳同步轨道 · 2015 年至今', en: 'Purple Mountain Observatory, CAS · Sun-synchronous orbit · 2015–present' },
+  'obs.dampe.body': { zh: '齐天大圣真的在天上：它 2015 年底出发，本来设计寿命三年，结果一干就是十年多，记录了约 185 亿个高能粒子。它不拍照片——它是一台在轨道上的粒子秤，专门称宇宙射线和暗物质可能留下的蛛丝马迹。2026 年 4 月它的最新成果刚上《自然》：发现了宇宙射线加速能量极限的电荷依赖规律。', en: "The Monkey King really is up in the sky: launched at the end of 2015 with a three-year design life, it has now worked for over a decade and logged some 18.5 billion high-energy particles. It takes no pictures — it's a particle scale in orbit, weighing cosmic rays and the faint traces dark matter might leave behind. In April 2026 its latest result reached Nature: a charge-dependent pattern in the energy limit to which cosmic rays are accelerated." },
+  'obs.dampe.hook': { zh: '为什么值得知道：找暗物质这件事上，它是目前人类派出去的主力选手之一，而且严重超期服役、状态良好。', en: "Why it matters: in the hunt for dark matter it's one of humanity's frontline players right now — badly overdue for retirement, and still going strong." },
+
+  'obs.footer': { zh: '图片来源：ESO、NSF–DOE Vera C. Rubin Observatory / NOIRLab、International Gemini Observatory / NOIRLab / NSF / AURA、ESA/ATG medialab（CC BY 4.0）；SCJiang、Acabashi 摄，来自 Wikimedia Commons（CC BY-SA 4.0）；NASA（公有领域及 CC BY 2.0）；NASA/JPL-Caltech（公有领域）。均已按授权要求署名。介绍文字为本项目原创整理，事实核对至 2026 年 7 月。', en: 'Image credits: ESO; NSF–DOE Vera C. Rubin Observatory / NOIRLab; International Gemini Observatory / NOIRLab / NSF / AURA; ESA/ATG medialab (CC BY 4.0); photos by SCJiang and Acabashi via Wikimedia Commons (CC BY-SA 4.0); NASA (public domain and CC BY 2.0); NASA/JPL-Caltech (public domain). All attributed as required by license. Descriptive text is this project’s original writing, fact-checked to July 2026.' },
+})
+</script>
 <style>
   :root {
     --bg: #04060c;
@@ -22,12 +130,21 @@
   .eyebrow { font-size: 12px; letter-spacing: 0.18em; color: var(--dim); }
   h1 { margin: 6px 0 10px; font-size: 30px; letter-spacing: 0.02em; }
   .lede { color: var(--dim); max-width: 620px; margin: 0 0 14px; }
+  .navbar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 10px 0 34px; }
   .back {
-    display: inline-block; margin: 10px 0 34px; color: var(--accent);
+    display: inline-block; color: var(--accent);
     text-decoration: none; border: 1px solid var(--line); border-radius: 999px;
     padding: 6px 16px; font-size: 13px;
   }
   .back:hover { border-color: var(--accent); }
+  .lang-toggle {
+    margin-left: auto; cursor: pointer; font: inherit; font-size: 13px; font-weight: 600;
+    letter-spacing: 0.04em; min-width: 50px; text-align: center;
+    color: var(--accent); background: rgba(157, 184, 255, 0.08);
+    border: 1px solid rgba(157, 184, 255, 0.4); border-radius: 999px; padding: 6px 16px;
+    transition: background 180ms ease, border-color 180ms ease;
+  }
+  .lang-toggle:hover { background: rgba(157, 184, 255, 0.16); border-color: rgba(157, 184, 255, 0.65); }
   .card {
     background: var(--panel); border: 1px solid var(--line); border-radius: 14px;
     overflow: hidden; margin-bottom: 26px;
@@ -55,168 +172,172 @@
 </head>
 <body>
 <div class="wrap">
-  <div class="eyebrow">解释层 / 地面上的眼睛</div>
-  <h1>观星台：那些正在替我们看宇宙的地方</h1>
-  <p class="lede">你在探索器里看到的每一张照片、每一颗被测量的星，背后都有一座真实存在的天文台。它们大多有非常好的官网——只是我们从来不知道它们的存在。</p>
-  <a class="back" href="./">← 回到星空探索器</a>
-  <a class="back" href="solar.html">太阳系 →</a>
-  <a class="back" href="stations.html">空间站 →</a>
+  <div class="eyebrow" data-i18n="obs.eyebrow">解释层 / 地面上的眼睛</div>
+  <h1 data-i18n="obs.title">观星台：那些正在替我们看宇宙的地方</h1>
+  <p class="lede" data-i18n="obs.lede">你在探索器里看到的每一张照片、每一颗被测量的星，背后都有一座真实存在的天文台。它们大多有非常好的官网——只是我们从来不知道它们的存在。</p>
+  <nav class="navbar">
+    <a class="back" href="./" data-i18n="nav.home">← 回到星空探索器</a>
+    <a class="back" href="solar.html" data-i18n="nav.solar">太阳系 →</a>
+    <a class="back" href="stations.html" data-i18n="nav.stations">空间站 →</a>
+    <a class="back" href="reference.html" data-i18n="nav.reference">来源 →</a>
+    <button class="lang-toggle" type="button" data-lang-toggle>EN</button>
+  </nav>
 
   <div class="card">
-    <img src="observatories/rubin.jpg" alt="Vera C. Rubin 天文台">
-    <div class="credit">图：NSF–DOE Vera C. Rubin Observatory / NOIRLab（CC BY 4.0）</div>
+    <img src="observatories/rubin.jpg" data-i18n-attr="alt:obs.rubin.alt" alt="Vera C. Rubin 天文台">
+    <div class="credit" data-i18n="obs.rubin.credit">图：NSF–DOE Vera C. Rubin Observatory / NOIRLab（CC BY 4.0）</div>
     <div class="body">
-      <h2>薇拉·鲁宾天文台 Vera C. Rubin Observatory</h2>
-      <div class="meta">智利 · 帕琼山 · 美国国家科学基金会 &amp; 能源部</div>
-      <p>就在 2026 年 6 月 30 日——两天前——它正式启动了为期十年的 LSST 巡天：用全世界最大的数码相机（32 亿像素）每隔约 40 秒拍一张深空照片，十年内把整个南天扫描数百遍，等于给宇宙拍一部超长电影。</p>
-      <p class="hook">为什么值得盯着它：未来十年天文学的大新闻，很大概率从这里出来。</p>
-      <a class="visit" href="https://rubinobservatory.org/" target="_blank" rel="noopener">打开官网 →</a>
-      <a class="visit2" href="https://rubinobservatory.org/news" target="_blank" rel="noopener">最新动态</a>
+      <h2 data-i18n="obs.rubin.h2">薇拉·鲁宾天文台 Vera C. Rubin Observatory</h2>
+      <div class="meta" data-i18n="obs.rubin.meta">智利 · 帕琼山 · 美国国家科学基金会 &amp; 能源部</div>
+      <p data-i18n="obs.rubin.body">就在 2026 年 6 月 30 日——两天前——它正式启动了为期十年的 LSST 巡天：用全世界最大的数码相机（32 亿像素）每隔约 40 秒拍一张深空照片，十年内把整个南天扫描数百遍，等于给宇宙拍一部超长电影。</p>
+      <p class="hook" data-i18n="obs.rubin.hook">为什么值得盯着它：未来十年天文学的大新闻，很大概率从这里出来。</p>
+      <a class="visit" href="https://rubinobservatory.org/" target="_blank" rel="noopener" data-i18n="obs.visit">打开官网 →</a>
+      <a class="visit2" href="https://rubinobservatory.org/news" target="_blank" rel="noopener" data-i18n="obs.news">最新动态</a>
     </div>
   </div>
 
   <div class="card">
-    <img src="observatories/vlt.jpg" alt="ESO 甚大望远镜">
-    <div class="credit">图：ESO（CC BY 4.0）</div>
+    <img src="observatories/vlt.jpg" data-i18n-attr="alt:obs.vlt.alt" alt="ESO 甚大望远镜">
+    <div class="credit" data-i18n="obs.vlt.credit">图：ESO（CC BY 4.0）</div>
     <div class="body">
-      <h2>甚大望远镜 VLT · 帕瑞纳天文台</h2>
-      <div class="meta">智利 · 阿塔卡马沙漠 · 欧洲南方天文台（ESO）</div>
-      <p>四台 8.2 米望远镜并排立在沙漠山顶，可以各自观测，也可以联合成干涉仪。照片里射向天空的橙色激光是人造导星——在高层大气里点一颗“假星”，用来实时校正大气抖动，让地面望远镜拍出接近太空的清晰度。</p>
-      <p class="hook">为什么值得知道：人类第一张系外行星的直接影像、银心黑洞周围恒星的轨道测量，都有它的份。ESO 官网的图片库是天文摄影的宝库，绝大多数图都可以自由使用。</p>
-      <a class="visit" href="https://www.eso.org/public/" target="_blank" rel="noopener">打开官网 →</a>
-      <a class="visit2" href="https://www.eso.org/public/news/" target="_blank" rel="noopener">最新动态</a>
+      <h2 data-i18n="obs.vlt.h2">甚大望远镜 VLT · 帕瑞纳天文台</h2>
+      <div class="meta" data-i18n="obs.vlt.meta">智利 · 阿塔卡马沙漠 · 欧洲南方天文台（ESO）</div>
+      <p data-i18n="obs.vlt.body">四台 8.2 米望远镜并排立在沙漠山顶，可以各自观测，也可以联合成干涉仪。照片里射向天空的橙色激光是人造导星——在高层大气里点一颗“假星”，用来实时校正大气抖动，让地面望远镜拍出接近太空的清晰度。</p>
+      <p class="hook" data-i18n="obs.vlt.hook">为什么值得知道：人类第一张系外行星的直接影像、银心黑洞周围恒星的轨道测量，都有它的份。ESO 官网的图片库是天文摄影的宝库，绝大多数图都可以自由使用。</p>
+      <a class="visit" href="https://www.eso.org/public/" target="_blank" rel="noopener" data-i18n="obs.visit">打开官网 →</a>
+      <a class="visit2" href="https://www.eso.org/public/news/" target="_blank" rel="noopener" data-i18n="obs.news">最新动态</a>
     </div>
   </div>
 
   <div class="card">
-    <img src="observatories/alma.jpg" alt="ALMA 天线阵与银河">
-    <div class="credit">图：ESO / B. Tafreshi（CC BY 4.0）</div>
+    <img src="observatories/alma.jpg" data-i18n-attr="alt:obs.alma.alt" alt="ALMA 天线阵与银河">
+    <div class="credit" data-i18n="obs.alma.credit">图：ESO / B. Tafreshi（CC BY 4.0）</div>
     <div class="body">
-      <h2>阿塔卡马大型毫米波阵 ALMA</h2>
-      <div class="meta">智利 · 查南托高原（海拔约 5000 米）· 国际合作</div>
-      <p>66 面天线在世界上最干燥的高原上组成一台“化整为零”的望远镜。它看的不是可见光，而是毫米波——尘埃云挡得住星光，挡不住毫米波，所以它专门负责看恒星和行星正在诞生的地方。</p>
-      <p class="hook">为什么值得知道：那张著名的“原行星盘同心圆沟槽”照片（正在成形的太阳系）就是它拍的。</p>
-      <a class="visit" href="https://www.almaobservatory.org/" target="_blank" rel="noopener">打开官网 →</a>
-      <a class="visit2" href="https://www.almaobservatory.org/en/news/" target="_blank" rel="noopener">最新动态</a>
+      <h2 data-i18n="obs.alma.h2">阿塔卡马大型毫米波阵 ALMA</h2>
+      <div class="meta" data-i18n="obs.alma.meta">智利 · 查南托高原（海拔约 5000 米）· 国际合作</div>
+      <p data-i18n="obs.alma.body">66 面天线在世界上最干燥的高原上组成一台“化整为零”的望远镜。它看的不是可见光，而是毫米波——尘埃云挡得住星光，挡不住毫米波，所以它专门负责看恒星和行星正在诞生的地方。</p>
+      <p class="hook" data-i18n="obs.alma.hook">为什么值得知道：那张著名的“原行星盘同心圆沟槽”照片（正在成形的太阳系）就是它拍的。</p>
+      <a class="visit" href="https://www.almaobservatory.org/" target="_blank" rel="noopener" data-i18n="obs.visit">打开官网 →</a>
+      <a class="visit2" href="https://www.almaobservatory.org/en/news/" target="_blank" rel="noopener" data-i18n="obs.news">最新动态</a>
     </div>
   </div>
 
   <div class="card">
-    <img src="observatories/fast.jpg" alt="FAST 500 米口径球面射电望远镜航拍">
-    <div class="credit">图：SCJiang，Wikimedia Commons（CC BY-SA 4.0）</div>
+    <img src="observatories/fast.jpg" data-i18n-attr="alt:obs.fast.alt" alt="FAST 500 米口径球面射电望远镜航拍">
+    <div class="credit" data-i18n="obs.fast.credit">图：SCJiang，Wikimedia Commons（CC BY-SA 4.0）</div>
     <div class="body">
-      <h2>中国天眼 FAST</h2>
-      <div class="meta">中国 · 贵州平塘 · 中国科学院国家天文台</div>
-      <p>口径 500 米、挂在喀斯特洼地里的全球最大单口径射电望远镜。它不拍照片，而是“听”宇宙的无线电——尤其擅长找脉冲星：恒星死亡后留下的、以毫秒级精度旋转的致密残骸，可以当宇宙里的时钟用。</p>
-      <p class="hook">为什么值得知道：它已经发现了上千颗新脉冲星，是这个领域最高产的设备。</p>
-      <a class="visit" href="https://fast.bao.ac.cn/" target="_blank" rel="noopener">打开官网 →</a>
+      <h2 data-i18n="obs.fast.h2">中国天眼 FAST</h2>
+      <div class="meta" data-i18n="obs.fast.meta">中国 · 贵州平塘 · 中国科学院国家天文台</div>
+      <p data-i18n="obs.fast.body">口径 500 米、挂在喀斯特洼地里的全球最大单口径射电望远镜。它不拍照片，而是“听”宇宙的无线电——尤其擅长找脉冲星：恒星死亡后留下的、以毫秒级精度旋转的致密残骸，可以当宇宙里的时钟用。</p>
+      <p class="hook" data-i18n="obs.fast.hook">为什么值得知道：它已经发现了上千颗新脉冲星，是这个领域最高产的设备。</p>
+      <a class="visit" href="https://fast.bao.ac.cn/" target="_blank" rel="noopener" data-i18n="obs.visit">打开官网 →</a>
     </div>
   </div>
 
   <div class="card">
-    <img src="observatories/keck.jpg" alt="凯克天文台双圆顶">
-    <div class="credit">图：NASA/JPL-Caltech（公有领域）</div>
+    <img src="observatories/keck.jpg" data-i18n-attr="alt:obs.keck.alt" alt="凯克天文台双圆顶">
+    <div class="credit" data-i18n="obs.keck.credit">图：NASA/JPL-Caltech（公有领域）</div>
     <div class="body">
-      <h2>凯克天文台 W. M. Keck Observatory</h2>
-      <div class="meta">美国 · 夏威夷冒纳凯亚火山（海拔约 4200 米）</div>
-      <p>两台 10 米望远镜，主镜由 36 块六边形镜片拼成——这个“分段镜”方案当年是豪赌，如今成了所有超大望远镜（包括韦布空间望远镜）的标准做法。</p>
-      <p class="hook">为什么值得知道：银河系中心黑洞的诺贝尔奖级观测，一半功劳在这里。</p>
-      <a class="visit" href="https://www.keckobservatory.org/" target="_blank" rel="noopener">打开官网 →</a>
-      <a class="visit2" href="https://www.keckobservatory.org/news/" target="_blank" rel="noopener">最新动态</a>
+      <h2 data-i18n="obs.keck.h2">凯克天文台 W. M. Keck Observatory</h2>
+      <div class="meta" data-i18n="obs.keck.meta">美国 · 夏威夷冒纳凯亚火山（海拔约 4200 米）</div>
+      <p data-i18n="obs.keck.body">两台 10 米望远镜，主镜由 36 块六边形镜片拼成——这个“分段镜”方案当年是豪赌，如今成了所有超大望远镜（包括韦布空间望远镜）的标准做法。</p>
+      <p class="hook" data-i18n="obs.keck.hook">为什么值得知道：银河系中心黑洞的诺贝尔奖级观测，一半功劳在这里。</p>
+      <a class="visit" href="https://www.keckobservatory.org/" target="_blank" rel="noopener" data-i18n="obs.visit">打开官网 →</a>
+      <a class="visit2" href="https://www.keckobservatory.org/news/" target="_blank" rel="noopener" data-i18n="obs.news">最新动态</a>
     </div>
   </div>
 
   <div class="card">
-    <img src="observatories/subaru.jpg" alt="昴星团望远镜圆顶">
-    <div class="credit">图：International Gemini Observatory / NOIRLab / NSF / AURA（CC BY 4.0）</div>
+    <img src="observatories/subaru.jpg" data-i18n-attr="alt:obs.subaru.alt" alt="昴星团望远镜圆顶">
+    <div class="credit" data-i18n="obs.subaru.credit">图：International Gemini Observatory / NOIRLab / NSF / AURA（CC BY 4.0）</div>
     <div class="body">
-      <h2>昴星团望远镜 Subaru Telescope</h2>
-      <div class="meta">美国 · 夏威夷冒纳凯亚 · 日本国立天文台</div>
-      <p>8.2 米的单块主镜，名字就来自你在探索器里能拉近的昴星团（M45）。它的超广视场相机特别擅长一次拍下大片天区，是研究宇宙大尺度结构的主力。</p>
-      <p class="hook">为什么值得知道：官网有中文之外少见的细致科普（日/英双语），器材控会看得很开心。</p>
-      <a class="visit" href="https://subarutelescope.org/en/" target="_blank" rel="noopener">打开官网 →</a>
-      <a class="visit2" href="https://subarutelescope.org/en/news/" target="_blank" rel="noopener">最新动态</a>
+      <h2 data-i18n="obs.subaru.h2">昴星团望远镜 Subaru Telescope</h2>
+      <div class="meta" data-i18n="obs.subaru.meta">美国 · 夏威夷冒纳凯亚 · 日本国立天文台</div>
+      <p data-i18n="obs.subaru.body">8.2 米的单块主镜，名字就来自你在探索器里能拉近的昴星团（M45）。它的超广视场相机特别擅长一次拍下大片天区，是研究宇宙大尺度结构的主力。</p>
+      <p class="hook" data-i18n="obs.subaru.hook">为什么值得知道：官网有中文之外少见的细致科普（日/英双语），器材控会看得很开心。</p>
+      <a class="visit" href="https://subarutelescope.org/en/" target="_blank" rel="noopener" data-i18n="obs.visit">打开官网 →</a>
+      <a class="visit2" href="https://subarutelescope.org/en/news/" target="_blank" rel="noopener" data-i18n="obs.news">最新动态</a>
     </div>
   </div>
 
   <div class="card">
-    <img src="observatories/palomar.jpg" alt="帕洛马天文台海尔望远镜圆顶">
-    <div class="credit">图：NASA/JPL-Caltech（公有领域）</div>
+    <img src="observatories/palomar.jpg" data-i18n-attr="alt:obs.palomar.alt" alt="帕洛马天文台海尔望远镜圆顶">
+    <div class="credit" data-i18n="obs.palomar.credit">图：NASA/JPL-Caltech（公有领域）</div>
     <div class="body">
-      <h2>帕洛马天文台 Palomar Observatory</h2>
-      <div class="meta">美国 · 加州 · 加州理工学院</div>
-      <p>1948 年建成的 5 米海尔望远镜，在之后将近半个世纪里都是世界最大的光学望远镜。你在探索器近景里看到的 DSS2 巡天照片，很大一部分就来自帕洛马的巡天底片——你其实一直在看它的作品。</p>
-      <p class="hook">为什么值得知道：类星体、棕矮星这些名词，都是在这里第一次变成“看到的东西”。</p>
-      <a class="visit" href="https://sites.astro.caltech.edu/palomar/" target="_blank" rel="noopener">打开官网 →</a>
+      <h2 data-i18n="obs.palomar.h2">帕洛马天文台 Palomar Observatory</h2>
+      <div class="meta" data-i18n="obs.palomar.meta">美国 · 加州 · 加州理工学院</div>
+      <p data-i18n="obs.palomar.body">1948 年建成的 5 米海尔望远镜，在之后将近半个世纪里都是世界最大的光学望远镜。你在探索器近景里看到的 DSS2 巡天照片，很大一部分就来自帕洛马的巡天底片——你其实一直在看它的作品。</p>
+      <p class="hook" data-i18n="obs.palomar.hook">为什么值得知道：类星体、棕矮星这些名词，都是在这里第一次变成“看到的东西”。</p>
+      <a class="visit" href="https://sites.astro.caltech.edu/palomar/" target="_blank" rel="noopener" data-i18n="obs.visit">打开官网 →</a>
     </div>
   </div>
 
   <div class="card">
-    <img src="observatories/greenwich.jpg" alt="弗拉姆斯蒂德宫与格林威治报时球">
-    <div class="credit">图：Acabashi，Wikimedia Commons（CC BY-SA 4.0）</div>
+    <img src="observatories/greenwich.jpg" data-i18n-attr="alt:obs.greenwich.alt" alt="弗拉姆斯蒂德宫与格林威治报时球">
+    <div class="credit" data-i18n="obs.greenwich.credit">图：Acabashi，Wikimedia Commons（CC BY-SA 4.0）</div>
     <div class="body">
-      <h2>格林威治皇家天文台 Royal Observatory Greenwich</h2>
-      <div class="meta">英国 · 伦敦 · 1675 年创立</div>
-      <p>本初子午线（经度 0°）就从它的院子里穿过。它早已不做前沿观测，但全世界的时间和经度都曾以它为准——今天你手机里的时区系统，源头就在这座小山上。</p>
-      <p class="hook">为什么值得知道：每年的“年度天文摄影师”大赛由它主办，获奖图库美得惊人。</p>
-      <a class="visit" href="https://www.rmg.co.uk/royal-observatory" target="_blank" rel="noopener">打开官网 →</a>
-      <a class="visit2" href="https://www.rmg.co.uk/whats-on/astronomy-photographer-year" target="_blank" rel="noopener">摄影大赛</a>
+      <h2 data-i18n="obs.greenwich.h2">格林威治皇家天文台 Royal Observatory Greenwich</h2>
+      <div class="meta" data-i18n="obs.greenwich.meta">英国 · 伦敦 · 1675 年创立</div>
+      <p data-i18n="obs.greenwich.body">本初子午线（经度 0°）就从它的院子里穿过。它早已不做前沿观测，但全世界的时间和经度都曾以它为准——今天你手机里的时区系统，源头就在这座小山上。</p>
+      <p class="hook" data-i18n="obs.greenwich.hook">为什么值得知道：每年的“年度天文摄影师”大赛由它主办，获奖图库美得惊人。</p>
+      <a class="visit" href="https://www.rmg.co.uk/royal-observatory" target="_blank" rel="noopener" data-i18n="obs.visit">打开官网 →</a>
+      <a class="visit2" href="https://www.rmg.co.uk/whats-on/astronomy-photographer-year" target="_blank" rel="noopener" data-i18n="obs.contest">摄影大赛</a>
     </div>
   </div>
 
-  <div class="eyebrow" style="margin-top:48px">太空里的眼睛</div>
-  <h1 style="font-size:24px">大气层之上，还有一支舰队</h1>
-  <p class="lede">地面望远镜隔着大气看宇宙，这几台干脆飞了上去。你在探索器里点开的每一颗星，背后都有它们的份。</p>
+  <div class="eyebrow" style="margin-top:48px" data-i18n="obs.eyebrow2">太空里的眼睛</div>
+  <h1 style="font-size:24px" data-i18n="obs.title2">大气层之上，还有一支舰队</h1>
+  <p class="lede" data-i18n="obs.lede2">地面望远镜隔着大气看宇宙，这几台干脆飞了上去。你在探索器里点开的每一颗星，背后都有它们的份。</p>
 
   <div class="card">
-    <img src="observatories/gaia-sc.jpg" alt="Gaia 卫星艺术想象图">
-    <div class="credit">图：ESA / ATG medialab；背景 ESO / S. Brunier（CC BY 4.0）</div>
+    <img src="observatories/gaia-sc.jpg" data-i18n-attr="alt:obs.gaia.alt" alt="Gaia 卫星艺术想象图">
+    <div class="credit" data-i18n="obs.gaia.credit">图：ESA / ATG medialab；背景 ESO / S. Brunier（CC BY 4.0）</div>
     <div class="body">
-      <h2>盖亚 Gaia</h2>
-      <div class="meta">欧洲空间局 · 日地拉格朗日 L2 点 · 2013–2025</div>
-      <p>这个网站的主底图就是它画的。它在轨十一年，把十几亿颗恒星的位置、距离和运动测到了前所未有的精度——等于给银河系拍了第一张真正的三维证件照。卫星本尊已于 2025 年 3 月光荣退役，但它的遗产还在增值：完整版星表 DR4 将于 2026 年 12 月 2 日发布，天文学家已经排好队了。</p>
-      <p class="hook">为什么值得知道：你在探索器总览里看到的每一粒光点，都是它认真量过的一颗星。</p>
-      <a class="visit" href="https://www.esa.int/Science_Exploration/Space_Science/Gaia" target="_blank" rel="noopener">打开官网 →</a>
-    </div>
-  </div>
-
-  <div class="card">
-    <img src="observatories/hubble.jpg" alt="哈勃空间望远镜在轨照片">
-    <div class="credit">图：NASA（公有领域，2009 年航天飞机维修任务实拍）</div>
-    <div class="body">
-      <h2>哈勃空间望远镜 Hubble</h2>
-      <div class="meta">NASA / ESA · 近地轨道 · 1990 年至今</div>
-      <p>在轨三十多年，人类对宇宙的想象有一大半是它给的：深空场里数千个星系挤在一小块黑天里、创生之柱、超新星测出的宇宙加速膨胀。它每 95 分钟绕地球一圈——所以它没法被钉在我们的天图上，它看哪儿全凭排班表。</p>
-      <p class="hook">为什么值得知道：它证明了一件事——把望远镜送出大气层，值回所有代价。</p>
-      <a class="visit" href="https://science.nasa.gov/mission/hubble/" target="_blank" rel="noopener">打开官网 →</a>
-      <a class="visit2" href="https://esahubble.org/images/" target="_blank" rel="noopener">图片库</a>
+      <h2 data-i18n="obs.gaia.h2">盖亚 Gaia</h2>
+      <div class="meta" data-i18n="obs.gaia.meta">欧洲空间局 · 日地拉格朗日 L2 点 · 2013–2025</div>
+      <p data-i18n="obs.gaia.body">这个网站的主底图就是它画的。它在轨十一年，把十几亿颗恒星的位置、距离和运动测到了前所未有的精度——等于给银河系拍了第一张真正的三维证件照。卫星本尊已于 2025 年 3 月光荣退役，但它的遗产还在增值：完整版星表 DR4 将于 2026 年 12 月 2 日发布，天文学家已经排好队了。</p>
+      <p class="hook" data-i18n="obs.gaia.hook">为什么值得知道：你在探索器总览里看到的每一粒光点，都是它认真量过的一颗星。</p>
+      <a class="visit" href="https://www.esa.int/Science_Exploration/Space_Science/Gaia" target="_blank" rel="noopener" data-i18n="obs.visit">打开官网 →</a>
     </div>
   </div>
 
   <div class="card">
-    <img src="observatories/jwst.jpg" alt="韦布空间望远镜艺术图">
-    <div class="credit">图：NASA（CC BY 2.0，艺术想象图）</div>
+    <img src="observatories/hubble.jpg" data-i18n-attr="alt:obs.hubble.alt" alt="哈勃空间望远镜在轨照片">
+    <div class="credit" data-i18n="obs.hubble.credit">图：NASA（公有领域，2009 年航天飞机维修任务实拍）</div>
     <div class="body">
-      <h2>韦布空间望远镜 JWST</h2>
-      <div class="meta">NASA / ESA / CSA · 日地拉格朗日 L2 点 · 2021 年至今</div>
-      <p>哈勃的继任者，一面 6.5 米的金色蜂巢镜，专看红外——宇宙最早的星光飞了一百多亿年，早被拉伸成红外线，只有它接得住。它和 Gaia 曾是 L2 点的邻居，都躲在地球影子附近那片又冷又安静的太空里工作。</p>
-      <p class="hook">为什么值得知道：现在新闻里"史上最远星系"的纪录，基本都是它刷新的。</p>
-      <a class="visit" href="https://science.nasa.gov/mission/webb/" target="_blank" rel="noopener">打开官网 →</a>
-      <a class="visit2" href="https://webbtelescope.org/images" target="_blank" rel="noopener">图片库</a>
+      <h2 data-i18n="obs.hubble.h2">哈勃空间望远镜 Hubble</h2>
+      <div class="meta" data-i18n="obs.hubble.meta">NASA / ESA · 近地轨道 · 1990 年至今</div>
+      <p data-i18n="obs.hubble.body">在轨三十多年，人类对宇宙的想象有一大半是它给的：深空场里数千个星系挤在一小块黑天里、创生之柱、超新星测出的宇宙加速膨胀。它每 95 分钟绕地球一圈——所以它没法被钉在我们的天图上，它看哪儿全凭排班表。</p>
+      <p class="hook" data-i18n="obs.hubble.hook">为什么值得知道：它证明了一件事——把望远镜送出大气层，值回所有代价。</p>
+      <a class="visit" href="https://science.nasa.gov/mission/hubble/" target="_blank" rel="noopener" data-i18n="obs.visit">打开官网 →</a>
+      <a class="visit2" href="https://esahubble.org/images/" target="_blank" rel="noopener" data-i18n="obs.gallery">图片库</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <img src="observatories/jwst.jpg" data-i18n-attr="alt:obs.jwst.alt" alt="韦布空间望远镜艺术图">
+    <div class="credit" data-i18n="obs.jwst.credit">图：NASA（CC BY 2.0，艺术想象图）</div>
+    <div class="body">
+      <h2 data-i18n="obs.jwst.h2">韦布空间望远镜 JWST</h2>
+      <div class="meta" data-i18n="obs.jwst.meta">NASA / ESA / CSA · 日地拉格朗日 L2 点 · 2021 年至今</div>
+      <p data-i18n="obs.jwst.body">哈勃的继任者，一面 6.5 米的金色蜂巢镜，专看红外——宇宙最早的星光飞了一百多亿年，早被拉伸成红外线，只有它接得住。它和 Gaia 曾是 L2 点的邻居，都躲在地球影子附近那片又冷又安静的太空里工作。</p>
+      <p class="hook" data-i18n="obs.jwst.hook">为什么值得知道：现在新闻里“史上最远星系”的纪录，基本都是它刷新的。</p>
+      <a class="visit" href="https://science.nasa.gov/mission/webb/" target="_blank" rel="noopener" data-i18n="obs.visit">打开官网 →</a>
+      <a class="visit2" href="https://webbtelescope.org/images" target="_blank" rel="noopener" data-i18n="obs.gallery">图片库</a>
     </div>
   </div>
 
   <div class="card">
     <div class="body">
-      <h2>悟空号 DAMPE 暗物质粒子探测卫星</h2>
-      <div class="meta">中国科学院紫金山天文台 · 太阳同步轨道 · 2015 年至今</div>
-      <p>齐天大圣真的在天上：它 2015 年底出发，本来设计寿命三年，结果一干就是十年多，记录了约 185 亿个高能粒子。它不拍照片——它是一台在轨道上的粒子秤，专门称宇宙射线和暗物质可能留下的蛛丝马迹。2026 年 4 月它的最新成果刚上《自然》：发现了宇宙射线加速能量极限的电荷依赖规律。</p>
-      <p class="hook">为什么值得知道：找暗物质这件事上，它是目前人类派出去的主力选手之一，而且严重超期服役、状态良好。</p>
-      <a class="visit" href="https://dampe.ustc.edu.cn/" target="_blank" rel="noopener">打开官网 →</a>
+      <h2 data-i18n="obs.dampe.h2">悟空号 DAMPE 暗物质粒子探测卫星</h2>
+      <div class="meta" data-i18n="obs.dampe.meta">中国科学院紫金山天文台 · 太阳同步轨道 · 2015 年至今</div>
+      <p data-i18n="obs.dampe.body">齐天大圣真的在天上：它 2015 年底出发，本来设计寿命三年，结果一干就是十年多，记录了约 185 亿个高能粒子。它不拍照片——它是一台在轨道上的粒子秤，专门称宇宙射线和暗物质可能留下的蛛丝马迹。2026 年 4 月它的最新成果刚上《自然》：发现了宇宙射线加速能量极限的电荷依赖规律。</p>
+      <p class="hook" data-i18n="obs.dampe.hook">为什么值得知道：找暗物质这件事上，它是目前人类派出去的主力选手之一，而且严重超期服役、状态良好。</p>
+      <a class="visit" href="https://dampe.ustc.edu.cn/" target="_blank" rel="noopener" data-i18n="obs.visit">打开官网 →</a>
     </div>
   </div>
 
-  <footer>
+  <footer data-i18n="obs.footer">
     图片来源：ESO、NSF–DOE Vera C. Rubin Observatory / NOIRLab、International Gemini Observatory / NOIRLab / NSF / AURA、ESA/ATG medialab（CC BY 4.0）；SCJiang、Acabashi 摄，来自 Wikimedia Commons（CC BY-SA 4.0）；NASA（公有领域及 CC BY 2.0）；NASA/JPL-Caltech（公有领域）。均已按授权要求署名。介绍文字为本项目原创整理，事实核对至 2026 年 7 月。
   </footer>
 </div>

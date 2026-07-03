@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title data-i18n="ref.pageTitle">数据与来源 · 星空照片探索器</title>
+<script src="/i18n.js"></script>
+<script>
+// Page dictionary — { zh, en } pairs, human-written English. This page is the
+// project's provenance record: every dataset, image service and photo credit.
+window.I18N.register({
+  'ref.pageTitle': { zh: '数据与来源 · 星空照片探索器', en: 'Data & Sources · Cosmic Photo Explorer' },
+  'ref.eyebrow': { zh: '解释层 / 这些东西从哪来', en: 'Explainer / Where all of this comes from' },
+  'ref.title': { zh: '数据与来源', en: 'Data & Sources' },
+  'ref.lede': { zh: '这个探索器自己不拥有任何一颗星、任何一张照片。它做的事，是把世界上一批公开的天文数据和影像服务接到一起，配上中文（和英文）叙事。这一页把用到的每一个来源都摆出来——既是致谢，也方便你顺着链接自己去看原始的东西。', en: "This explorer owns not a single star nor a single photo of its own. What it does is stitch together a set of the world's open astronomical datasets and image services, and wrap them in a Chinese (and English) narrative. This page lays out every source it draws on — partly as thanks, partly so you can follow the links to the originals yourself." },
+  'nav.home': { zh: '← 回到星空探索器', en: '← Back to the Explorer' },
+  'nav.solar': { zh: '太阳系 →', en: 'Solar System →' },
+  'nav.stations': { zh: '空间站 →', en: 'Space Stations →' },
+  'nav.observatories': { zh: '观星台 →', en: 'Observatories →' },
+  'ref.open': { zh: '打开来源 →', en: 'Open source →' },
+
+  'ref.sky.h': { zh: '天空底图与影像', en: 'Sky base maps & imagery' },
+  'ref.gaia.t': { zh: 'Gaia DR3 全天图', en: 'Gaia DR3 all-sky map' },
+  'ref.gaia.d': { zh: '总览模式的主底图。由欧洲空间局 Gaia 任务第三次数据发布（DR3）的十几亿颗恒星测光生成，经斯特拉斯堡天文数据中心（CDS）渲染成分级的 HiPS 全天图。', en: "The base map of the overview mode. Built from the billion-plus stellar photometry of the European Space Agency's Gaia mission, Data Release 3 (DR3), and rendered by the Strasbourg astronomical Data Center (CDS) into a tiered HiPS all-sky map." },
+  'ref.gaia.c': { zh: '数据 © ESA / Gaia / DPAC；HiPS 影像由 CDS 制作。图层 ID：CDS/P/DM/flux-color-Rp-G-Bp/I/355/gaiadr3', en: 'Data © ESA / Gaia / DPAC; HiPS imagery produced by CDS. Layer ID: CDS/P/DM/flux-color-Rp-G-Bp/I/355/gaiadr3' },
+  'ref.dss.t': { zh: 'DSS2 彩色巡天', en: 'DSS2 color survey' },
+  'ref.dss.d': { zh: '近景模式（视场小于约 30° 时自动切入）的照片底图。数字化巡天第二版，源自帕洛马和英澳施密特望远镜的照相底片，由 CDS 作为 HiPS 提供。', en: 'The photographic base map in close-up mode (switched in automatically below a ~30° field of view). The second-generation Digitized Sky Survey, scanned from photographic plates of the Palomar and UK/AAO Schmidt telescopes, served as HiPS by CDS.' },
+  'ref.dss.c': { zh: '源自 STScI 数字化巡天底片；HiPS 影像由 CDS 提供。图层 ID：P/DSS2/color', en: 'From the STScI Digitized Sky Survey plates; HiPS imagery served by CDS. Layer ID: P/DSS2/color' },
+  'ref.aladin.t': { zh: 'Aladin Lite v3', en: 'Aladin Lite v3' },
+  'ref.aladin.d': { zh: '整个探索器的天空查看器引擎——平移、缩放、投影、底图切换、坐标反投影都由它完成。由 CDS 开发的开源天图组件。', en: "The sky-viewer engine behind the whole explorer — panning, zooming, projection, base-map switching and coordinate back-projection all run on it. An open-source sky-atlas component developed by CDS." },
+  'ref.aladin.c': { zh: '© Université de Strasbourg / CNRS — Centre de Données astronomiques de Strasbourg (CDS)', en: '© Université de Strasbourg / CNRS — Centre de Données astronomiques de Strasbourg (CDS)' },
+
+  'ref.probe.h': { zh: '探测器轨迹', en: 'Spacecraft trajectories' },
+  'ref.horizons.t': { zh: 'JPL Horizons 星历系统', en: 'JPL Horizons ephemeris system' },
+  'ref.horizons.d': { zh: '五艘深空探测器（旅行者 1/2 号、先驱者 10 号、新视野号等）在天空中的真实轨迹丝带，来自 NASA 喷气推进实验室 Horizons 系统的星历数据，按月/数日采样后离线烘焙成天球坐标路径。照片记录呈弹簧状的原因（地球公转视差）也在探索器内有专门解释。', en: "The real sky-track ribbons of five deep-space probes (Voyager 1/2, Pioneer 10, New Horizons and others) come from ephemeris data in NASA JPL's Horizons system, sampled monthly/every few days and baked offline into celestial-coordinate paths. The reason the recorded tracks look spring-shaped — Earth's orbital parallax — is explained inside the explorer." },
+  'ref.horizons.c': { zh: '数据来源：NASA / JPL-Caltech Horizons On-Line Ephemeris System', en: 'Data source: NASA / JPL-Caltech Horizons On-Line Ephemeris System' },
+
+  'ref.nasa.h': { zh: 'NASA 影像服务', en: 'NASA image services' },
+  'ref.images.t': { zh: 'NASA 图像与视频库 API', en: 'NASA Image and Video Library API' },
+  'ref.images.d': { zh: '每个天区「在 NASA 图库看这里」的缩略图与应用内灯箱大图，实时来自 images-api.nasa.gov（免密钥、允许跨域）。太阳系页的行星画廊也用同一图库的任务原片。', en: "The 'see this in the NASA library' thumbnails and in-app lightbox images for each region come live from images-api.nasa.gov (no key required, cross-origin allowed). The planet gallery on the Solar System page also uses original mission imagery from the same library." },
+  'ref.images.c': { zh: '图片版权归各任务团队，多为 NASA/JPL-Caltech 等（公有领域）；具体署名见各图详情页。', en: 'Image rights belong to the respective mission teams, mostly NASA/JPL-Caltech and others (public domain); see each image detail page for its specific credit.' },
+  'ref.apod.t': { zh: 'NASA 每日天文一图（APOD）', en: 'NASA Astronomy Picture of the Day (APOD)' },
+  'ref.apod.d': { zh: '解释层「NASA 今天看什么」卡片，取自 NASA 官方 APOD 接口的当日图文。', en: "The 'what is NASA looking at today' card in the explainer layer pulls the day's image and text from NASA's official APOD API." },
+  'ref.apod.c': { zh: '接口：api.nasa.gov/planetary/apod。图片版权见 APOD 每日页面署名。', en: 'API: api.nasa.gov/planetary/apod. Image rights per the credit on each APOD daily page.' },
+
+  'ref.planet.h': { zh: '行星与天体表面', en: 'Planetary & surface maps' },
+  'ref.moon.t': { zh: '月球表面全图', en: 'Lunar surface mosaics' },
+  'ref.moon.d': { zh: '太阳系页月球查看器的两套底图：NASA 月球勘测轨道器广角相机 100 米/像素全图（默认），以及嫦娥二号 7 米分辨率数字正射影像（中国探月工程官方测绘）。', en: "The two base maps in the Solar System page's Moon viewer: NASA's Lunar Reconnaissance Orbiter Wide Angle Camera mosaic at 100 m/pixel (default), and the Chang'e-2 7-metre digital orthophoto (the official survey of China's lunar program)." },
+  'ref.moon.c': { zh: 'NASA LROC WAC（经 CDS HiPS）；嫦娥二号 7 米 DOM：中国国家天文台 / China-VO。', en: 'NASA LROC WAC (via CDS HiPS); Chang’e-2 7 m DOM: National Astronomical Observatories of China / China-VO.' },
+  'ref.mars.t': { zh: '火星表面全图', en: 'Martian surface mosaics' },
+  'ref.mars.d': { zh: '火星查看器的两套底图：Viking 彩色全图（近真实色），以及火星全球勘测者 MOLA 激光高程彩图（蓝低红高）。', en: 'The two base maps in the Mars viewer: the Viking color mosaic (near-true color) and the Mars Global Surveyor MOLA laser-altimetry color map (blue low, red high).' },
+  'ref.mars.c': { zh: 'Viking MDIM21、MGS MOLA：NASA / USGS，经 CDS HiPS。', en: 'Viking MDIM21, MGS MOLA: NASA / USGS, via CDS HiPS.' },
+
+  'ref.model.h': { zh: '三维模型', en: '3D models' },
+  'ref.mv.t': { zh: 'model-viewer 组件', en: 'model-viewer component' },
+  'ref.mv.d': { zh: '空间站页里可拖动旋转的三维模型由 Google 开源的 model-viewer 网页组件渲染。', en: "The draggable 3D model on the Space Stations page is rendered by Google's open-source model-viewer web component." },
+  'ref.mv.c': { zh: '© Google（开源，Apache-2.0 许可）', en: '© Google (open source, Apache-2.0 licensed)' },
+  'ref.iss3d.t': { zh: '国际空间站三维模型', en: 'International Space Station 3D model' },
+  'ref.iss3d.d': { zh: 'NASA 官方发布的国际空间站 glTF 模型；为了能在网页里点开就转，本站用 Draco + WebP 把它从约 44 MB 压到约 3 MB，几何和贴图保持完好。', en: "NASA's officially published glTF model of the ISS. So it loads and spins right in the browser, this site compressed it from about 44 MB to about 3 MB with Draco + WebP, keeping the geometry and textures intact." },
+  'ref.iss3d.c': { zh: 'NASA（公有领域）；本站自托管压缩版（NASA 原始 glTF 的 CORS 仅放行自家域）。', en: "NASA (public domain); self-hosted compressed copy on this site (NASA's original glTF only allows CORS from its own domain)." },
+  'ref.tg3d.t': { zh: '天宫空间站渲染图', en: 'Tiangong station render' },
+  'ref.tg3d.d': { zh: '天宫没有公开的官方三维模型，空间站页用的是社区制作的全构型渲染图（天和 + 问天 + 梦天）。', en: 'There is no public official 3D model of Tiangong, so the Space Stations page uses a community-made render of the full configuration (Tianhe + Wentian + Mengtian).' },
+  'ref.tg3d.c': { zh: 'Shujianyang / Wikimedia Commons，CC BY-SA 4.0。', en: 'Shujianyang / Wikimedia Commons, CC BY-SA 4.0.' },
+
+  'ref.photo.h': { zh: '天文台与望远镜照片', en: 'Observatory & telescope photos' },
+  'ref.photo.d': { zh: '观星台页每张设施照片都按授权署名。汇总如下：', en: 'Every facility photo on the Observatories page is attributed per its license. In summary:' },
+  'ref.photo.list': { zh: 'ESO；NSF–DOE Vera C. Rubin Observatory / NOIRLab；International Gemini Observatory / NOIRLab / NSF / AURA；ESA / ATG medialab（以上 CC BY 4.0）；SCJiang、Acabashi 摄，来自 Wikimedia Commons（CC BY-SA 4.0）；NASA（公有领域及 CC BY 2.0）；NASA / JPL-Caltech（公有领域）。', en: 'ESO; NSF–DOE Vera C. Rubin Observatory / NOIRLab; International Gemini Observatory / NOIRLab / NSF / AURA; ESA / ATG medialab (all CC BY 4.0); photos by SCJiang and Acabashi via Wikimedia Commons (CC BY-SA 4.0); NASA (public domain and CC BY 2.0); NASA / JPL-Caltech (public domain).' },
+
+  'ref.illus.h': { zh: '解释性插图', en: 'Explanatory illustrations' },
+  'ref.bortle.t': { zh: '光污染阶梯（Bortle 等级）', en: 'Light-pollution ladder (Bortle scale)' },
+  'ref.bortle.d': { zh: '解释层「光污染阶梯」卡片里的等级示意图，是本项目在早期自渲染管线里生成的图像。', en: "The scale diagram in the explainer's light-pollution card is an image this project generated in its own early rendering pipeline." },
+  'ref.bortle.c': { zh: '本项目原创制作。', en: "This project's own work." },
+  'ref.milkyway.t': { zh: '银河系俯视示意图', en: 'Milky Way top-down illustration' },
+  'ref.milkyway.d': { zh: '「跳出银河系」卡片里的银河系俯视图，是基于真实测量绘制的示意图——人类从未从外部拍到过银河系全貌。', en: "The face-on view of the Milky Way in the 'stepping outside the galaxy' card is an illustration based on real measurements — no one has ever photographed the whole Milky Way from outside." },
+  'ref.milkyway.c': { zh: 'NASA / JPL-Caltech / R. Hurt。', en: 'NASA / JPL-Caltech / R. Hurt.' },
+
+  'ref.inspo.h': { zh: '灵感来源', en: 'Inspiration' },
+  'ref.inspo.t': { zh: '鸭哥（grapeot）的工作流分享', en: 'grapeot’s workflow notes' },
+  'ref.inspo.d': { zh: '这个项目的最初念头，来自 grapeot 公开分享的一批用 Gaia 数据做宇宙影像的工作流笔记。探索器的数据管线、叙事角度和实现都是本项目独立完成的，但那份分享是把我们领进门的人。', en: "The first idea for this project came from a set of workflow notes grapeot shared publicly, on making cosmic imagery from Gaia data. The explorer's data pipeline, narrative angle and implementation are all this project's own, but those notes are what opened the door." },
+  'ref.inspo.c': { zh: '致谢 grapeot（鸭哥）的公开分享。', en: 'With thanks to grapeot for sharing openly.' },
+
+  'ref.note.h': { zh: '关于文字与事实', en: 'On the writing & the facts' },
+  'ref.note.body': { zh: '本站所有介绍与叙事文字均为本项目原创整理，不是从某处翻译或搬运的现成文案。事实数据核对至 2026 年 7 月；天文数字随观测更新，如与最新结果不符，以官方来源为准。所有第三方素材均按其授权要求署名，如有疏漏欢迎指出更正。', en: 'All descriptive and narrative text on this site is this project’s original writing, not lifted or translated from existing copy elsewhere. Facts are checked as of July 2026; astronomical figures update with new observations, so where they differ from the latest results, defer to the official sources. All third-party material is credited as its license requires — please point out any omission so it can be fixed.' },
+})
+</script>
+<style>
+  :root {
+    --bg: #04060c;
+    --panel: #0b101c;
+    --line: rgba(148, 170, 220, 0.16);
+    --text: #d8e0f0;
+    --dim: #8fa0be;
+    --accent: #9db8ff;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font: 15px/1.75 -apple-system, "PingFang SC", "Hiragino Sans GB", sans-serif;
+  }
+  .wrap { max-width: 900px; margin: 0 auto; padding: 40px 24px 80px; }
+  .eyebrow { font-size: 12px; letter-spacing: 0.18em; color: var(--dim); }
+  h1 { margin: 6px 0 10px; font-size: 30px; letter-spacing: 0.02em; }
+  .lede { color: var(--dim); max-width: 660px; margin: 0 0 14px; }
+  .navbar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 10px 0 30px; }
+  .back {
+    display: inline-block; color: var(--accent);
+    text-decoration: none; border: 1px solid var(--line); border-radius: 999px;
+    padding: 6px 16px; font-size: 13px;
+  }
+  .back:hover { border-color: var(--accent); }
+  .lang-toggle {
+    margin-left: auto; cursor: pointer; font: inherit; font-size: 13px; font-weight: 600;
+    letter-spacing: 0.04em; min-width: 50px; text-align: center;
+    color: var(--accent); background: rgba(157, 184, 255, 0.08);
+    border: 1px solid rgba(157, 184, 255, 0.4); border-radius: 999px; padding: 6px 16px;
+    transition: background 180ms ease, border-color 180ms ease;
+  }
+  .lang-toggle:hover { background: rgba(157, 184, 255, 0.16); border-color: rgba(157, 184, 255, 0.65); }
+  section.group { margin-top: 34px; }
+  .group > h2 {
+    font-size: 15px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--accent); font-weight: 600; margin: 0 0 4px;
+    border-bottom: 1px solid var(--line); padding-bottom: 8px;
+  }
+  .src {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 12px;
+    padding: 16px 20px; margin-top: 14px;
+  }
+  .src h3 { margin: 0 0 4px; font-size: 17px; }
+  .src p { margin: 6px 0 0; }
+  .src .credit { font-size: 12.5px; color: var(--dim); margin-top: 8px; }
+  .src a.open {
+    display: inline-block; margin-top: 10px; color: var(--accent);
+    text-decoration: none; border: 1px solid var(--line); border-radius: 999px;
+    padding: 5px 14px; font-size: 12.5px;
+  }
+  .src a.open:hover { border-color: var(--accent); }
+  .note { color: var(--dim); }
+  footer { color: var(--dim); font-size: 12px; margin-top: 44px; border-top: 1px solid var(--line); padding-top: 16px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="eyebrow" data-i18n="ref.eyebrow">解释层 / 这些东西从哪来</div>
+  <h1 data-i18n="ref.title">数据与来源</h1>
+  <p class="lede" data-i18n="ref.lede">这个探索器自己不拥有任何一颗星、任何一张照片。它做的事，是把世界上一批公开的天文数据和影像服务接到一起，配上中文（和英文）叙事。这一页把用到的每一个来源都摆出来——既是致谢，也方便你顺着链接自己去看原始的东西。</p>
+  <nav class="navbar">
+    <a class="back" href="./" data-i18n="nav.home">← 回到星空探索器</a>
+    <a class="back" href="solar.html" data-i18n="nav.solar">太阳系 →</a>
+    <a class="back" href="stations.html" data-i18n="nav.stations">空间站 →</a>
+    <a class="back" href="observatories.html" data-i18n="nav.observatories">观星台 →</a>
+    <button class="lang-toggle" type="button" data-lang-toggle>EN</button>
+  </nav>
+
+  <section class="group">
+    <h2 data-i18n="ref.sky.h">天空底图与影像</h2>
+    <div class="src">
+      <h3 data-i18n="ref.gaia.t">Gaia DR3 全天图</h3>
+      <p data-i18n="ref.gaia.d">总览模式的主底图。由欧洲空间局 Gaia 任务第三次数据发布（DR3）的十几亿颗恒星测光生成，经斯特拉斯堡天文数据中心（CDS）渲染成分级的 HiPS 全天图。</p>
+      <p class="credit" data-i18n="ref.gaia.c">数据 © ESA / Gaia / DPAC；HiPS 影像由 CDS 制作。图层 ID：CDS/P/DM/flux-color-Rp-G-Bp/I/355/gaiadr3</p>
+      <a class="open" href="https://www.cosmos.esa.int/web/gaia/dr3" target="_blank" rel="noopener" data-i18n="ref.open">打开来源 →</a>
+    </div>
+    <div class="src">
+      <h3 data-i18n="ref.dss.t">DSS2 彩色巡天</h3>
+      <p data-i18n="ref.dss.d">近景模式（视场小于约 30° 时自动切入）的照片底图。数字化巡天第二版，源自帕洛马和英澳施密特望远镜的照相底片，由 CDS 作为 HiPS 提供。</p>
+      <p class="credit" data-i18n="ref.dss.c">源自 STScI 数字化巡天底片；HiPS 影像由 CDS 提供。图层 ID：P/DSS2/color</p>
+      <a class="open" href="https://archive.stsci.edu/cgi-bin/dss_form" target="_blank" rel="noopener" data-i18n="ref.open">打开来源 →</a>
+    </div>
+    <div class="src">
+      <h3 data-i18n="ref.aladin.t">Aladin Lite v3</h3>
+      <p data-i18n="ref.aladin.d">整个探索器的天空查看器引擎——平移、缩放、投影、底图切换、坐标反投影都由它完成。由 CDS 开发的开源天图组件。</p>
+      <p class="credit" data-i18n="ref.aladin.c">© Université de Strasbourg / CNRS — Centre de Données astronomiques de Strasbourg (CDS)</p>
+      <a class="open" href="https://aladin.cds.unistra.fr/AladinLite/" target="_blank" rel="noopener" data-i18n="ref.open">打开来源 →</a>
+    </div>
+  </section>
+
+  <section class="group">
+    <h2 data-i18n="ref.probe.h">探测器轨迹</h2>
+    <div class="src">
+      <h3 data-i18n="ref.horizons.t">JPL Horizons 星历系统</h3>
+      <p data-i18n="ref.horizons.d">五艘深空探测器（旅行者 1/2 号、先驱者 10 号、新视野号等）在天空中的真实轨迹丝带，来自 NASA 喷气推进实验室 Horizons 系统的星历数据，按月/数日采样后离线烘焙成天球坐标路径。照片记录呈弹簧状的原因（地球公转视差）也在探索器内有专门解释。</p>
+      <p class="credit" data-i18n="ref.horizons.c">数据来源：NASA / JPL-Caltech Horizons On-Line Ephemeris System</p>
+      <a class="open" href="https://ssd.jpl.nasa.gov/horizons/" target="_blank" rel="noopener" data-i18n="ref.open">打开来源 →</a>
+    </div>
+  </section>
+
+  <section class="group">
+    <h2 data-i18n="ref.nasa.h">NASA 影像服务</h2>
+    <div class="src">
+      <h3 data-i18n="ref.images.t">NASA 图像与视频库 API</h3>
+      <p data-i18n="ref.images.d">每个天区「在 NASA 图库看这里」的缩略图与应用内灯箱大图，实时来自 images-api.nasa.gov（免密钥、允许跨域）。太阳系页的行星画廊也用同一图库的任务原片。</p>
+      <p class="credit" data-i18n="ref.images.c">图片版权归各任务团队，多为 NASA/JPL-Caltech 等（公有领域）；具体署名见各图详情页。</p>
+      <a class="open" href="https://images.nasa.gov/" target="_blank" rel="noopener" data-i18n="ref.open">打开来源 →</a>
+    </div>
+    <div class="src">
+      <h3 data-i18n="ref.apod.t">NASA 每日天文一图（APOD）</h3>
+      <p data-i18n="ref.apod.d">解释层「NASA 今天看什么」卡片，取自 NASA 官方 APOD 接口的当日图文。</p>
+      <p class="credit" data-i18n="ref.apod.c">接口：api.nasa.gov/planetary/apod。图片版权见 APOD 每日页面署名。</p>
+      <a class="open" href="https://apod.nasa.gov/apod/" target="_blank" rel="noopener" data-i18n="ref.open">打开来源 →</a>
+    </div>
+  </section>
+
+  <section class="group">
+    <h2 data-i18n="ref.planet.h">行星与天体表面</h2>
+    <div class="src">
+      <h3 data-i18n="ref.moon.t">月球表面全图</h3>
+      <p data-i18n="ref.moon.d">太阳系页月球查看器的两套底图：NASA 月球勘测轨道器广角相机 100 米/像素全图（默认），以及嫦娥二号 7 米分辨率数字正射影像（中国探月工程官方测绘）。</p>
+      <p class="credit" data-i18n="ref.moon.c">NASA LROC WAC（经 CDS HiPS）；嫦娥二号 7 米 DOM：中国国家天文台 / China-VO。</p>
+      <a class="open" href="https://www.lroc.asu.edu/" target="_blank" rel="noopener" data-i18n="ref.open">打开来源 →</a>
+    </div>
+    <div class="src">
+      <h3 data-i18n="ref.mars.t">火星表面全图</h3>
+      <p data-i18n="ref.mars.d">火星查看器的两套底图：Viking 彩色全图（近真实色），以及火星全球勘测者 MOLA 激光高程彩图（蓝低红高）。</p>
+      <p class="credit" data-i18n="ref.mars.c">Viking MDIM21、MGS MOLA：NASA / USGS，经 CDS HiPS。</p>
+      <a class="open" href="https://astrogeology.usgs.gov/" target="_blank" rel="noopener" data-i18n="ref.open">打开来源 →</a>
+    </div>
+  </section>
+
+  <section class="group">
+    <h2 data-i18n="ref.model.h">三维模型</h2>
+    <div class="src">
+      <h3 data-i18n="ref.mv.t">model-viewer 组件</h3>
+      <p data-i18n="ref.mv.d">空间站页里可拖动旋转的三维模型由 Google 开源的 model-viewer 网页组件渲染。</p>
+      <p class="credit" data-i18n="ref.mv.c">© Google（开源，Apache-2.0 许可）</p>
+      <a class="open" href="https://modelviewer.dev/" target="_blank" rel="noopener" data-i18n="ref.open">打开来源 →</a>
+    </div>
+    <div class="src">
+      <h3 data-i18n="ref.iss3d.t">国际空间站三维模型</h3>
+      <p data-i18n="ref.iss3d.d">NASA 官方发布的国际空间站 glTF 模型；为了能在网页里点开就转，本站用 Draco + WebP 把它从约 44 MB 压到约 3 MB，几何和贴图保持完好。</p>
+      <p class="credit" data-i18n="ref.iss3d.c">NASA（公有领域）；本站自托管压缩版（NASA 原始 glTF 的 CORS 仅放行自家域）。</p>
+      <a class="open" href="https://science.nasa.gov/3d-resources/" target="_blank" rel="noopener" data-i18n="ref.open">打开来源 →</a>
+    </div>
+    <div class="src">
+      <h3 data-i18n="ref.tg3d.t">天宫空间站渲染图</h3>
+      <p data-i18n="ref.tg3d.d">天宫没有公开的官方三维模型，空间站页用的是社区制作的全构型渲染图（天和 + 问天 + 梦天）。</p>
+      <p class="credit" data-i18n="ref.tg3d.c">Shujianyang / Wikimedia Commons，CC BY-SA 4.0。</p>
+      <a class="open" href="https://commons.wikimedia.org/wiki/File:Tiangong_Space_Station_-_full_configuration.png" target="_blank" rel="noopener" data-i18n="ref.open">打开来源 →</a>
+    </div>
+  </section>
+
+  <section class="group">
+    <h2 data-i18n="ref.photo.h">天文台与望远镜照片</h2>
+    <div class="src">
+      <p data-i18n="ref.photo.d">观星台页每张设施照片都按授权署名。汇总如下：</p>
+      <p class="credit" data-i18n="ref.photo.list">ESO；NSF–DOE Vera C. Rubin Observatory / NOIRLab；International Gemini Observatory / NOIRLab / NSF / AURA；ESA / ATG medialab（以上 CC BY 4.0）；SCJiang、Acabashi 摄，来自 Wikimedia Commons（CC BY-SA 4.0）；NASA（公有领域及 CC BY 2.0）；NASA / JPL-Caltech（公有领域）。</p>
+      <a class="open" href="observatories.html" data-i18n="nav.observatories">观星台 →</a>
+    </div>
+  </section>
+
+  <section class="group">
+    <h2 data-i18n="ref.illus.h">解释性插图</h2>
+    <div class="src">
+      <h3 data-i18n="ref.bortle.t">光污染阶梯（Bortle 等级）</h3>
+      <p data-i18n="ref.bortle.d">解释层「光污染阶梯」卡片里的等级示意图，是本项目在早期自渲染管线里生成的图像。</p>
+      <p class="credit" data-i18n="ref.bortle.c">本项目原创制作。</p>
+    </div>
+    <div class="src">
+      <h3 data-i18n="ref.milkyway.t">银河系俯视示意图</h3>
+      <p data-i18n="ref.milkyway.d">「跳出银河系」卡片里的银河系俯视图，是基于真实测量绘制的示意图——人类从未从外部拍到过银河系全貌。</p>
+      <p class="credit" data-i18n="ref.milkyway.c">NASA / JPL-Caltech / R. Hurt。</p>
+    </div>
+  </section>
+
+  <section class="group">
+    <h2 data-i18n="ref.inspo.h">灵感来源</h2>
+    <div class="src">
+      <h3 data-i18n="ref.inspo.t">鸭哥（grapeot）的工作流分享</h3>
+      <p data-i18n="ref.inspo.d">这个项目的最初念头，来自 grapeot 公开分享的一批用 Gaia 数据做宇宙影像的工作流笔记。探索器的数据管线、叙事角度和实现都是本项目独立完成的，但那份分享是把我们领进门的人。</p>
+      <p class="credit" data-i18n="ref.inspo.c">致谢 grapeot（鸭哥）的公开分享。</p>
+    </div>
+  </section>
+
+  <section class="group">
+    <h2 data-i18n="ref.note.h">关于文字与事实</h2>
+    <div class="src">
+      <p class="note" data-i18n="ref.note.body">本站所有介绍与叙事文字均为本项目原创整理，不是从某处翻译或搬运的现成文案。事实数据核对至 2026 年 7 月；天文数字随观测更新，如与最新结果不符，以官方来源为准。所有第三方素材均按其授权要求署名，如有疏漏欢迎指出更正。</p>
+    </div>
+  </section>
+</div>
+</body>
+</html>

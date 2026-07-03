@@ -1,7 +1,10 @@
 [
   {
     "id": "galactic-center",
-    "label": "银心",
+    "label": {
+      "zh": "银心",
+      "en": "Galactic Center"
+    },
     "kind": "region",
     "mode": "real",
     "sky": {
@@ -9,14 +12,23 @@
       "dec": -29.0078
     },
     "fov": 10,
-    "summary": "银河系中心所在的方向，恒星密度和尘埃结构都格外醒目。",
-    "details": "拉近后能看到密集星场与暗尘带交织。我们看不到银心本体——它藏在厚厚的尘埃后面，这本身就是照片里的信息。",
+    "summary": {
+      "zh": "银河系中心所在的方向，恒星密度和尘埃结构都格外醒目。",
+      "en": "The direction of the Milky Way’s core, where star density and dust structure are especially striking."
+    },
+    "details": {
+      "zh": "拉近后能看到密集星场与暗尘带交织。我们看不到银心本体——它藏在厚厚的尘埃后面，这本身就是照片里的信息。",
+      "en": "Zoom in and you see dense star fields interlaced with dark dust lanes. We can’t see the core itself — it hides behind thick dust, and that concealment is itself information in the photo."
+    },
     "group": "夏季银河",
     "tour": true
   },
   {
     "id": "antares-region",
-    "label": "心宿二 · 蛇夫座暗云",
+    "label": {
+      "zh": "心宿二 · 蛇夫座暗云",
+      "en": "Antares · Rho Ophiuchi Dark Clouds"
+    },
     "kind": "star-region",
     "mode": "real",
     "sky": {
@@ -24,14 +36,23 @@
       "dec": -26.432
     },
     "fov": 8,
-    "summary": "心宿二附近有亮星、尘埃云和暗云，是夏季银河旁极有层次的天区。",
-    "details": "这里的橙黄、蓝白和漆黑都来自真实观测：红超巨星的光、反射星云的尘埃散射、以及挡住背景星光的暗云。",
+    "summary": {
+      "zh": "心宿二附近有亮星、尘埃云和暗云，是夏季银河旁极有层次的天区。",
+      "en": "Around Antares lie bright stars, dust clouds and dark nebulae — one of the most layered regions beside the summer Milky Way."
+    },
+    "details": {
+      "zh": "这里的橙黄、蓝白和漆黑都来自真实观测：红超巨星的光、反射星云的尘埃散射、以及挡住背景星光的暗云。",
+      "en": "Its oranges, blue-whites and inky blacks all come from real observation: the glow of a red supergiant, dust scattering in reflection nebulae, and dark clouds blocking the starlight behind them."
+    },
     "group": "夏季银河",
     "tour": true
   },
   {
     "id": "summer-triangle",
-    "label": "夏季大三角",
+    "label": {
+      "zh": "夏季大三角",
+      "en": "Summer Triangle"
+    },
     "kind": "asterism",
     "mode": "real",
     "sky": {
@@ -39,14 +60,23 @@
       "dec": 31
     },
     "fov": 45,
-    "summary": "织女星、天津四、牛郎星构成的高辨识度导航三角。",
-    "details": "三颗亮星横跨银河两岸，是北半球夏夜认路的起点。放大后注意三角内部穿过的银河光带与暗隙。",
+    "summary": {
+      "zh": "织女星、天津四、牛郎星构成的高辨识度导航三角。",
+      "en": "A highly recognizable navigation triangle formed by Vega, Deneb and Altair."
+    },
+    "details": {
+      "zh": "三颗亮星横跨银河两岸，是北半球夏夜认路的起点。放大后注意三角内部穿过的银河光带与暗隙。",
+      "en": "The three bright stars straddle both banks of the Milky Way — the starting point for finding your way on a northern summer night. Zoom in and watch the band of the Milky Way and its dark rifts run through the triangle."
+    },
     "group": "夏季银河",
     "tour": true
   },
   {
     "id": "cygnus-rift",
-    "label": "天鹅座 · 银河暗隙",
+    "label": {
+      "zh": "天鹅座 · 银河暗隙",
+      "en": "Cygnus · The Great Rift"
+    },
     "kind": "region",
     "mode": "real",
     "sky": {
@@ -54,14 +84,23 @@
       "dec": 45.2803
     },
     "fov": 18,
-    "summary": "天津四脚下，一条黑色裂缝把银河劈成两条。",
-    "details": "这条“大暗隙”不是没有星，而是前景尘埃云挡住了后面的亿万颗星——暗，也是一种观测结果。",
+    "summary": {
+      "zh": "天津四脚下，一条黑色裂缝把银河劈成两条。",
+      "en": "Below Deneb, a black fissure splits the Milky Way into two streams."
+    },
+    "details": {
+      "zh": "这条“大暗隙”不是没有星，而是前景尘埃云挡住了后面的亿万颗星——暗，也是一种观测结果。",
+      "en": "This “Great Rift” isn’t empty of stars — foreground dust clouds hide the billions behind them. Darkness, too, is an observation."
+    },
     "group": "夏季银河",
     "tour": true
   },
   {
     "id": "andromeda",
-    "label": "仙女座星系 M31",
+    "label": {
+      "zh": "仙女座星系 M31",
+      "en": "Andromeda Galaxy (M31)"
+    },
     "kind": "galaxy",
     "mode": "real",
     "sky": {
@@ -69,14 +108,23 @@
       "dec": 41.269
     },
     "fov": 3.5,
-    "summary": "肉眼可见的最远天体，一整个和银河系同级的星系。",
-    "details": "照片里那团拉长的光斑是两千五百亿颗恒星的总和。Gaia 测的是我们银河系内的恒星，M31 在它的边界之外。",
+    "summary": {
+      "zh": "肉眼可见的最远天体，一整个和银河系同级的星系。",
+      "en": "The most distant object visible to the naked eye — an entire galaxy on a par with our own."
+    },
+    "details": {
+      "zh": "照片里那团拉长的光斑是两千五百亿颗恒星的总和。Gaia 测的是我们银河系内的恒星，M31 在它的边界之外。",
+      "en": "That elongated smudge in the photo is the combined light of some 250 billion stars. Gaia measures stars within our own Milky Way; M31 lies beyond its edge."
+    },
     "group": "秋冬星空",
     "tour": true
   },
   {
     "id": "pleiades",
-    "label": "昴星团 M45",
+    "label": {
+      "zh": "昴星团 M45",
+      "en": "Pleiades (M45)"
+    },
     "kind": "cluster",
     "mode": "real",
     "sky": {
@@ -84,14 +132,23 @@
       "dec": 24.1167
     },
     "fov": 2.5,
-    "summary": "最著名的疏散星团，蓝白色的年轻恒星群。",
-    "details": "恒星周围的蓝色雾光是星团正好穿过的尘埃云反射的星光，不是恒星诞生时的残留物。",
+    "summary": {
+      "zh": "最著名的疏散星团，蓝白色的年轻恒星群。",
+      "en": "The most famous open cluster — a group of young, blue-white stars."
+    },
+    "details": {
+      "zh": "恒星周围的蓝色雾光是星团正好穿过的尘埃云反射的星光，不是恒星诞生时的残留物。",
+      "en": "The blue haze around the stars is starlight reflected off a dust cloud the cluster happens to be drifting through — not leftover material from the stars’ birth."
+    },
     "group": "秋冬星空",
     "tour": true
   },
   {
     "id": "orion-nebula",
-    "label": "猎户座大星云 M42",
+    "label": {
+      "zh": "猎户座大星云 M42",
+      "en": "Orion Nebula (M42)"
+    },
     "kind": "nebula",
     "mode": "real",
     "sky": {
@@ -99,14 +156,23 @@
       "dec": -5.3911
     },
     "fov": 3,
-    "summary": "离我们最近的大型恒星形成区，肉眼可见的星云。",
-    "details": "它是恒星形成活跃的星云区域。DSS2 照片里能看到发光气体的层次和被新生恒星吹开的空腔。",
+    "summary": {
+      "zh": "离我们最近的大型恒星形成区，肉眼可见的星云。",
+      "en": "The nearest large star-forming region, and a nebula visible to the naked eye."
+    },
+    "details": {
+      "zh": "它是恒星形成活跃的星云区域。DSS2 照片里能看到发光气体的层次和被新生恒星吹开的空腔。",
+      "en": "It is a nebula alive with star formation. In DSS2 imagery you can make out the layers of glowing gas and the cavities blown open by newborn stars."
+    },
     "group": "秋冬星空",
     "tour": true
   },
   {
     "id": "winter-triangle",
-    "label": "冬季大三角",
+    "label": {
+      "zh": "冬季大三角",
+      "en": "Winter Triangle"
+    },
     "kind": "region",
     "mode": "real",
     "group": "秋冬星空",
@@ -116,12 +182,21 @@
       "dec": -1.36
     },
     "fov": 45,
-    "summary": "天狼星、参宿四、南河三围出的冬夜地标，淡淡的冬季银河正好从三角形中间流过。",
-    "details": "三颗亮星分属大犬座、猎户座、小犬座。冬季银河比夏季淡很多——夏天我们朝银河系中心看，冬天朝外侧看，星星自然稀一些。这个亮度差本身就是『我们住在银河系里』的直接证据。"
+    "summary": {
+      "zh": "天狼星、参宿四、南河三围出的冬夜地标，淡淡的冬季银河正好从三角形中间流过。",
+      "en": "A winter landmark outlined by Sirius, Betelgeuse and Procyon, with the faint winter Milky Way flowing right through its middle."
+    },
+    "details": {
+      "zh": "三颗亮星分属大犬座、猎户座、小犬座。冬季银河比夏季淡很多——夏天我们朝银河系中心看，冬天朝外侧看，星星自然稀一些。这个亮度差本身就是『我们住在银河系里』的直接证据。",
+      "en": "The three bright stars belong to Canis Major, Orion and Canis Minor. The winter Milky Way is far fainter than the summer’s — in summer we look toward the galactic center, in winter toward the outer rim, where stars are naturally sparser. That difference in brightness is itself direct evidence that we live inside the Milky Way."
+    }
   },
   {
     "id": "sirius",
-    "label": "天狼星",
+    "label": {
+      "zh": "天狼星",
+      "en": "Sirius"
+    },
     "kind": "star-region",
     "mode": "real",
     "group": "秋冬星空",
@@ -131,12 +206,21 @@
       "dec": -16.71612
     },
     "fov": 6,
-    "summary": "全天最亮的恒星，其实只是离我们特别近——8.6 光年，宇宙尺度上的隔壁。",
-    "details": "它的亮不是因为大，而是因为近。Gaia 这类测量把『看起来亮』和『真的亮』分得清清楚楚：论真实光度，银河里比它强的星多得数不过来，只是都远。它旁边还藏着一颗白矮星伴星，是恒星死后的样子。"
+    "summary": {
+      "zh": "全天最亮的恒星，其实只是离我们特别近——8.6 光年，宇宙尺度上的隔壁。",
+      "en": "The brightest star in the sky — bright mostly because it’s so close: 8.6 light-years, next-door on a cosmic scale."
+    },
+    "details": {
+      "zh": "它的亮不是因为大，而是因为近。Gaia 这类测量把『看起来亮』和『真的亮』分得清清楚楚：论真实光度，银河里比它强的星多得数不过来，只是都远。它旁边还藏着一颗白矮星伴星，是恒星死后的样子。",
+      "en": "It shines not because it is large, but because it is near. Measurements like Gaia’s cleanly separate “looks bright” from “is bright”: in true luminosity, countless stars in the galaxy outshine it — they are simply farther away. Hidden beside it is a white-dwarf companion, a glimpse of what a star becomes after it dies."
+    }
   },
   {
     "id": "horsehead",
-    "label": "马头星云",
+    "label": {
+      "zh": "马头星云",
+      "en": "Horsehead Nebula"
+    },
     "kind": "nebula",
     "mode": "real",
     "group": "秋冬星空",
@@ -146,12 +230,21 @@
       "dec": -2.45833
     },
     "fov": 1.6,
-    "summary": "猎户座腰带旁最著名的暗星云——一团挡住背景红光的尘埃，剪影恰好像马头。",
-    "details": "发光的是它身后的氢气幕布，马头本身是不发光的冷尘埃。DSS2 照片里能认出轮廓；这团尘埃里正在悄悄孕育新的恒星，再过几百万年马头会被自己的孩子们吹散。"
+    "summary": {
+      "zh": "猎户座腰带旁最著名的暗星云——一团挡住背景红光的尘埃，剪影恰好像马头。",
+      "en": "The most famous dark nebula beside Orion’s Belt — a knot of dust blocking the red glow behind it, its silhouette shaped like a horse’s head."
+    },
+    "details": {
+      "zh": "发光的是它身后的氢气幕布，马头本身是不发光的冷尘埃。DSS2 照片里能认出轮廓；这团尘埃里正在悄悄孕育新的恒星，再过几百万年马头会被自己的孩子们吹散。",
+      "en": "What glows is the curtain of hydrogen behind it; the horse’s head itself is cold, non-luminous dust. You can pick out the outline in DSS2 imagery. New stars are quietly forming inside this dust, and in a few million years the horse’s head will be blown apart by its own children."
+    }
   },
   {
     "id": "rosette",
-    "label": "玫瑰星云",
+    "label": {
+      "zh": "玫瑰星云",
+      "en": "Rosette Nebula"
+    },
     "kind": "nebula",
     "mode": "real",
     "group": "秋冬星空",
@@ -161,12 +254,21 @@
       "dec": 4.79364
     },
     "fov": 2.5,
-    "summary": "麒麟座里一朵直径 130 光年的宇宙玫瑰，花心是被新生恒星吹空的。",
-    "details": "中心的星团 NGC 2244 刚从这团气体里诞生，年轻恒星的辐射把周围物质向外推，掏出了花心的空腔——花是它自己开的。DSS2 里花瓣的红色来自氢气发光。"
+    "summary": {
+      "zh": "麒麟座里一朵直径 130 光年的宇宙玫瑰，花心是被新生恒星吹空的。",
+      "en": "A cosmic rose 130 light-years across in Monoceros, its heart hollowed out by newborn stars."
+    },
+    "details": {
+      "zh": "中心的星团 NGC 2244 刚从这团气体里诞生，年轻恒星的辐射把周围物质向外推，掏出了花心的空腔——花是它自己开的。DSS2 里花瓣的红色来自氢气发光。",
+      "en": "The central cluster NGC 2244 was just born from this gas; radiation from its young stars pushes the surrounding material outward, carving the cavity at the flower’s heart — the rose opened itself. In DSS2, the red of the petals is glowing hydrogen."
+    }
   },
   {
     "id": "hyades",
-    "label": "毕宿五与毕星团",
+    "label": {
+      "zh": "毕宿五与毕星团",
+      "en": "Aldebaran & the Hyades"
+    },
     "kind": "star-region",
     "mode": "real",
     "group": "秋冬星空",
@@ -176,12 +278,21 @@
       "dec": 16.5093
     },
     "fov": 8,
-    "summary": "金牛座的 V 字牛脸：离我们最近的疏散星团，加一颗其实不属于它的橙色亮星。",
-    "details": "毕星团约 150 光年，是距离最近的疏散星团；橙色的毕宿五只有 65 光年，纯属路过镜头的前景演员。这层前后关系肉眼永远看不出来，是 Gaia 这类距离测量把它定死的——同一画面，两层空间。"
+    "summary": {
+      "zh": "金牛座的 V 字牛脸：离我们最近的疏散星团，加一颗其实不属于它的橙色亮星。",
+      "en": "The V-shaped face of Taurus: the nearest open cluster, plus a bright orange star that doesn’t actually belong to it."
+    },
+    "details": {
+      "zh": "毕星团约 150 光年，是距离最近的疏散星团；橙色的毕宿五只有 65 光年，纯属路过镜头的前景演员。这层前后关系肉眼永远看不出来，是 Gaia 这类距离测量把它定死的——同一画面，两层空间。",
+      "en": "The Hyades lie about 150 light-years away, the closest open cluster; orange Aldebaran is only 65 light-years off, a foreground actor merely passing through the frame. The eye can never tell this near-and-far apart — it took distance measurements like Gaia’s to pin it down. One picture, two layers of space."
+    }
   },
   {
     "id": "m35",
-    "label": "双子座 M35",
+    "label": {
+      "zh": "双子座 M35",
+      "en": "M35 in Gemini"
+    },
     "kind": "cluster",
     "mode": "real",
     "group": "秋冬星空",
@@ -191,12 +302,21 @@
       "dec": 24.33611
     },
     "fov": 2.5,
-    "summary": "双子座脚边的疏散星团，视场里还挤着另一个远五倍的星团，一近一远。",
-    "details": "M35 约 2800 光年；画面同侧那团更致密的小星点 NGC 2158 有一万多光年。两个星团挤在同一视场，是练习『看照片时想着距离』的绝佳天区。"
+    "summary": {
+      "zh": "双子座脚边的疏散星团，视场里还挤着另一个远五倍的星团，一近一远。",
+      "en": "An open cluster at the foot of Gemini, sharing the field with a second cluster five times farther away — one near, one far."
+    },
+    "details": {
+      "zh": "M35 约 2800 光年；画面同侧那团更致密的小星点 NGC 2158 有一万多光年。两个星团挤在同一视场，是练习『看照片时想着距离』的绝佳天区。",
+      "en": "M35 lies about 2,800 light-years away; the tighter knot of tiny points on the same side, NGC 2158, is over 10,000. Two clusters crammed into one field make this a perfect place to practice “thinking in distance while looking at a photo.”"
+    }
   },
   {
     "id": "carina-nebula",
-    "label": "船底座大星云",
+    "label": {
+      "zh": "船底座大星云",
+      "en": "Carina Nebula"
+    },
     "kind": "nebula",
     "mode": "real",
     "sky": {
@@ -204,14 +324,23 @@
       "dec": -59.6844
     },
     "fov": 4,
-    "summary": "南天最壮观的恒星形成区，比猎户座大星云更大更亮。",
-    "details": "这里住着银河系里已知最不稳定的大质量恒星之一（海山二）。南天巡天照片里它的气体结构非常震撼。",
+    "summary": {
+      "zh": "南天最壮观的恒星形成区，比猎户座大星云更大更亮。",
+      "en": "The most spectacular star-forming region of the southern sky — larger and brighter than the Orion Nebula."
+    },
+    "details": {
+      "zh": "这里住着银河系里已知最不稳定的大质量恒星之一（海山二）。南天巡天照片里它的气体结构非常震撼。",
+      "en": "It is home to one of the most unstable massive stars known in the galaxy (Eta Carinae). Its gas structures are breathtaking in southern-sky survey imagery."
+    },
     "group": "南天深空",
     "tour": true
   },
   {
     "id": "lmc",
-    "label": "大麦哲伦云",
+    "label": {
+      "zh": "大麦哲伦云",
+      "en": "Large Magellanic Cloud"
+    },
     "kind": "galaxy",
     "mode": "real",
     "sky": {
@@ -219,14 +348,23 @@
       "dec": -69.7561
     },
     "fov": 8,
-    "summary": "银河系最大的卫星星系，南天肉眼可见的一片光雾。",
-    "details": "它正围绕银河系运动，未来会被逐渐吸收。放大能看到里面自己的恒星形成区（蜘蛛星云）。",
+    "summary": {
+      "zh": "银河系最大的卫星星系，南天肉眼可见的一片光雾。",
+      "en": "The Milky Way’s largest satellite galaxy — a patch of luminous haze visible to the naked eye in the southern sky."
+    },
+    "details": {
+      "zh": "它正围绕银河系运动，未来会被逐渐吸收。放大能看到里面自己的恒星形成区（蜘蛛星云）。",
+      "en": "It is orbiting the Milky Way and will slowly be absorbed. Zoom in and you can see its own star-forming region within (the Tarantula Nebula)."
+    },
     "group": "南天深空",
     "tour": true
   },
   {
     "id": "smc",
-    "label": "小麦哲伦云",
+    "label": {
+      "zh": "小麦哲伦云",
+      "en": "Small Magellanic Cloud"
+    },
     "kind": "galaxy",
     "mode": "real",
     "sky": {
@@ -234,14 +372,23 @@
       "dec": -72.8286
     },
     "fov": 5,
-    "summary": "大麦哲伦云的小伙伴，另一个卫星星系。",
-    "details": "大小麦哲伦云之间由一条气体桥相连——星系之间的引力拉扯是看得见后果的。",
+    "summary": {
+      "zh": "大麦哲伦云的小伙伴，另一个卫星星系。",
+      "en": "The Large Magellanic Cloud’s little companion — another satellite galaxy."
+    },
+    "details": {
+      "zh": "大小麦哲伦云之间由一条气体桥相连——星系之间的引力拉扯是看得见后果的。",
+      "en": "A bridge of gas connects the two Magellanic Clouds — the gravitational tug between galaxies has visible consequences."
+    },
     "group": "南天深空",
     "tour": true
   },
   {
     "id": "crux-coalsack",
-    "label": "南十字与煤袋",
+    "label": {
+      "zh": "南十字与煤袋",
+      "en": "Southern Cross & the Coalsack"
+    },
     "kind": "region",
     "mode": "real",
     "group": "南天深空",
@@ -251,12 +398,21 @@
       "dec": -62.8
     },
     "fov": 12,
-    "summary": "南天最著名的路标十字，旁边贴着全天最醒目的暗星云——煤袋。",
-    "details": "南十字是全天 88 个星座里最小的一个，却上了好几个国家的国旗。紧挨着它的煤袋星云是一团近处的尘埃，把身后的银河光整块挡掉，肉眼看就是银河里一个突兀的黑洞。亮与暗贴在一起，是南天银河最戏剧性的一段。"
+    "summary": {
+      "zh": "南天最著名的路标十字，旁边贴着全天最醒目的暗星云——煤袋。",
+      "en": "The southern sky’s most famous signpost cross, set right beside the most conspicuous dark nebula in the heavens — the Coalsack."
+    },
+    "details": {
+      "zh": "南十字是全天 88 个星座里最小的一个，却上了好几个国家的国旗。紧挨着它的煤袋星云是一团近处的尘埃，把身后的银河光整块挡掉，肉眼看就是银河里一个突兀的黑洞。亮与暗贴在一起，是南天银河最戏剧性的一段。",
+      "en": "The Southern Cross is the smallest of the 88 constellations, yet it flies on several national flags. Right next to it, the Coalsack is a nearby cloud of dust that blocks the Milky Way’s light behind it wholesale — to the eye, an abrupt black hole in the galaxy. Bright and dark pressed together make this the most dramatic stretch of the southern Milky Way."
+    }
   },
   {
     "id": "omega-centauri",
-    "label": "半人马座 ω 球状星团",
+    "label": {
+      "zh": "半人马座 ω 球状星团",
+      "en": "Omega Centauri"
+    },
     "kind": "cluster",
     "mode": "real",
     "group": "南天深空",
@@ -266,12 +422,21 @@
       "dec": -47.4795
     },
     "fov": 2,
-    "summary": "全天最大的球状星团，一千万颗古老恒星挤成一团雾状的光球。",
-    "details": "它大得反常——很多研究认为它根本不是普通星团，而是一个被银河系吞掉的矮星系残留的核。里面的恒星大多比太阳老几十亿年。DSS2 拉近后能看到光球边缘散成密密麻麻的星点。"
+    "summary": {
+      "zh": "全天最大的球状星团，一千万颗古老恒星挤成一团雾状的光球。",
+      "en": "The largest globular cluster in the sky — ten million ancient stars packed into a hazy ball of light."
+    },
+    "details": {
+      "zh": "它大得反常——很多研究认为它根本不是普通星团，而是一个被银河系吞掉的矮星系残留的核。里面的恒星大多比太阳老几十亿年。DSS2 拉近后能看到光球边缘散成密密麻麻的星点。",
+      "en": "It is anomalously large — many studies argue it isn’t an ordinary cluster at all, but the surviving core of a dwarf galaxy the Milky Way swallowed. Most of its stars are billions of years older than the Sun. Zoom in with DSS2 and the edge of the ball dissolves into a dense scatter of individual points."
+    }
   },
   {
     "id": "47-tucanae",
-    "label": "杜鹃座 47",
+    "label": {
+      "zh": "杜鹃座 47",
+      "en": "47 Tucanae"
+    },
     "kind": "cluster",
     "mode": "real",
     "group": "南天深空",
@@ -281,12 +446,21 @@
       "dec": -72.0814
     },
     "fov": 2.5,
-    "summary": "第二亮的球状星团，看起来紧贴小麦哲伦云——其实是纯粹的视线巧合。",
-    "details": "它离我们约 1.5 万光年，旁边的小麦哲伦云在 20 万光年之外——两者只是恰好排在同一条视线上，前后差了一个数量级。又是一个『照片是平的，宇宙不是』的天区。"
+    "summary": {
+      "zh": "第二亮的球状星团，看起来紧贴小麦哲伦云——其实是纯粹的视线巧合。",
+      "en": "The second-brightest globular cluster, appearing to hug the Small Magellanic Cloud — a pure coincidence of sightline."
+    },
+    "details": {
+      "zh": "它离我们约 1.5 万光年，旁边的小麦哲伦云在 20 万光年之外——两者只是恰好排在同一条视线上，前后差了一个数量级。又是一个『照片是平的，宇宙不是』的天区。",
+      "en": "It lies about 15,000 light-years away; the Small Magellanic Cloud beside it is 200,000 — the two merely happen to line up along the same sightline, an order of magnitude apart. Another region where the photo is flat but the universe is not."
+    }
   },
   {
     "id": "tarantula",
-    "label": "蜘蛛星云",
+    "label": {
+      "zh": "蜘蛛星云",
+      "en": "Tarantula Nebula"
+    },
     "kind": "nebula",
     "mode": "real",
     "group": "南天深空",
@@ -296,12 +470,21 @@
       "dec": -69.1009
     },
     "fov": 2,
-    "summary": "藏在大麦哲伦云里的恒星工厂，是整个本星系群里最猛烈的一处。",
-    "details": "它不属于银河系——这团星云在大麦哲伦云里，16 万光年外。有个流传很广的比较：如果把它挪到猎户座大星云的位置，它会亮到在地上投出影子。里面正在批量制造大质量恒星。"
+    "summary": {
+      "zh": "藏在大麦哲伦云里的恒星工厂，是整个本星系群里最猛烈的一处。",
+      "en": "A stellar factory tucked inside the Large Magellanic Cloud — the most violent one in the entire Local Group."
+    },
+    "details": {
+      "zh": "它不属于银河系——这团星云在大麦哲伦云里，16 万光年外。有个流传很广的比较：如果把它挪到猎户座大星云的位置，它会亮到在地上投出影子。里面正在批量制造大质量恒星。",
+      "en": "It doesn’t belong to the Milky Way — this nebula sits in the Large Magellanic Cloud, 160,000 light-years away. A widely repeated comparison: move it to the Orion Nebula’s distance and it would be bright enough to cast shadows on the ground. Inside, massive stars are being mass-produced."
+    }
   },
   {
     "id": "alpha-centauri",
-    "label": "南门二 · 比邻星",
+    "label": {
+      "zh": "南门二 · 比邻星",
+      "en": "Alpha Centauri · Proxima"
+    },
     "kind": "star-region",
     "mode": "real",
     "group": "南天深空",
@@ -311,12 +494,21 @@
       "dec": -60.834
     },
     "fov": 6,
-    "summary": "离太阳最近的恒星系统，4.2 光年——宇宙里真正的隔壁邻居。",
-    "details": "肉眼看是一颗亮星，实际是三颗：两颗类太阳恒星互相绕转，加一颗暗淡的红矮星比邻星。比邻星旁边确认有行星。人类目前最认真的恒星际航行设想（光帆探测器），目的地都写的是这里。"
+    "summary": {
+      "zh": "离太阳最近的恒星系统，4.2 光年——宇宙里真正的隔壁邻居。",
+      "en": "The nearest star system to the Sun, 4.2 light-years away — our true next-door neighbor in the cosmos."
+    },
+    "details": {
+      "zh": "肉眼看是一颗亮星，实际是三颗：两颗类太阳恒星互相绕转，加一颗暗淡的红矮星比邻星。比邻星旁边确认有行星。人类目前最认真的恒星际航行设想（光帆探测器），目的地都写的是这里。",
+      "en": "To the eye it is a single bright star; in truth there are three: two Sun-like stars orbiting each other, plus a faint red dwarf, Proxima. A planet has been confirmed around Proxima. Humanity’s most serious interstellar-travel proposals so far — light-sail probes — all name this as the destination."
+    }
   },
   {
     "id": "vela-snr",
-    "label": "船帆座超新星遗迹",
+    "label": {
+      "zh": "船帆座超新星遗迹",
+      "en": "Vela Supernova Remnant"
+    },
     "kind": "nebula",
     "mode": "real",
     "group": "南天深空",
@@ -326,7 +518,13 @@
       "dec": -45.8333
     },
     "fov": 8,
-    "summary": "一颗恒星约一万年前爆炸留下的残骸，丝缕状的碎片还在往外飞。",
-    "details": "爆炸当时的亮度在地球上白天可见。今天留下的是撕成细丝的气体壳层和中心一颗每秒自转 11 圈的脉冲星。DSS2 里能隐约认出淡淡的丝状结构——那是一场万年前的死亡现场。"
+    "summary": {
+      "zh": "一颗恒星约一万年前爆炸留下的残骸，丝缕状的碎片还在往外飞。",
+      "en": "The wreckage a star left when it exploded about 10,000 years ago — filamentary debris still flying outward."
+    },
+    "details": {
+      "zh": "爆炸当时的亮度在地球上白天可见。今天留下的是撕成细丝的气体壳层和中心一颗每秒自转 11 圈的脉冲星。DSS2 里能隐约认出淡淡的丝状结构——那是一场万年前的死亡现场。",
+      "en": "At the moment of the blast it would have been visible in daylight from Earth. What remains today is a shell of gas torn into fine filaments and, at its center, a pulsar spinning 11 times a second. In DSS2 you can faintly trace the wispy filaments — the scene of a death ten thousand years old."
+    }
   }
 ]
