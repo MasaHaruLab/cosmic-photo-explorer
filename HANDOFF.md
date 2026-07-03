@@ -2,6 +2,18 @@
 
 Updated: 2026-07-03（整站双语 + 探测器模拟器 + 移动端切换钮修复，**全部已部署上线**）
 
+## ⭐ 静态页 EN 切换失效修复（2026-07-03，已部署 gh-pages a942afe）
+
+CEO 反馈太阳系页 EN 按了无效。根因 = 子路径部署陷阱（**不是缓存/不是内容**）：
+`public/` 四页（solar/observatories/stations/reference）用**绝对路径** `<script src="/i18n.js">`
+加载引擎。Vite 会把入口 `index.html` 的 `/i18n.js` 重写为 `./i18n.js`，但 `public/` 页原样拷贝，
+于是在 GitHub Pages 子路径 `/cosmic-photo-explorer/` 下 `/i18n.js` 指向域根 → **404**，
+引擎从未加载 → 四页 EN 切换全死。旧验收只在 dist 根路径预览故没暴露（根路径下 `/i18n.js` 恰好 200）。
+修复（3656c55）：四页改 `./i18n.js`。**验收改在子路径复现**（`http.server` 服 dist 父目录、走 `/dist/xxx.html`）：
+真浏览器四页 EN 逐一实测——引擎加载、点击翻转 EN↔中文、CJK 残留全 0。线上 a942afe ~24s 生效。
+教训：子路径站点验收必须在子路径下测，不能在根路径测（同一 bug 在根路径不可见）。
+全局 skill `bilingual-static-site` 的 SKILL.md 里也写了 `src="/i18n.js"` 同款坑，待授权后修。
+
 ## ⭐ 移动端语言钮修复（2026-07-03，已部署 gh-pages 9cbf2c9）
 
 CEO 反馈手机上看不到中英切换钮（清缓存 + `?2` 仍无效）。根因 = 真 CSS bug，非缓存：
