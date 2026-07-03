@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title data-i18n="con.pageTitle">星座的真相 · 星空照片探索器</title>
+<script src="./i18n.js"></script>
+<script>
+// Page dictionary — { zh, en } pairs, human-written English. Registered during
+// head parse, applied by i18n.js on DOMContentLoaded. See TRANSLATION-GUIDE.md.
+window.I18N.register({
+  'con.pageTitle': { zh: '星座的真相 · 星空照片探索器', en: 'The truth about constellations · Cosmic Photo Explorer' },
+  'con.eyebrow': { zh: '解释层 / 星座其实是障眼法', en: 'Explainer / A constellation is a trick of perspective' },
+  'con.title': { zh: '北斗七星：一个只属于地球的形状', en: 'The Big Dipper: a shape that only exists from Earth' },
+  'con.lede': {
+    zh: '从地球看，这七颗星连成一把勺子。但它们其实前后散布在 80 到 124 光年之间，根本不在一块儿——这个「勺子」只是我们这个视角的巧合。拖动鼠标离开地球，看它当场散架。',
+    en: 'From Earth these seven stars line up into a ladle. But they are actually scattered between 80 and 124 light-years away — nowhere near each other. The "ladle" is a coincidence of our single viewpoint. Drag to leave Earth and watch it fall apart.',
+  },
+  'con.status.earth': { zh: '✨ 这就是你从地球看到的北斗七星', en: '✨ This is the Big Dipper as you see it from Earth' },
+  'con.status.off': { zh: '🌀 你已离开地球视角 —— 看，它们前后差着几十光年', en: '🌀 You have left Earth — see, they are tens of light-years apart in depth' },
+  'con.reset': { zh: '🌍 回到地球视角', en: '🌍 Back to Earth’s view' },
+  'con.sightlines.on': { zh: '显示到地球的视线', en: 'Show sightlines to Earth' },
+  'con.sightlines.off': { zh: '隐藏视线', en: 'Hide sightlines' },
+  'con.hint': { zh: '拖动 = 环绕飞行 · 滚轮 = 远近 · 连线始终连着同样的星，散开的是它们排成的「形状」', en: 'Drag = orbit · Scroll = zoom · The lines always join the same stars — what breaks apart is the "shape" they trace' },
+  'con.unit': { zh: '光年', en: 'ly' },
+  'con.earth': { zh: '地球（你在这里）', en: 'Earth (you are here)' },
+  'con.about.h': { zh: '这是怎么回事', en: 'What you are looking at' },
+  'con.about.p1': {
+    zh: '北斗七星是大熊座的一部分。它看起来像个整体，其实两端的天枢和摇光离我们最远（约 124 和 104 光年），中间五颗挤在 80 光年附近——它们甚至不属于同一个星群。所以你一转视角，两端就最先「甩」出去。',
+    en: 'The Big Dipper is part of Ursa Major. It looks like one object, but its two ends — Dubhe and Alkaid — are the farthest (about 124 and 104 ly), while the middle five cluster near 80 ly and do not even belong to the same star group. So as you rotate, the two ends swing out first.',
+  },
+  'con.about.p2': {
+    zh: '这七颗星还各自朝不同方向运动。大约五万年后，这把勺子会明显变形——星座并不是永恒的图案，只是此时此地、从地球看过去的一张快照。',
+    en: 'The seven stars also drift in different directions. In about 50,000 years the ladle will visibly deform — a constellation is not an eternal pattern, just a snapshot from here and now, seen from Earth.',
+  },
+  'con.stars.h': { zh: '七颗星与它们的距离', en: 'The seven stars and their distances' },
+  'con.source': { zh: '恒星坐标与距离：Hipparcos 星表（ESA）。渲染：Three.js（自托管）。', en: 'Star positions & distances: Hipparcos catalogue (ESA). Rendering: Three.js (self-hosted).' },
+  'nav.home': { zh: '← 回到星空探索器', en: '← Back to the explorer' },
+  'nav.solar': { zh: '太阳系 →', en: 'Solar System →' },
+  'nav.stations': { zh: '空间站 →', en: 'Space Stations →' },
+  'nav.observatories': { zh: '观星台 →', en: 'Observatories →' },
+  'nav.reference': { zh: '来源 →', en: 'Sources →' },
+})
+</script>
+<style>
+  :root {
+    --bg: #04060c;
+    --panel: rgba(11, 16, 28, 0.72);
+    --line: rgba(148, 170, 220, 0.16);
+    --text: #d8e0f0;
+    --dim: #8fa0be;
+    --accent: #9db8ff;
+    --cyan: #37e0ff;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--text);
+    font: 15px/1.6 -apple-system, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif; }
+  #stage { position: fixed; inset: 0; overflow: hidden; }
+  #sky { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
+  #labels { position: absolute; inset: 0; pointer-events: none; }
+
+  /* Overlaid 3D labels */
+  .star-label { position: absolute; transform: translate(-50%, -140%); white-space: nowrap;
+    font-size: 12px; color: var(--text); text-shadow: 0 1px 6px rgba(0,0,0,0.9); }
+  .star-label b { font-weight: 600; font-size: 13px; letter-spacing: 0.02em; }
+  .star-label .d { color: var(--cyan); font-size: 11px; margin-left: 5px; }
+  .earth-label { position: absolute; transform: translate(-50%, 20px); white-space: nowrap;
+    font-size: 12px; color: #7fd0ff; text-shadow: 0 1px 6px rgba(0,0,0,0.9); }
+
+  /* Info panel */
+  .panel { position: absolute; top: 18px; left: 18px; width: min(360px, calc(100vw - 36px));
+    max-height: calc(100vh - 36px); overflow-y: auto; background: var(--panel);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--line); border-radius: 16px; padding: 18px 20px 20px; }
+  .eyebrow { font-size: 11.5px; letter-spacing: 0.16em; color: var(--dim); text-transform: none; }
+  h1 { font-size: 20px; line-height: 1.35; margin: 6px 0 8px; }
+  .lede { color: var(--dim); font-size: 13.5px; margin: 0 0 14px; }
+  nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 16px; }
+  .back { display: inline-block; color: var(--accent); text-decoration: none; font-size: 12px;
+    border: 1px solid var(--line); border-radius: 999px; padding: 3px 11px; }
+  .back:hover { border-color: var(--accent); }
+  .lang-toggle { font: inherit; font-size: 12px; cursor: pointer; color: var(--accent);
+    background: rgba(157,184,255,0.08); border: 1px solid var(--line); border-radius: 999px; padding: 3px 12px; }
+  .section { border-top: 1px solid var(--line); padding-top: 12px; margin-top: 14px; }
+  .section h2 { font-size: 13.5px; margin: 0 0 7px; color: var(--text); }
+  .section p { font-size: 12.5px; color: var(--dim); margin: 0 0 8px; }
+  .starlist { list-style: none; padding: 0; margin: 0; }
+  .starlist li { display: flex; justify-content: space-between; gap: 10px; font-size: 12.5px;
+    padding: 3px 0; border-bottom: 1px dashed rgba(148,170,220,0.10); }
+  .starlist li:last-child { border-bottom: 0; }
+  .starlist .nm { color: var(--text); }
+  .starlist .nm span { color: var(--dim); font-size: 11px; margin-left: 5px; }
+  .starlist .dist { color: var(--cyan); white-space: nowrap; }
+  .source { font-size: 11px; color: var(--dim); margin-top: 12px; }
+
+  /* Bottom controls + live status */
+  .dock { position: absolute; left: 50%; bottom: 22px; transform: translateX(-50%);
+    display: flex; flex-direction: column; align-items: center; gap: 10px; width: min(560px, calc(100vw - 36px)); }
+  .status { font-size: 13px; text-align: center; color: var(--text);
+    background: rgba(11,16,28,0.7); border: 1px solid var(--line); border-radius: 999px;
+    padding: 7px 16px; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+  .btns { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+  .btn { font: inherit; font-size: 13px; cursor: pointer; color: var(--text);
+    background: rgba(11,16,28,0.7); border: 1px solid var(--line); border-radius: 999px; padding: 7px 15px;
+    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+  .btn:hover { border-color: var(--accent); }
+  .btn.primary { color: var(--bg); background: var(--accent); border-color: var(--accent); font-weight: 600; }
+  .hint { position: absolute; right: 18px; bottom: 22px; max-width: 260px; text-align: right;
+    font-size: 11.5px; color: var(--dim); }
+  @media (max-width: 720px) {
+    .hint { display: none; }
+    .panel { top: 12px; left: 12px; padding: 14px 16px; }
+    h1 { font-size: 17px; }
+  }
+</style>
+</head>
+<body>
+<div id="stage">
+  <canvas id="sky"></canvas>
+  <div id="labels"></div>
+
+  <div class="panel">
+    <div class="eyebrow" data-i18n="con.eyebrow">解释层 / 星座其实是障眼法</div>
+    <h1 data-i18n="con.title">北斗七星：一个只属于地球的形状</h1>
+    <p class="lede" data-i18n="con.lede">从地球看，这七颗星连成一把勺子……</p>
+    <nav>
+      <a class="back" href="./" data-i18n="nav.home">← 回到星空探索器</a>
+      <a class="back" href="solar.html" data-i18n="nav.solar">太阳系 →</a>
+      <a class="back" href="reference.html" data-i18n="nav.reference">来源 →</a>
+      <button class="lang-toggle" type="button" data-lang-toggle>EN</button>
+    </nav>
+    <div class="section">
+      <h2 data-i18n="con.about.h">这是怎么回事</h2>
+      <p data-i18n="con.about.p1"></p>
+      <p data-i18n="con.about.p2"></p>
+    </div>
+    <div class="section">
+      <h2 data-i18n="con.stars.h">七颗星与它们的距离</h2>
+      <ul class="starlist" id="starlist"></ul>
+      <p class="source" data-i18n="con.source"></p>
+    </div>
+    <!-- Host the shared creator credit here so it sits in the panel instead of
+         floating over the immersive canvas; i18n.js sees it and skips its own. -->
+    <div class="site-credit" data-i18n="credit.madeby" style="margin-top:14px;font-size:11px;opacity:.5;letter-spacing:.03em"></div>
+  </div>
+
+  <div class="dock">
+    <div class="status" data-status>✨</div>
+    <div class="btns">
+      <button class="btn primary" type="button" data-reset data-i18n="con.reset">🌍 回到地球视角</button>
+      <button class="btn" type="button" data-sightlines data-i18n="con.sightlines.on">显示到地球的视线</button>
+    </div>
+  </div>
+  <div class="hint" data-i18n="con.hint">拖动 = 环绕飞行 · 滚轮 = 远近</div>
+</div>
+
+<script>
+(function () {
+  'use strict'
+
+  // --- Big Dipper (北斗七星), part of Ursa Major. Positions & distances from the
+  //     Hipparcos catalogue. ra/dec in degrees (J2000), dist in light-years,
+  //     mag = apparent visual magnitude (smaller = brighter). ---
+  const STARS = [
+    { id: 'dubhe',  zh: '天枢', west: 'Dubhe',  bayer: 'α', ra: 165.932, dec: 61.751, dist: 123.0, mag: 1.79 },
+    { id: 'merak',  zh: '天璇', west: 'Merak',  bayer: 'β', ra: 165.460, dec: 56.383, dist: 79.7,  mag: 2.37 },
+    { id: 'phecda', zh: '天玑', west: 'Phecda', bayer: 'γ', ra: 178.458, dec: 53.695, dist: 83.2,  mag: 2.44 },
+    { id: 'megrez', zh: '天权', west: 'Megrez', bayer: 'δ', ra: 183.857, dec: 57.033, dist: 80.5,  mag: 3.31 },
+    { id: 'alioth', zh: '玉衡', west: 'Alioth', bayer: 'ε', ra: 193.507, dec: 55.960, dist: 82.6,  mag: 1.77 },
+    { id: 'mizar',  zh: '开阳', west: 'Mizar',  bayer: 'ζ', ra: 200.981, dec: 54.925, dist: 82.9,  mag: 2.04 },
+    { id: 'alkaid', zh: '摇光', west: 'Alkaid', bayer: 'η', ra: 206.885, dec: 49.313, dist: 103.9, mag: 1.86 },
+  ]
+  // Stick-figure connectivity: bowl (quadrilateral) + handle.
+  const LINKS = [
+    ['dubhe', 'merak'], ['merak', 'phecda'], ['phecda', 'megrez'], ['megrez', 'dubhe'],
+    ['megrez', 'alioth'], ['alioth', 'mizar'], ['mizar', 'alkaid'],
+  ]
+
+  const canvas = document.getElementById('sky')
+  const labelLayer = document.getElementById('labels')
+  const statusEl = document.querySelector('[data-status]')
+  const I18N = window.I18N
+
+  // Load the vendored engine (self-hosted, same as the solar page).
+  const load = (src) => new Promise((res, rej) => {
+    const s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = rej
+    document.head.appendChild(s)
+  })
+  load('vendor/three.min.js').then(() => load('vendor/OrbitControls.js')).then(start)
+
+  // Equatorial (ra, dec, distance) -> Cartesian. From the origin (Earth) the
+  // direction is exactly the star's sky position, so the view from (0,0,0)
+  // reproduces the familiar pattern; depth only shows once you move off Earth.
+  function toVec3(THREE, s) {
+    const a = s.ra * Math.PI / 180, d = s.dec * Math.PI / 180
+    return new THREE.Vector3(
+      s.dist * Math.cos(d) * Math.cos(a),
+      s.dist * Math.cos(d) * Math.sin(a),
+      s.dist * Math.sin(d),
+    )
+  }
+
+  function starSprite(THREE) {
+    const c = document.createElement('canvas'); c.width = c.height = 64
+    const g = c.getContext('2d')
+    const grd = g.createRadialGradient(32, 32, 0, 32, 32, 32)
+    grd.addColorStop(0.0, 'rgba(255,255,255,1)')
+    grd.addColorStop(0.22, 'rgba(245,249,255,0.95)')
+    grd.addColorStop(0.5, 'rgba(160,200,255,0.35)')
+    grd.addColorStop(1.0, 'rgba(160,200,255,0)')
+    g.fillStyle = grd; g.fillRect(0, 0, 64, 64)
+    return new THREE.CanvasTexture(c)
+  }
+
+  function start() {
+    const THREE = window.THREE
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true })
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+    renderer.outputEncoding = THREE.sRGBEncoding
+    const scene = new THREE.Scene()
+    const camera = new THREE.PerspectiveCamera(46, 1, 0.1, 6000)
+
+    // Positions + centroid (the point we orbit around).
+    const pos = {}
+    const centroid = new THREE.Vector3()
+    STARS.forEach((s) => { pos[s.id] = toVec3(THREE, s); centroid.add(pos[s.id]) })
+    centroid.multiplyScalar(1 / STARS.length)
+
+    // Faint background starfield for depth.
+    const bgGeo = new THREE.BufferGeometry()
+    const bgN = 500, bgArr = new Float32Array(bgN * 3)
+    let seed = 7
+    const rnd = () => { seed = (seed * 9301 + 49297) % 233280; return seed / 233280 }
+    for (let i = 0; i < bgN; i++) {
+      const th = rnd() * Math.PI * 2, ph = Math.acos(rnd() * 2 - 1), r = 2600
+      bgArr[i * 3] = r * Math.sin(ph) * Math.cos(th)
+      bgArr[i * 3 + 1] = r * Math.sin(ph) * Math.sin(th)
+      bgArr[i * 3 + 2] = r * Math.cos(ph)
+    }
+    bgGeo.setAttribute('position', new THREE.BufferAttribute(bgArr, 3))
+    scene.add(new THREE.Points(bgGeo, new THREE.PointsMaterial({ color: 0x9fb0d0, size: 3, sizeAttenuation: false, transparent: true, opacity: 0.5 })))
+
+    // Earth marker at the origin. Front-side material → invisible while the
+    // camera sits at the origin (Earth's view), appears once you orbit away.
+    const earth = new THREE.Mesh(
+      new THREE.SphereGeometry(2.4, 24, 18),
+      new THREE.MeshBasicMaterial({ color: 0x2f7fff }),
+    )
+    scene.add(earth)
+
+    // The seven stars (additive-blended sprites, sized by brightness).
+    const tex = starSprite(THREE)
+    STARS.forEach((s) => {
+      const mat = new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending })
+      const sp = new THREE.Sprite(mat)
+      const size = 2 + (3.4 - s.mag) * 1.0   // brighter (lower mag) → bigger
+      sp.scale.set(size, size, 1)
+      sp.position.copy(pos[s.id])
+      scene.add(sp)
+    })
+
+    // Constellation lines — always connected. Static in 3D; the "shape" only
+    // changes because the camera moves.
+    const linePts = []
+    LINKS.forEach(([a, b]) => { linePts.push(pos[a].x, pos[a].y, pos[a].z, pos[b].x, pos[b].y, pos[b].z) })
+    const lineGeo = new THREE.BufferGeometry()
+    lineGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(linePts), 3))
+    const lines = new THREE.LineSegments(lineGeo, new THREE.LineBasicMaterial({ color: 0x37e0ff, transparent: true, opacity: 0.8 }))
+    scene.add(lines)
+
+    // Sightlines from Earth (origin) to each star — toggleable depth cue.
+    const sightPts = []
+    STARS.forEach((s) => { sightPts.push(0, 0, 0, pos[s.id].x, pos[s.id].y, pos[s.id].z) })
+    const sightGeo = new THREE.BufferGeometry()
+    sightGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(sightPts), 3))
+    const sightlines = new THREE.LineSegments(sightGeo, new THREE.LineBasicMaterial({ color: 0x37e0ff, transparent: true, opacity: 0.22 }))
+    sightlines.visible = false
+    scene.add(sightlines)
+
+    // Controls: orbit around the constellation centroid.
+    const controls = new THREE.OrbitControls(camera, renderer.domElement)
+    controls.enableDamping = true
+    controls.dampingFactor = 0.08
+    controls.rotateSpeed = 0.55
+    controls.enablePan = false
+    controls.minDistance = 28
+    controls.maxDistance = 320
+    controls.target.copy(centroid)
+
+    function goEarthView() {
+      // Camera exactly at Earth → the seven stars project into the real ladle.
+      // First update with damping off flushes any leftover orbit momentum
+      // (sphericalDelta) so the snap-back is clean; then place the camera at the
+      // origin and update once more with the delta already zeroed.
+      const damp = controls.enableDamping
+      controls.enableDamping = false
+      controls.update()
+      camera.position.set(0, 0, 0)
+      controls.target.copy(centroid)
+      controls.update()
+      controls.enableDamping = damp
+    }
+    goEarthView()
+
+    // HTML labels for the stars + Earth (crisp text, projected each frame).
+    const starLabels = STARS.map((s) => {
+      const el = document.createElement('div'); el.className = 'star-label'
+      el.innerHTML = '<b></b><span class="d"></span>'
+      labelLayer.appendChild(el)
+      return { s, el, nm: el.querySelector('b'), d: el.querySelector('.d') }
+    })
+    const earthLabel = document.createElement('div'); earthLabel.className = 'earth-label'
+    labelLayer.appendChild(earthLabel)
+
+    function refreshLabelText() {
+      const zh = I18N.getLang() === 'zh'
+      const unit = I18N.t('con.unit')
+      starLabels.forEach(({ s, nm, d }) => {
+        nm.textContent = zh ? s.zh : s.west
+        d.textContent = s.dist + ' ' + unit
+      })
+      earthLabel.textContent = I18N.t('con.earth')
+    }
+    refreshLabelText()
+
+    // Side panel star list.
+    const listEl = document.getElementById('starlist')
+    function refreshList() {
+      const zh = I18N.getLang() === 'zh'
+      const unit = I18N.t('con.unit')
+      listEl.innerHTML = ''
+      STARS.forEach((s) => {
+        const li = document.createElement('li')
+        li.innerHTML = '<span class="nm">' + (zh ? s.zh : s.west) +
+          '<span>' + (zh ? s.west : s.zh) + ' ' + s.bayer + '</span></span>' +
+          '<span class="dist">' + s.dist + ' ' + unit + '</span>'
+        listEl.appendChild(li)
+      })
+    }
+    refreshList()
+
+    // Live status: are we still (near) Earth's viewpoint?
+    let lastEarthState = null
+    function updateStatus() {
+      const nearEarth = camera.position.length() < 14   // ly from origin
+      if (nearEarth !== lastEarthState) {
+        lastEarthState = nearEarth
+        statusEl.textContent = I18N.t(nearEarth ? 'con.status.earth' : 'con.status.off')
+      }
+    }
+
+    // Re-localize dynamic bits when the language flips.
+    I18N.onChange(() => { refreshLabelText(); refreshList(); lastEarthState = null; updateStatus() })
+
+    // Buttons.
+    document.querySelector('[data-reset]').addEventListener('click', goEarthView)
+    const slBtn = document.querySelector('[data-sightlines]')
+    slBtn.addEventListener('click', () => {
+      sightlines.visible = !sightlines.visible
+      slBtn.setAttribute('data-i18n', sightlines.visible ? 'con.sightlines.off' : 'con.sightlines.on')
+      slBtn.textContent = I18N.t(sightlines.visible ? 'con.sightlines.off' : 'con.sightlines.on')
+    })
+
+    // Project a world point to screen pixels; returns null if behind the camera.
+    const proj = new THREE.Vector3()
+    function toScreen(v3, w, h) {
+      proj.copy(v3).project(camera)
+      if (proj.z > 1) return null
+      return { x: (proj.x * 0.5 + 0.5) * w, y: (-proj.y * 0.5 + 0.5) * h }
+    }
+
+    function resize() {
+      const w = canvas.clientWidth, h = canvas.clientHeight
+      if (canvas.width !== w * renderer.getPixelRatio() || canvas.height !== h * renderer.getPixelRatio()) {
+        renderer.setSize(w, h, false)
+      }
+      camera.aspect = w / h
+      camera.updateProjectionMatrix()
+    }
+    window.addEventListener('resize', resize)
+
+    function tick() {
+      resize()
+      controls.update()
+      updateStatus()
+      const w = canvas.clientWidth, h = canvas.clientHeight
+      starLabels.forEach(({ el, s }) => {
+        const p = toScreen(pos[s.id], w, h)
+        if (p) { el.style.display = ''; el.style.left = p.x + 'px'; el.style.top = p.y + 'px' }
+        else el.style.display = 'none'
+      })
+      // Earth label — hide when the camera is essentially on Earth (origin ≈ camera).
+      const ep = camera.position.length() > 6 ? toScreen(earth.position, w, h) : null
+      if (ep) { earthLabel.style.display = ''; earthLabel.style.left = ep.x + 'px'; earthLabel.style.top = ep.y + 'px' }
+      else earthLabel.style.display = 'none'
+      renderer.render(scene, camera)
+      requestAnimationFrame(tick)
+    }
+    tick()
+  }
+})()
+</script>
+</body>
+</html>

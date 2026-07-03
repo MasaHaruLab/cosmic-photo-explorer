@@ -114,13 +114,16 @@
   // stays identical everywhere and can't drift, and any future page gets it for
   // free. It carries data-i18n so apply() re-localizes it on language toggle.
   function mountCredit() {
-    if (document.querySelector('.site-credit')) return
+    // Register the string first, so a page that hosts its own .site-credit
+    // element (e.g. an immersive full-screen page that wants the line inside a
+    // panel instead of floating) still gets it localized.
     register({
       'credit.madeby': {
         zh: '由 AmbrosiaZ 与 Claude Code 共同打造 · 2026',
         en: 'Made by AmbrosiaZ & Claude Code · 2026',
       },
     })
+    if (document.querySelector('.site-credit')) return
     const el = document.createElement('div')
     el.className = 'site-credit'
     el.setAttribute('data-i18n', 'credit.madeby')
