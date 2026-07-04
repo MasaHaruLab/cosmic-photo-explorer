@@ -1,5 +1,21 @@
 # HANDOFF
 
+Updated: 2026-07-04（**星座 3D 侧栏移动端可收起 + 手机默认折叠**，修「文字栏占满屏、挡星图、拖不动」。源 master 352be91 / 部署 gh-pages 9657555，**已推送并线上复验生效**）
+
+## ⭐ 星座 3D 侧栏移动端可收起（2026-07-04，源 352be91 / 部署 9657555）
+
+CEO 反馈：手机（微信 / 手机 Chrome）上「星座其实是障眼法」页的文字栏一直铺满屏幕、完全挡住星图，也用不了拖拽环绕。
+
+**改动（`public/constellations.html` 单文件）：**
+- 面板右上加「‹」收起钮 → 面板整体 `translateX(-100% - 30px)` + opacity 0 **向左滑出屏外**（`.panel.collapsed`）。
+- 收起后左上冒出「ℹ️ 说明 / ℹ️ Info」再展开标签（`.panel.collapsed ~ .panel-open` 兄弟选择器控制显隐），点它展开。
+- **`matchMedia('(max-width: 720px)')` 命中（=手机）时 boot 即默认折叠**；桌面照旧默认展开。i18n 加 `con.panel.open`。
+
+**验证**：浏览器实测收起钮/展开标签显隐、`.collapsed` 最终位（右缘 -12px = 彻底移出左侧屏外）、桌面默认展开；`curl` 线上 constellations.html 命中新代码（10 处）。⚠️ 隐藏标签页会**冻结 CSS transition**（读到中间值像「没动」，见记忆 `feedback_hidden_tab_verification_is_fake_green`）→ 关掉 transition 直接读最终值确认。
+⚠️ 微信/手机 Chrome **会缓存旧页**，CEO 端如未回缩需手动刷新 / 清缓存。
+
+---
+
 Updated: 2026-07-03（**主页探测器改造「卫星贴身跟随 + 视差科普卡」+ 星座扩充「猎户座/仙后座」，均已部署**。源 master cb9a0fd / 部署 gh-pages 32c2695，**已推送，Pages 构建 + 新西兰边缘缓存约 10 分钟**）
 
 ## ⭐ 当前最新状态（2026-07-03 晚，源 cb9a0fd / 部署 32c2695）—— 取代下方「静态默认」旧方案
