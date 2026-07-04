@@ -23,6 +23,7 @@ window.I18N.register({
   'con.earth': { zh: '地球（你在这里）', en: 'Earth (you are here)' },
   'con.about.h': { zh: '这是怎么回事', en: 'What you are looking at' },
   'con.pick': { zh: '换一个星座', en: 'Switch constellation' },
+  'con.panel.open': { zh: 'ℹ️ 说明', en: 'ℹ️ Info' },
   'nav.home': { zh: '← 回到星空探索器', en: '← Back to the explorer' },
   'nav.solar': { zh: '太阳系 →', en: 'Solar System →' },
   'nav.stations': { zh: '空间站 →', en: 'Space Stations →' },
@@ -60,6 +61,23 @@ window.I18N.register({
     max-height: calc(100vh - 36px); overflow-y: auto; background: var(--panel);
     backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
     border: 1px solid var(--line); border-radius: 16px; padding: 18px 20px 20px; }
+
+  /* Collapsible panel — on phones it otherwise fills the screen and blocks the
+     orbit drag, so it can tuck off to the left, leaving only a re-open tab. */
+  .panel { transition: transform .3s cubic-bezier(.4,0,.2,1), opacity .25s ease; }
+  .panel.collapsed { transform: translateX(calc(-100% - 30px)); opacity: 0; pointer-events: none; }
+  .panel-collapse { position: absolute; top: 12px; right: 14px; z-index: 2;
+    width: 30px; height: 26px; padding: 0; font: inherit; font-size: 17px; line-height: 1;
+    cursor: pointer; color: var(--dim); background: rgba(157,184,255,0.08);
+    border: 1px solid var(--line); border-radius: 999px; }
+  .panel-collapse:hover { border-color: var(--accent); color: var(--text); }
+  .panel-open { position: absolute; top: 18px; left: 18px; z-index: 5; display: none;
+    align-items: center; font: inherit; font-size: 13px; cursor: pointer; color: var(--text);
+    background: var(--panel); border: 1px solid var(--line); border-radius: 999px;
+    padding: 8px 15px; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+  .panel-open:hover { border-color: var(--accent); }
+  .panel.collapsed ~ .panel-open { display: inline-flex; }
+
   .eyebrow { font-size: 11.5px; letter-spacing: 0.16em; color: var(--dim); text-transform: none; }
   h1 { font-size: 20px; line-height: 1.35; margin: 6px 0 8px; }
   .lede { color: var(--dim); font-size: 13.5px; margin: 0 0 14px; }
@@ -106,6 +124,7 @@ window.I18N.register({
   @media (max-width: 720px) {
     .hint { display: none; }
     .panel { top: 12px; left: 12px; padding: 14px 16px; }
+    .panel-open { top: 12px; left: 12px; }
     h1 { font-size: 17px; }
   }
 </style>
@@ -116,6 +135,7 @@ window.I18N.register({
   <div id="labels"></div>
 
   <div class="panel">
+    <button class="panel-collapse" type="button" data-panel-collapse aria-label="收起说明 / Hide panel">‹</button>
     <div class="eyebrow" data-i18n="con.eyebrow">解释层 / 星座其实是障眼法</div>
     <h1 data-con-title>星座的真相</h1>
     <p class="lede" data-con-lede></p>
@@ -139,6 +159,8 @@ window.I18N.register({
          floating over the immersive canvas; i18n.js sees it and skips its own. -->
     <div class="site-credit" data-i18n="credit.madeby" style="margin-top:14px;font-size:11px;opacity:.5;letter-spacing:.03em"></div>
   </div>
+
+  <button class="panel-open" type="button" data-panel-open data-i18n="con.panel.open" aria-expanded="false">ℹ️ 说明</button>
 
   <div class="dock">
     <div class="status" data-status>✨</div>
@@ -531,6 +553,18 @@ window.I18N.register({
       slBtn.setAttribute('data-i18n', showSightlines ? 'con.sightlines.off' : 'con.sightlines.on')
       slBtn.textContent = I18N.t(showSightlines ? 'con.sightlines.off' : 'con.sightlines.on')
     })
+
+    // Collapsible info panel. On phones it otherwise covers the whole sky and
+    // eats the orbit-drag, so it tucks off to the left and starts collapsed there.
+    const panelEl = document.querySelector('.panel')
+    const openBtn = document.querySelector('[data-panel-open]')
+    const setPanelCollapsed = (collapsed) => {
+      panelEl.classList.toggle('collapsed', collapsed)
+      openBtn.setAttribute('aria-expanded', String(!collapsed))
+    }
+    document.querySelector('[data-panel-collapse]').addEventListener('click', () => setPanelCollapsed(true))
+    openBtn.addEventListener('click', () => setPanelCollapsed(false))
+    if (window.matchMedia('(max-width: 720px)').matches) setPanelCollapsed(true)
 
     // Project a world point to screen pixels; returns null if behind the camera.
     const proj = new THREE.Vector3()
