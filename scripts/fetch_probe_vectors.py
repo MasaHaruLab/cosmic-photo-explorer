@@ -22,7 +22,7 @@ STEP_DAYS = 5
 # Real mission milestones (closest-approach / boundary-crossing dates).
 PROBES = [
     {"id": "voyager-1", "command": "-31", "label": "旅行者 1 号", "label_en": "Voyager 1",
-     "start": "1977-09-06", "stop": "NOW",
+     "start": "1977-09-06", "stop": "NOW", "last_contact": None,
      "milestones": [
          {"date": "1979-03-05", "zh": "掠过木星", "en": "Jupiter flyby"},
          {"date": "1980-11-12", "zh": "掠过土星", "en": "Saturn flyby"},
@@ -30,7 +30,7 @@ PROBES = [
          {"date": "2012-08-25", "zh": "冲出日球层，进入星际空间", "en": "Entered interstellar space"},
      ]},
     {"id": "voyager-2", "command": "-32", "label": "旅行者 2 号", "label_en": "Voyager 2",
-     "start": "1977-08-21", "stop": "NOW",
+     "start": "1977-08-21", "stop": "NOW", "last_contact": None,
      "milestones": [
          {"date": "1979-07-09", "zh": "掠过木星", "en": "Jupiter flyby"},
          {"date": "1981-08-25", "zh": "掠过土星", "en": "Saturn flyby"},
@@ -39,21 +39,21 @@ PROBES = [
          {"date": "2018-11-05", "zh": "冲出日球层，进入星际空间", "en": "Entered interstellar space"},
      ]},
     {"id": "pioneer-10", "command": "-23", "label": "先驱者 10 号", "label_en": "Pioneer 10",
-     "start": "1972-03-04", "stop": "NOW",
+     "start": "1972-03-04", "stop": "NOW", "last_contact": "2003-01-23",
      "milestones": [
          {"date": "1973-12-04", "zh": "首航木星（人类首次）", "en": "First Jupiter flyby"},
          {"date": "1983-06-13", "zh": "越过海王星轨道", "en": "Passed Neptune's orbit"},
          {"date": "2003-01-23", "zh": "最后一次信号", "en": "Last signal"},
      ]},
     {"id": "pioneer-11", "command": "-24", "label": "先驱者 11 号", "label_en": "Pioneer 11",
-     "start": "1973-04-07", "stop": "NOW",
+     "start": "1973-04-07", "stop": "NOW", "last_contact": "1995-11-24",
      "milestones": [
          {"date": "1974-12-03", "zh": "掠过木星", "en": "Jupiter flyby"},
          {"date": "1979-09-01", "zh": "首航土星（人类首次）", "en": "First Saturn flyby"},
          {"date": "1995-11-24", "zh": "最后一次信号", "en": "Last signal"},
      ]},
     {"id": "new-horizons", "command": "-98", "label": "新视野号", "label_en": "New Horizons",
-     "start": "2006-01-20", "stop": "NOW",
+     "start": "2006-01-20", "stop": "NOW", "last_contact": None,
      "milestones": [
          {"date": "2007-02-28", "zh": "木星引力加速", "en": "Jupiter gravity assist"},
          {"date": "2015-07-14", "zh": "飞掠冥王星（人类首次）", "en": "First Pluto flyby"},
@@ -140,6 +140,7 @@ def main():
             'label_en': probe['label_en'],
             'start': probe['start'],
             'end': TODAY if probe['stop'] == 'NOW' else probe['stop'],
+            'last_contact': probe.get('last_contact'),
             'step_days': STEP_DAYS,
             'samples': n,
             'dist_au': dist_now,

@@ -33,6 +33,9 @@ window.I18N.register({
   },
   'msg.milestones.h': { zh: '关键节点', en: 'Milestones' },
   'msg.now': { zh: '现在（{date}）：{list}', en: 'Right now ({date}): {list}' },
+  'msg.present': { zh: '至今', en: 'now' },
+  'msg.stillActive': { zh: '仍在运行', en: 'still active' },
+  'msg.signalLost': { zh: '已失联', en: 'signal lost' },
   'msg.source': { zh: '轨迹数据：NASA / JPL-Caltech Horizons 星历系统（黄道 J2000 坐标，每 5 天采样一次）。', en: 'Trajectory data: NASA / JPL-Caltech Horizons ephemeris system (ecliptic J2000, sampled every 5 days).' },
   'msg.play': { zh: '▶ 播放', en: '▶ Play' },
   'msg.pause': { zh: '⏸ 暂停', en: '⏸ Pause' },
@@ -611,7 +614,7 @@ window.I18N.register({
       })
 
       return {
-        id: p.id, label: p.label, labelEn: p.label_en, start: p.start, samples: p.samples,
+        id: p.id, label: p.label, labelEn: p.label_en, start: p.start, lastContact: p.last_contact, samples: p.samples,
         stepDays: p.step_days, distAu: p.dist_au, colorHex, compressedPath, group, sat, satLabel, milestones,
         visible: true, cumArc, totalArc, seconds: PROBE_SECONDS[p.id] || 40,
         // Independent per-probe transport state (Change 1): own progress (s,
@@ -652,12 +655,6 @@ window.I18N.register({
     controls.update()
 
     // --- Per-probe transport state ---
-    function dateAtIndex(probe, idx) {
-      const d = new Date(probe.start + 'T00:00:00Z')
-      d.setUTCDate(d.getUTCDate() + idx * probe.stepDays)
-      return d.toISOString().slice(0, 10)
-    }
-
     // Advance/scrub probe by arc-length fraction s (0..1): interpolate the
     // satellite's on-screen position between the two bracketing samples, then
     // round to the nearest sample for the date readout and milestone
@@ -683,11 +680,9 @@ window.I18N.register({
         entry.everPassed = passed
       })
 
-      const nearestIdx = Math.round(contIdx)
-      const dateStr = dateAtIndex(probe, nearestIdx)
       if (probe.dock) {
-        probe.dock.yearEl.textContent = dateStr.slice(0, 4)
-        probe.dock.fullEl.textContent = dateStr
+        // The date column is a static life-span label (set once in buildDock); only
+        // the scrubber position tracks playback progress here.
         probe.dock.rangeEl.value = String(Math.round(probe.s * 1000))
       }
     }
@@ -733,6 +728,16 @@ window.I18N.register({
         rangeEl.setAttribute('aria-label', I18N.t('msg.timelineLabel', { name: pick(probe.label, probe.labelEn) }))
 
         probe.dock = { rangeEl, playBtn, yearEl, fullEl }
+
+        // Static life-span per probe: launch year – last-signal year (or 至今 if still
+        // active). The trajectories are propagated to the present, so a live scrub date
+        // made every player read the same "today" — as if they all hit the wall now.
+        // The span tells each probe's real active life instead (Pioneers fell silent
+        // 2003 / 1995; the Voyagers and New Horizons are still talking).
+        const startYear = probe.start.slice(0, 4)
+        const active = !probe.lastContact
+        yearEl.textContent = startYear + '–' + (active ? I18N.t('msg.present') : probe.lastContact.slice(0, 4))
+        fullEl.textContent = I18N.t(active ? 'msg.stillActive' : 'msg.signalLost')
 
         rangeEl.addEventListener('input', () => {
           stopProbePlay(probe) // dragging a probe's scrubber pauses only that probe
