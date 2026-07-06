@@ -14,6 +14,8 @@ window.I18N.register({
   'solar.title': { zh: '太阳系：从别人的星光回到自己的行星', en: 'The Solar System: from distant starlight back to our own planets' },
   'solar.lede': { zh: '银河看久了，别忘了我们自己也住在一颗行星上。月球和火星的表面是真实探测器测绘的全图——可以一路拉近到山和陨石坑；其余行星是各任务拍下的原版照片。', en: "After all that Milky Way, don't forget we live on a planet too. The surfaces of the Moon and Mars here are full maps built by real spacecraft — you can zoom all the way in to mountains and craters; the other planets are original photos taken by individual missions." },
   'nav.home': { zh: '← 回到星空探索器', en: '← Back to the Explorer' },
+  'nav.messengers': { zh: '深空信使 →', en: 'Deep Space Messengers →' },
+  'nav.messengers_back': { zh: '← 深空信使', en: '← Deep Space Messengers' },
   'nav.stations': { zh: '空间站 →', en: 'Space Stations →' },
   'nav.observatories': { zh: '观星台 →', en: 'Observatories →' },
   'nav.reference': { zh: '来源 →', en: 'Sources →' },
@@ -44,6 +46,8 @@ window.I18N.register({
   'solar.mercury.sub': { zh: '信使号全球拼图', en: 'MESSENGER global mosaic' },
   'solar.venus.name': { zh: '金星', en: 'Venus' },
   'solar.venus.sub': { zh: '麦哲伦号雷达成像', en: 'Magellan radar imaging' },
+  'solar.earth.name': { zh: '地球', en: 'Earth' },
+  'solar.earth.sub': { zh: '阿波罗 17 号「蓝色弹珠」', en: 'Apollo 17 · The Blue Marble' },
   'solar.jupiter.name': { zh: '木星', en: 'Jupiter' },
   'solar.jupiter.sub': { zh: '朱诺号「大理石木星」', en: "Juno 'Marble Jupiter'" },
   'solar.saturn.name': { zh: '土星', en: 'Saturn' },
@@ -94,6 +98,17 @@ window.I18N.register({
     padding: 6px 16px; font-size: 13px;
   }
   .back:hover { border-color: var(--accent); }
+  /* Always-visible "return to Deep Space Messengers", shown when arriving via a deep-link. */
+  .return-msg {
+    position: fixed; top: 14px; right: 14px; z-index: 60;
+    display: none; align-items: center; gap: 6px;
+    color: var(--accent); text-decoration: none;
+    background: rgba(8, 12, 22, 0.82); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+    border: 1px solid var(--accent); border-radius: 999px;
+    padding: 8px 16px; font-size: 13px; box-shadow: 0 4px 18px rgba(0, 0, 0, 0.45);
+  }
+  .return-msg.show { display: inline-flex; }
+  .return-msg:hover { background: var(--accent); color: #04121f; }
   .lang-toggle {
     margin-left: auto; cursor: pointer; font: inherit; font-size: 13px; font-weight: 600;
     letter-spacing: 0.04em; min-width: 50px; text-align: center;
@@ -132,6 +147,13 @@ window.I18N.register({
   .gallery img { display: block; width: 100%; aspect-ratio: 1; object-fit: cover; }
   .gallery figcaption { padding: 8px 12px 10px; font-size: 13px; }
   .gallery .sub { color: var(--dim); font-size: 11.5px; display: block; }
+  .hl-flash {
+    animation: hlFlash 1.6s ease-out;
+  }
+  @keyframes hlFlash {
+    0% { box-shadow: 0 0 0 3px rgba(157,184,255,0.9), 0 0 32px 6px rgba(157,184,255,0.65); }
+    100% { box-shadow: 0 0 0 3px rgba(157,184,255,0), 0 0 32px 6px rgba(157,184,255,0); }
+  }
   .lightbox {
     position: fixed; inset: 0; background: rgba(2,4,10,0.92); display: flex;
     align-items: center; justify-content: center; flex-direction: column; gap: 10px;
@@ -190,12 +212,14 @@ window.I18N.register({
 <script src="https://aladin.cds.unistra.fr/AladinLite/api/v3/latest/aladin.js" charset="utf-8"></script>
 </head>
 <body>
+<a class="return-msg" href="messengers.html" data-i18n="nav.messengers_back">← 深空信使</a>
 <div class="wrap">
   <div class="eyebrow" data-i18n="solar.eyebrow">解释层 / 我们自己的后院</div>
   <h1 data-i18n="solar.title">太阳系：从别人的星光回到自己的行星</h1>
   <p class="lede" data-i18n="solar.lede">银河看久了，别忘了我们自己也住在一颗行星上。月球和火星的表面是真实探测器测绘的全图——可以一路拉近到山和陨石坑；其余行星是各任务拍下的原版照片。</p>
   <nav class="navbar">
     <a class="back" href="./" data-i18n="nav.home">← 回到星空探索器</a>
+    <a class="back" href="messengers.html" data-i18n="nav.messengers">深空信使 →</a>
     <a class="back" href="stations.html" data-i18n="nav.stations">空间站 →</a>
     <a class="back" href="observatories.html" data-i18n="nav.observatories">观星台 →</a>
     <a class="back" href="reference.html" data-i18n="nav.reference">来源 →</a>
@@ -221,7 +245,7 @@ window.I18N.register({
     <button class="pano-btn" type="button" data-pano="textures/moon_pano.jpg" data-cap="solar.pano.moon.cap" data-bg="#000000" data-i18n="solar.moon.pano">🥾 站上月球表面 · 360°</button>
   </div>
 
-  <h2 data-i18n="solar.mars.h2">火星</h2>
+  <h2 id="body-mars" data-i18n="solar.mars.h2">火星</h2>
   <p class="note" data-i18n="solar.mars.note">默认底图：Viking 彩色全图（真实颜色感的锈红火星）。切换 MOLA 彩色高程能看出山有多高、谷有多深——蓝色低、红色高。</p>
   <div class="viewer-card">
     <div id="mars-view" class="viewer"></div>
@@ -243,12 +267,13 @@ window.I18N.register({
   <h2 data-i18n="solar.gallery.h2">行星画廊</h2>
   <p class="note" data-i18n="solar.gallery.note">每张都是任务原片，点开看大图。奥林帕斯山比珠峰高两倍半；土星那张是卡西尼躲进土星影子里回望拍下的。</p>
   <div class="gallery" data-gallery>
-    <figure class="has-globe" data-id="PIA15162" data-globe="textures/2k_mercury.jpg"><span class="globe-badge">360°</span><img loading="lazy" src="planets/PIA15162.jpg" data-i18n-attr="alt:solar.mercury.name" alt="水星"><figcaption><span data-i18n="solar.mercury.name">水星</span><span class="sub" data-i18n="solar.mercury.sub">信使号全球拼图</span></figcaption></figure>
-    <figure class="has-globe" data-id="PIA00104" data-globe="textures/2k_venus_surface.jpg"><span class="globe-badge">360°</span><img loading="lazy" src="planets/PIA00104.jpg" data-i18n-attr="alt:solar.venus.name" alt="金星"><figcaption><span data-i18n="solar.venus.name">金星</span><span class="sub" data-i18n="solar.venus.sub">麦哲伦号雷达成像</span></figcaption></figure>
-    <figure class="has-globe" data-id="PIA22946" data-globe="textures/2k_jupiter.jpg"><span class="globe-badge">360°</span><img loading="lazy" src="planets/PIA22946.jpg" data-i18n-attr="alt:solar.jupiter.name" alt="木星"><figcaption><span data-i18n="solar.jupiter.name">木星</span><span class="sub" data-i18n="solar.jupiter.sub">朱诺号「大理石木星」</span></figcaption></figure>
-    <figure class="has-globe" data-id="PIA08329" data-globe="textures/2k_saturn.jpg" data-ring="textures/2k_saturn_ring_alpha.png"><span class="globe-badge">360°</span><img loading="lazy" src="planets/PIA08329.jpg" data-i18n-attr="alt:solar.saturn.name" alt="土星"><figcaption><span data-i18n="solar.saturn.name">土星</span><span class="sub" data-i18n="solar.saturn.sub">卡西尼号 · 在土星的阴影里</span></figcaption></figure>
-    <figure class="has-globe" data-id="PIA18182" data-globe="textures/2k_uranus.jpg"><span class="globe-badge">360°</span><img loading="lazy" src="planets/PIA18182.jpg" data-i18n-attr="alt:solar.uranus.name" alt="天王星"><figcaption><span data-i18n="solar.uranus.name">天王星</span><span class="sub" data-i18n="solar.uranus.sub">旅行者 2 号 · 唯一到访者</span></figcaption></figure>
-    <figure class="has-globe" data-id="PIA01492" data-globe="textures/2k_neptune.jpg"><span class="globe-badge">360°</span><img loading="lazy" src="planets/PIA01492.jpg" data-i18n-attr="alt:solar.neptune.name" alt="海王星"><figcaption><span data-i18n="solar.neptune.name">海王星</span><span class="sub" data-i18n="solar.neptune.sub">旅行者 2 号最后的全貌照</span></figcaption></figure>
+    <figure class="has-globe" id="body-mercury" data-id="PIA15162" data-globe="textures/2k_mercury.jpg"><span class="globe-badge">360°</span><img loading="lazy" src="planets/PIA15162.jpg" data-i18n-attr="alt:solar.mercury.name" alt="水星"><figcaption><span data-i18n="solar.mercury.name">水星</span><span class="sub" data-i18n="solar.mercury.sub">信使号全球拼图</span></figcaption></figure>
+    <figure class="has-globe" id="body-venus" data-id="PIA00104" data-globe="textures/2k_venus_surface.jpg"><span class="globe-badge">360°</span><img loading="lazy" src="planets/PIA00104.jpg" data-i18n-attr="alt:solar.venus.name" alt="金星"><figcaption><span data-i18n="solar.venus.name">金星</span><span class="sub" data-i18n="solar.venus.sub">麦哲伦号雷达成像</span></figcaption></figure>
+    <figure class="has-globe" id="body-earth" data-id="earth_bluemarble" data-globe="textures/2k_earth.jpg"><span class="globe-badge">360°</span><img loading="lazy" src="planets/earth_bluemarble.jpg" data-i18n-attr="alt:solar.earth.name" alt="地球"><figcaption><span data-i18n="solar.earth.name">地球</span><span class="sub" data-i18n="solar.earth.sub">阿波罗 17 号「蓝色弹珠」</span></figcaption></figure>
+    <figure class="has-globe" id="body-jupiter" data-id="PIA22946" data-globe="textures/2k_jupiter.jpg"><span class="globe-badge">360°</span><img loading="lazy" src="planets/PIA22946.jpg" data-i18n-attr="alt:solar.jupiter.name" alt="木星"><figcaption><span data-i18n="solar.jupiter.name">木星</span><span class="sub" data-i18n="solar.jupiter.sub">朱诺号「大理石木星」</span></figcaption></figure>
+    <figure class="has-globe" id="body-saturn" data-id="PIA08329" data-globe="textures/2k_saturn.jpg" data-ring="textures/2k_saturn_ring_alpha.png"><span class="globe-badge">360°</span><img loading="lazy" src="planets/PIA08329.jpg" data-i18n-attr="alt:solar.saturn.name" alt="土星"><figcaption><span data-i18n="solar.saturn.name">土星</span><span class="sub" data-i18n="solar.saturn.sub">卡西尼号 · 在土星的阴影里</span></figcaption></figure>
+    <figure class="has-globe" id="body-uranus" data-id="PIA18182" data-globe="textures/2k_uranus.jpg"><span class="globe-badge">360°</span><img loading="lazy" src="planets/PIA18182.jpg" data-i18n-attr="alt:solar.uranus.name" alt="天王星"><figcaption><span data-i18n="solar.uranus.name">天王星</span><span class="sub" data-i18n="solar.uranus.sub">旅行者 2 号 · 唯一到访者</span></figcaption></figure>
+    <figure class="has-globe" id="body-neptune" data-id="PIA01492" data-globe="textures/2k_neptune.jpg"><span class="globe-badge">360°</span><img loading="lazy" src="planets/PIA01492.jpg" data-i18n-attr="alt:solar.neptune.name" alt="海王星"><figcaption><span data-i18n="solar.neptune.name">海王星</span><span class="sub" data-i18n="solar.neptune.sub">旅行者 2 号最后的全貌照</span></figcaption></figure>
     <figure data-id="PIA19952"><img loading="lazy" src="planets/PIA19952.jpg" data-i18n-attr="alt:solar.pluto.name" alt="冥王星"><figcaption><span data-i18n="solar.pluto.name">冥王星</span><span class="sub" data-i18n="solar.pluto.sub">新视野号 · 心形平原</span></figcaption></figure>
   </div>
 
@@ -322,6 +347,7 @@ window.I18N.register({
   const PHOTO_CREDITS = {
     PIA15162: 'NASA/JHU-APL/Carnegie',        // Mercury · MESSENGER
     PIA00104: 'NASA/JPL',                      // Venus · Magellan
+    earth_bluemarble: 'NASA · Apollo 17',      // Earth · Apollo 17 "Blue Marble"
     PIA22946: 'NASA/JPL-Caltech/SwRI/MSSS',    // Jupiter · Juno
     PIA08329: 'NASA/JPL/Space Science Institute', // Saturn · Cassini
     PIA18182: 'NASA/JPL-Caltech',              // Uranus · Voyager 2
@@ -547,6 +573,49 @@ window.I18N.register({
     if (!globebox.hidden) closeGlobe()
     else if (!lightbox.hidden) closePhoto()
   })
+
+  // ---------- deep-link: scroll to & highlight a body anchor from the hash ----------
+  // (e.g. arriving from messengers.html via solar.html#body-jupiter). Deliberately
+  // just scrolls + flashes — does NOT auto-open the globe, to stay robust.
+  function flashTarget(target) {
+    target.classList.remove('hl-flash')
+    void target.offsetWidth  // reflow so re-adding restarts the animation on repeat visits
+    target.classList.add('hl-flash')
+    setTimeout(() => target.classList.remove('hl-flash'), 1600)
+  }
+  function scrollToHashTarget(instant) {
+    const hash = window.location.hash
+    if (!hash || !hash.startsWith('#body-')) return
+    const target = document.querySelector(hash)
+    if (!target) return
+    target.scrollIntoView({ behavior: instant ? 'auto' : 'smooth', block: 'center' })
+    flashTarget(target)
+  }
+  // Show the fixed "← 深空信使" return button whenever the visitor arrived from the
+  // messengers page (deep-link hash or referrer), so getting back is always one tap.
+  const returnBtn = document.querySelector('.return-msg')
+  if (returnBtn && (window.location.hash.startsWith('#body-') ||
+      /messengers\.html/.test(document.referrer))) {
+    returnBtn.classList.add('show')
+  }
+  // The Moon/Mars viewers above the gallery size asynchronously, so a scroll fired at
+  // DOMContentLoaded lands wrong — the page snaps back near the top (Moon). Land after
+  // full load with an instant jump, then re-assert to beat late layout shifts; stop
+  // re-asserting the moment the visitor scrolls, so we never yank them back.
+  function landOnHash() {
+    let cancelled = false
+    const cancel = () => { cancelled = true }
+    addEventListener('wheel', cancel, { once: true, passive: true })
+    addEventListener('touchmove', cancel, { once: true, passive: true })
+    scrollToHashTarget(true)
+    setTimeout(() => { if (!cancelled) scrollToHashTarget(true) }, 350)
+    setTimeout(() => { if (!cancelled) scrollToHashTarget(true) }, 900)
+  }
+  if (window.location.hash.startsWith('#body-')) {
+    if (document.readyState === 'complete') landOnHash()
+    else addEventListener('load', landOnHash)
+  }
+  addEventListener('hashchange', () => scrollToHashTarget(false))
 </script>
 </body>
 </html>

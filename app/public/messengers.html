@@ -79,8 +79,11 @@ window.I18N.register({
 
   /* Projected 3D labels (ring names, Sun, heliopause, satellite tags) */
   .ring-label { position: absolute; transform: translate(-50%, -160%); white-space: nowrap;
-    font-size: 11px; color: var(--dim); text-shadow: 0 1px 6px rgba(0,0,0,0.9); }
+    font-size: 11px; color: var(--dim); text-shadow: 0 1px 6px rgba(0,0,0,0.9);
+    pointer-events: auto; cursor: pointer; transition: color .15s ease; }
+  .ring-label:hover { color: var(--cyan); text-decoration: underline; }
   .ring-label.earth { color: #bfe4ff; font-weight: 600; }
+  .ring-label.earth:hover { color: var(--cyan); }
   .helio-label { position: absolute; transform: translate(-50%, -50%); white-space: nowrap;
     font-size: 11px; letter-spacing: 0.03em; color: var(--dim); text-shadow: 0 1px 6px rgba(0,0,0,0.9); }
   .sun-label { position: absolute; transform: translate(-50%, 16px); white-space: nowrap;
@@ -496,6 +499,9 @@ window.I18N.register({
 
       const labelEl = document.createElement('div')
       labelEl.className = 'ring-label' + (p.emphasize ? ' earth' : '')
+      labelEl.style.cursor = 'pointer'
+      labelEl.title = '在太阳系里看它 →'
+      labelEl.addEventListener('click', () => { window.location.href = 'solar.html#body-' + p.key })
       labelLayer.appendChild(labelEl)
       planetRings.push({ planet: p, radius, labelEl, dotVec })
     })
