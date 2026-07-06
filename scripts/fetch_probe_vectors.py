@@ -38,6 +38,27 @@ PROBES = [
          {"date": "1989-08-25", "zh": "掠过海王星（唯一到访）", "en": "Neptune flyby (only visit)"},
          {"date": "2018-11-05", "zh": "冲出日球层，进入星际空间", "en": "Entered interstellar space"},
      ]},
+    {"id": "pioneer-10", "command": "-23", "label": "先驱者 10 号", "label_en": "Pioneer 10",
+     "start": "1972-03-04", "stop": "NOW",
+     "milestones": [
+         {"date": "1973-12-04", "zh": "首航木星（人类首次）", "en": "First Jupiter flyby"},
+         {"date": "1983-06-13", "zh": "越过海王星轨道", "en": "Passed Neptune's orbit"},
+         {"date": "2003-01-23", "zh": "最后一次信号", "en": "Last signal"},
+     ]},
+    {"id": "pioneer-11", "command": "-24", "label": "先驱者 11 号", "label_en": "Pioneer 11",
+     "start": "1973-04-07", "stop": "NOW",
+     "milestones": [
+         {"date": "1974-12-03", "zh": "掠过木星", "en": "Jupiter flyby"},
+         {"date": "1979-09-01", "zh": "首航土星（人类首次）", "en": "First Saturn flyby"},
+         {"date": "1995-11-24", "zh": "最后一次信号", "en": "Last signal"},
+     ]},
+    {"id": "new-horizons", "command": "-98", "label": "新视野号", "label_en": "New Horizons",
+     "start": "2006-01-20", "stop": "NOW",
+     "milestones": [
+         {"date": "2007-02-28", "zh": "木星引力加速", "en": "Jupiter gravity assist"},
+         {"date": "2015-07-14", "zh": "飞掠冥王星（人类首次）", "en": "First Pluto flyby"},
+         {"date": "2019-01-01", "zh": "飞掠阿罗科斯", "en": "Arrokoth flyby"},
+     ]},
 ]
 
 

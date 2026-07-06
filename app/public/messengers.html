@@ -3,19 +3,19 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title data-i18n="msg.pageTitle">深空信使：旅行者号的真实航迹 · 星空照片探索器</title>
+<title data-i18n="msg.pageTitle">深空信使：五艘探测器的真实航迹 · 星空照片探索器</title>
 <script src="./i18n.js"></script>
 <script>
 // Page dictionary — { zh, en } pairs. Milestone / probe-label copy is data-driven
 // (comes from data/probe_vectors.json at runtime) so only the authored chrome
 // strings are registered here; see the local pick()/pickMS() helpers below.
 window.I18N.register({
-  'msg.pageTitle': { zh: '深空信使：旅行者号的真实航迹 · 星空照片探索器', en: 'Deep Space Messengers: Voyager’s Real Trajectories · Cosmic Photo Explorer' },
+  'msg.pageTitle': { zh: '深空信使：五艘探测器的真实航迹 · 星空照片探索器', en: 'Deep Space Messengers: Five Probes’ Real Trajectories · Cosmic Photo Explorer' },
   'msg.eyebrow': { zh: '真实数据 / 太阳系俯视图', en: 'Real data / Top-down view of the solar system' },
   'msg.title': { zh: '深空信使', en: 'Deep Space Messengers' },
   'msg.lede1': {
-    zh: '这里画的不是旅行者号在天空中的方向，而是它们此刻在太空里的真实位置——一张俯视太阳系的地图。首页的星空地图演示的是「从地球看过去的方向」；这张图给你的是两艘探测器真正走过的路：掠过木星、土星，一个爬向黄道以北，一个扎向以南，冲出太阳的势力范围，钻进两颗恒星之间的空当。',
-    en: 'This isn’t the direction Voyager appears in Earth’s sky — it’s where the probes really are in space right now, a top-down map of the solar system. The homepage sky map demos viewing direction; this one shows the actual road each probe travelled: past Jupiter, past Saturn, one climbing north of the ecliptic, one diving south, out past the Sun’s reach and into the gap between stars.',
+    zh: '这里画的不是探测器在天空中的方向，而是它们此刻在太空里的真实位置——一张俯视太阳系的地图。首页的星空地图演示的是「从地球看过去的方向」；这张图给你的是人类飞得最远的五艘探测器真正走过的路：旅行者 1、2 号，先驱者 10、11 号，新视野号，从地球附近扇形散开，借巨行星的引力甩向四面八方，冲出太阳的势力范围。',
+    en: 'This isn’t the direction these probes appear in Earth’s sky — it’s where they really are in space right now, a top-down map of the solar system. The homepage sky map demos viewing direction; this one shows the actual road humanity’s five farthest probes travelled: Voyager 1 & 2, Pioneer 10 & 11, and New Horizons — fanning out from near Earth, slung in every direction by the giant planets’ gravity, out past the Sun’s reach.',
   },
   'msg.lede2': {
     zh: '径向距离做了平方根压缩（方向完全不变），否则 1 AU 的地球和 170 多 AU 的旅行者 1 号没法画在同一张图里。',
@@ -24,15 +24,15 @@ window.I18N.register({
   'msg.probes.h': { zh: '显示探测器', en: 'Show probes' },
   'msg.about.h': { zh: '这是怎么回事', en: 'What you are looking at' },
   'msg.about.p1': {
-    zh: '两艘探测器 1977 年从地球附近出发，都借了木星、土星的引力甩出去加速；旅行者 2 号还顺路飞掠了天王星和海王星——至今唯一到访过这两颗行星的探测器。之后它们几乎沿直线飞离太阳，一个偏向黄道以北，一个偏向以南，这个分岔在图上清清楚楚。',
-    en: 'Both probes launched from near Earth in 1977 and used Jupiter’s and Saturn’s gravity for a slingshot boost; Voyager 2 also swung past Uranus and Neptune — still the only probe ever to visit either. After that they fly almost straight out from the Sun, one drifting north of the ecliptic, one south — a split you can see clearly here.',
+    zh: '五艘探测器都从地球附近出发，借巨行星的引力弹弓甩向深空。先驱者 10、11 号是先锋——先驱者 10 号首航木星、11 号首航土星，为后来者探路。旅行者 1、2 号接棒完成「大巡游」，旅行者 2 号至今仍是唯一到访过天王星和海王星的探测器。最年轻的新视野号 2006 年出发，2015 年飞掠冥王星。之后它们几乎沿直线飞离太阳，方向各不相同，这些分岔在图上清清楚楚。',
+    en: 'All five probes launched from near Earth and were slung into deep space by the giant planets’ gravity. The Pioneers went first — Pioneer 10 made the first Jupiter flyby, Pioneer 11 the first Saturn flyby, scouting the way. The Voyagers followed with the “Grand Tour”; Voyager 2 is still the only probe ever to visit Uranus and Neptune. The youngest, New Horizons, left in 2006 and flew past Pluto in 2015. Afterward each flies almost straight out from the Sun in its own direction — splits you can see clearly here.',
   },
   'msg.about.p2': {
-    zh: '2012 和 2018 年，两艘探测器先后穿过「日球层顶」——太阳风的势力边界，进入了真正的星际空间。留意它们抵达这个边界时的距离几乎相同（约 120 AU），尽管方向完全不同：这不是巧合，是太阳风气泡本身近似球形的证据。',
-    en: 'In 2012 and 2018 the two probes each crossed the heliopause — the edge of the Sun’s solar-wind bubble — into true interstellar space. Notice they reach that boundary at almost the same distance (about 120 AU) despite flying in very different directions: that’s not a coincidence, it’s evidence the heliosphere itself is roughly spherical.',
+    zh: '2012 和 2018 年，两艘旅行者先后穿过「日球层顶」——太阳风的势力边界，进入了真正的星际空间（先驱者号在失联前、新视野号至今都还没到）。留意两艘旅行者抵达这个边界时的距离几乎相同（约 120 AU），尽管方向完全不同：这不是巧合，是太阳风气泡本身近似球形的证据。',
+    en: 'In 2012 and 2018 the two Voyagers each crossed the heliopause — the edge of the Sun’s solar-wind bubble — into true interstellar space (the Pioneers fell silent before reaching it, and New Horizons hasn’t yet). Notice the two Voyagers reach that boundary at almost the same distance (about 120 AU) despite flying in very different directions: not a coincidence, but evidence the heliosphere itself is roughly spherical.',
   },
   'msg.milestones.h': { zh: '关键节点', en: 'Milestones' },
-  'msg.now': { zh: '现在（{date}）：旅行者 1 号 {v1} AU · 旅行者 2 号 {v2} AU', en: 'Right now ({date}): Voyager 1 at {v1} AU · Voyager 2 at {v2} AU' },
+  'msg.now': { zh: '现在（{date}）：{list}', en: 'Right now ({date}): {list}' },
   'msg.source': { zh: '轨迹数据：NASA / JPL-Caltech Horizons 星历系统（黄道 J2000 坐标，每 5 天采样一次）。', en: 'Trajectory data: NASA / JPL-Caltech Horizons ephemeris system (ecliptic J2000, sampled every 5 days).' },
   'msg.play': { zh: '▶ 播放', en: '▶ Play' },
   'msg.pause': { zh: '⏸ 暂停', en: '⏸ Pause' },
@@ -286,10 +286,16 @@ window.I18N.register({
   const HELIOPAUSE_AU = 120
   const HELIO_LABEL_ANGLE = (-62 * Math.PI) / 180  // lower-right, clear of ring labels
 
-  const PROBE_COLORS = { 'voyager-1': '#4fd8ff', 'voyager-2': '#9b7bff' }
+  const PROBE_COLORS = {
+    'voyager-1': '#4fd8ff', 'voyager-2': '#9b7bff',
+    'pioneer-10': '#ffb454', 'pioneer-11': '#ff6f91', 'new-horizons': '#66d99a',
+  }
   const PROBE_GLOW = {
     'voyager-1': ['rgba(79,216,255,0.55)', 'rgba(79,216,255,0)'],
     'voyager-2': ['rgba(155,123,255,0.55)', 'rgba(155,123,255,0)'],
+    'pioneer-10': ['rgba(255,180,84,0.55)', 'rgba(255,180,84,0)'],
+    'pioneer-11': ['rgba(255,111,145,0.55)', 'rgba(255,111,145,0)'],
+    'new-horizons': ['rgba(102,217,154,0.55)', 'rgba(102,217,154,0)'],
   }
   // Each probe now plays on its own independent transport (own progress, own
   // play state) instead of a single shared clock — see the per-probe dock
@@ -297,9 +303,13 @@ window.I18N.register({
   // slightly longer than V1 because its compressed path has ~15% more total
   // arc length (it visits two extra planets), so equal seconds would make it
   // visibly outrun V1 on screen — this keeps their on-screen speeds matched.
-  const V1_SECONDS = 40
-  const V2_SECONDS = 46
-  const PROBE_SECONDS = { 'voyager-1': V1_SECONDS, 'voyager-2': V2_SECONDS }
+  // Traverse duration per probe (seconds), independently tunable. Because playback
+  // is arc-length paced, longer/twistier paths need more seconds to keep on-screen
+  // speed matched across probes; missing ids fall back to 40 (see `|| 40` below).
+  const PROBE_SECONDS = {
+    'voyager-1': 40, 'voyager-2': 46,
+    'pioneer-10': 40, 'pioneer-11': 40, 'new-horizons': 30,
+  }
 
   const load = (src) => new Promise((res, rej) => {
     const s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = rej
@@ -777,7 +787,8 @@ window.I18N.register({
         mileListEl.appendChild(li)
       })
       const dataEndDate = probesData[0].end
-      nowLineEl.textContent = I18N.t('msg.now', { date: dataEndDate, v1: probesData[0].dist_au, v2: probesData[1].dist_au })
+      const list = probes.map((probe) => pick(probe.label, probe.labelEn) + ' ' + probe.distAu + ' AU').join(' · ')
+      nowLineEl.textContent = I18N.t('msg.now', { date: dataEndDate, list })
     }
 
     // Re-render language-dependent dynamic text on toggle.
