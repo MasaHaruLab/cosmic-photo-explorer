@@ -136,6 +136,8 @@ export const UI = {
 
   // ---- ARIA / accessibility ----
   'aria.skyView': { zh: '可交互星空视图', en: 'Interactive sky view' },
+  'aria.fullscreen': { zh: '全屏查看天图', en: 'View the sky map fullscreen' },
+  'aria.fullscreenExit': { zh: '退出全屏', en: 'Exit fullscreen' },
   'aria.timeline': { zh: '轨迹时间轴', en: 'Trajectory timeline' },
   'aria.lightbox': { zh: 'NASA 大图', en: 'NASA full-size image' },
 

@@ -250,6 +250,65 @@ h1 {
   display: none;
 }
 
+/* Fullscreen toggle for the sky map — top-right of the scene, glassy like the chip. */
+.map-fs {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  z-index: 4;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  background: rgba(5, 8, 16, 0.58);
+  backdrop-filter: blur(10px);
+  color: rgba(234, 241, 255, 0.78);
+  cursor: pointer;
+  transition: background 180ms ease, color 180ms ease, border-color 180ms ease;
+}
+
+.map-fs:hover {
+  background: rgba(5, 8, 16, 0.82);
+  color: #fff;
+  border-color: rgba(157, 184, 255, 0.5);
+}
+
+.map-fs .map-fs-out {
+  display: none;
+}
+
+.map-fs.is-full .map-fs-in {
+  display: none;
+}
+
+.map-fs.is-full .map-fs-out {
+  display: inline;
+}
+
+/* Pseudo-fullscreen fallback (iPad Safari, where the element Fullscreen API is
+   unreliable): lift the whole map view up to cover the viewport. */
+body.map-pseudo-full {
+  overflow: hidden;
+}
+
+body.map-pseudo-full .hero-view {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+}
+
+/* .stage's backdrop-filter establishes a containing block for fixed descendants,
+   which would otherwise trap the maximized map inside the stage box — drop it while
+   maximized so .hero-view fills the whole viewport. */
+body.map-pseudo-full .stage {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
 .survey-option {
   border: none;
   border-radius: 999px;

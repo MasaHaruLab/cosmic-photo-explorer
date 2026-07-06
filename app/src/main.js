@@ -160,6 +160,15 @@ app.innerHTML = `
             <div id="sky-view" data-i18n-attr="aria-label:aria.skyView" aria-label="可交互星空视图"></div>
             <div class="hero-overlay"></div>
             <div class="anchor-layer" data-anchor-layer></div>
+            <button class="map-fs" type="button" data-fullscreen aria-pressed="false"
+              data-i18n-attr="aria-label:aria.fullscreen" aria-label="全屏查看天图">
+              <svg class="map-fs-in" viewBox="0 0 24 24" width="18" height="18" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" /></svg>
+              <svg class="map-fs-out" viewBox="0 0 24 24" width="18" height="18" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5" /></svg>
+            </button>
             <div class="survey-chip" data-survey-chip hidden>
               <button class="survey-option" type="button" data-survey-choice="dss2" data-i18n="survey.dss2">DSS2 照片</button>
               <button class="survey-option" type="button" data-survey-choice="gaia" data-i18n="survey.gaia">Gaia 测量图</button>
@@ -1690,6 +1699,71 @@ window.addEventListener('keydown', (event) => {
 })
 for (const button of surveyChip.querySelectorAll('.survey-option')) {
   button.addEventListener('click', () => setManualSurvey(button.dataset.surveyChoice))
+}
+
+// Sky-map fullscreen. Prefer the real Fullscreen API (true immersive view, Esc to
+// exit); fall back to a fixed-position "maximize" where the element API is missing
+// or unreliable (notably iPad Safari). Either path enlarges the whole .hero-view, so
+// the anchor hotspots and survey chip stay usable, and a resize nudge lets Aladin and
+// the hotspot overlay re-flow to the new size.
+const fsButton = document.querySelector('[data-fullscreen]')
+const fsTarget = document.querySelector('.hero-view')
+
+function fsActiveEl() {
+  return document.fullscreenElement || document.webkitFullscreenElement || null
+}
+let pseudoFull = false
+function fsIsOn() {
+  return Boolean(fsActiveEl()) || pseudoFull
+}
+
+function syncFullscreen() {
+  const on = fsIsOn()
+  document.body.classList.toggle('map-pseudo-full', pseudoFull)
+  fsButton.classList.toggle('is-full', on)
+  fsButton.setAttribute('aria-pressed', String(on))
+  fsButton.setAttribute('aria-label', I18N.t(on ? 'aria.fullscreenExit' : 'aria.fullscreen'))
+  // Let the new size settle, then re-flow the map + overlay markers.
+  requestAnimationFrame(() => window.dispatchEvent(new Event('resize')))
+  setTimeout(() => window.dispatchEvent(new Event('resize')), 260)
+}
+
+function toggleFullscreen() {
+  if (fsIsOn()) {
+    if (fsActiveEl()) {
+      (document.exitFullscreen || document.webkitExitFullscreen || (() => {})).call(document)
+    }
+    if (pseudoFull) {
+      pseudoFull = false
+      syncFullscreen()
+    }
+    return
+  }
+  const request = fsTarget.requestFullscreen || fsTarget.webkitRequestFullscreen
+  if (request) {
+    try {
+      const result = request.call(fsTarget)
+      if (result && typeof result.catch === 'function') {
+        result.catch(() => { pseudoFull = true; syncFullscreen() })
+      }
+    } catch {
+      pseudoFull = true
+      syncFullscreen()
+    }
+  } else {
+    pseudoFull = true
+    syncFullscreen()
+  }
+}
+
+if (fsButton && fsTarget) {
+  fsButton.addEventListener('click', toggleFullscreen)
+  document.addEventListener('fullscreenchange', syncFullscreen)
+  document.addEventListener('webkitfullscreenchange', syncFullscreen)
+  // Esc leaves the CSS-fallback maximize (the real API handles Esc itself).
+  window.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && pseudoFull) toggleFullscreen()
+  })
 }
 
 // Hero caption auto-hide: the intro text should never sit on top of the sky
