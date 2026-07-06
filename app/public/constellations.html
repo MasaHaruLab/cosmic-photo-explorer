@@ -348,6 +348,27 @@ window.I18N.register({
     return new THREE.CanvasTexture(c)
   }
 
+  // A little 🌍-style globe texture: blue ocean + green continents + white poles,
+  // so the Earth marker reads as Earth rather than a plain blue dot. Drawn on an
+  // equirectangular 2:1 canvas (x = longitude, y = latitude) mapped to the sphere.
+  function earthTexture(THREE) {
+    const w = 256, h = 128
+    const c = document.createElement('canvas'); c.width = w; c.height = h
+    const g = c.getContext('2d')
+    g.fillStyle = '#2f6fc4'; g.fillRect(0, 0, w, h)                 // ocean base
+    const oc = g.createRadialGradient(w * 0.4, h * 0.34, 0, w * 0.4, h * 0.34, w * 0.6)
+    oc.addColorStop(0, 'rgba(126,184,240,0.55)')                   // sunlit highlight
+    oc.addColorStop(1, 'rgba(126,184,240,0)')
+    g.fillStyle = oc; g.fillRect(0, 0, w, h)
+    g.fillStyle = '#57a648'                                        // land (flat green, emoji-like)
+    const blob = (cx, cy, rx, ry) => { g.beginPath(); g.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2); g.fill() }
+    blob(72, 58, 25, 33); blob(60, 33, 21, 12); blob(88, 78, 16, 18)  // Europe/Africa-ish
+    blob(158, 74, 30, 19); blob(206, 50, 23, 22); blob(122, 100, 17, 11)
+    g.fillStyle = 'rgba(240,248,255,0.92)'                         // polar caps
+    g.fillRect(0, 0, w, 7); g.fillRect(0, h - 7, w, 7)
+    return new THREE.CanvasTexture(c)
+  }
+
   function start() {
     const THREE = window.THREE
     const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true })
@@ -373,10 +394,35 @@ window.I18N.register({
     // Earth marker at the origin. Front-side material → invisible while the
     // camera sits at the origin (Earth's view), appears once you orbit away.
     const earth = new THREE.Mesh(
-      new THREE.SphereGeometry(2.4, 24, 18),
-      new THREE.MeshBasicMaterial({ color: 0x2f7fff }),
+      new THREE.SphereGeometry(2.4, 32, 24),
+      new THREE.MeshBasicMaterial({ map: earthTexture(THREE) }),
     )
+    // Star positions use the equatorial frame (see toVec3): +Z is the north
+    // celestial pole. The sphere's texture pole is +Y, so tilt it onto +Z to give
+    // Earth its REAL axis — poles point at the celestial pole (near Polaris, by the
+    // Big Dipper), the equator lies in the celestial equator. Now it's one real
+    // Earth seen from three directions, not three arbitrarily-oriented globes.
+    earth.rotation.x = Math.PI / 2
     scene.add(earth)
+
+    // Earth's rotation axis, drawn poking a little way out beyond both poles so the
+    // real orientation reads at a glance. Aligned with +Z (the celestial pole), a tip
+    // dot on each end. Toggled with the same distance gate as the label so it never
+    // clutters the on-Earth view. The rod's midsection is hidden inside the opaque
+    // globe, leaving just the two poking-out ends visible.
+    const earthAxis = new THREE.Group()
+    const axisMat = new THREE.MeshBasicMaterial({ color: 0x0a9fd8 })
+    const axisReach = 2.4 + 1.3
+    const rod = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, axisReach * 2, 12), axisMat)
+    rod.rotation.x = Math.PI / 2                       // Y -> Z: lie along the real axis
+    earthAxis.add(rod)
+    ;[axisReach, -axisReach].forEach((z) => {
+      const tip = new THREE.Mesh(new THREE.SphereGeometry(0.15, 12, 10), axisMat)
+      tip.position.z = z
+      earthAxis.add(tip)
+    })
+    earthAxis.visible = false
+    scene.add(earthAxis)
 
     const tex = starSprite(THREE)
 
@@ -608,8 +654,10 @@ window.I18N.register({
         if (p) { el.style.display = ''; el.style.left = p.x + 'px'; el.style.top = p.y + 'px' }
         else el.style.display = 'none'
       })
-      // Earth label — hide when the camera is essentially on Earth (origin ≈ camera).
-      const ep = camera.position.length() > 6 ? toScreen(earth.position, w, h) : null
+      // Earth label + axis — hide when the camera is essentially on Earth (origin ≈ camera).
+      const away = camera.position.length() > 6
+      earthAxis.visible = away
+      const ep = away ? toScreen(earth.position, w, h) : null
       if (ep) { earthLabel.style.display = ''; earthLabel.style.left = ep.x + 'px'; earthLabel.style.top = ep.y + 'px' }
       else earthLabel.style.display = 'none'
       renderer.render(scene, camera)
