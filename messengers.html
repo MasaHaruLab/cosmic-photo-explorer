@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title data-i18n="msg.pageTitle">深空信使：五艘探测器的真实航迹 · 星空照片探索器</title>
+<script src="./i18n.js"></script>
+<script>
+// Page dictionary — { zh, en } pairs. Milestone / probe-label copy is data-driven
+// (comes from data/probe_vectors.json at runtime) so only the authored chrome
+// strings are registered here; see the local pick()/pickMS() helpers below.
+window.I18N.register({
+  'msg.pageTitle': { zh: '深空信使：五艘探测器的真实航迹 · 星空照片探索器', en: 'Deep Space Messengers: Five Probes’ Real Trajectories · Cosmic Photo Explorer' },
+  'msg.eyebrow': { zh: '真实数据 / 太阳系俯视图', en: 'Real data / Top-down view of the solar system' },
+  'msg.title': { zh: '深空信使', en: 'Deep Space Messengers' },
+  'msg.lede1': {
+    zh: '这里画的不是探测器在天空中的方向，而是它们此刻在太空里的真实位置——一张俯视太阳系的地图。首页的星空地图演示的是「从地球看过去的方向」；这张图给你的是人类飞得最远的五艘探测器真正走过的路：旅行者 1、2 号，先驱者 10、11 号，新视野号，从地球附近扇形散开，借巨行星的引力甩向四面八方，冲出太阳的势力范围。',
+    en: 'This isn’t the direction these probes appear in Earth’s sky — it’s where they really are in space right now, a top-down map of the solar system. The homepage sky map demos viewing direction; this one shows the actual road humanity’s five farthest probes travelled: Voyager 1 & 2, Pioneer 10 & 11, and New Horizons — fanning out from near Earth, slung in every direction by the giant planets’ gravity, out past the Sun’s reach.',
+  },
+  'msg.lede2': {
+    zh: '径向距离做了平方根压缩（方向完全不变），否则 1 AU 的地球和 170 多 AU 的旅行者 1 号没法画在同一张图里。',
+    en: 'Radial distance is square-root compressed (direction is untouched) — otherwise 1 AU Earth and 170-plus AU Voyager 1 could never share one picture.',
+  },
+  'msg.probes.h': { zh: '显示探测器', en: 'Show probes' },
+  'msg.about.h': { zh: '这是怎么回事', en: 'What you are looking at' },
+  'msg.about.p1': {
+    zh: '五艘探测器都从地球附近出发，借巨行星的引力弹弓甩向深空。先驱者 10、11 号是先锋——先驱者 10 号首航木星、11 号首航土星，为后来者探路。旅行者 1、2 号接棒完成「大巡游」，旅行者 2 号至今仍是唯一到访过天王星和海王星的探测器。最年轻的新视野号 2006 年出发，2015 年飞掠冥王星。之后它们几乎沿直线飞离太阳，方向各不相同，这些分岔在图上清清楚楚。',
+    en: 'All five probes launched from near Earth and were slung into deep space by the giant planets’ gravity. The Pioneers went first — Pioneer 10 made the first Jupiter flyby, Pioneer 11 the first Saturn flyby, scouting the way. The Voyagers followed with the “Grand Tour”; Voyager 2 is still the only probe ever to visit Uranus and Neptune. The youngest, New Horizons, left in 2006 and flew past Pluto in 2015. Afterward each flies almost straight out from the Sun in its own direction — splits you can see clearly here.',
+  },
+  'msg.about.p2': {
+    zh: '2012 和 2018 年，两艘旅行者先后穿过「日球层顶」——太阳风的势力边界，进入了真正的星际空间（先驱者号在失联前、新视野号至今都还没到）。留意两艘旅行者抵达这个边界时的距离几乎相同（约 120 AU），尽管方向完全不同：这不是巧合，是太阳风气泡本身近似球形的证据。',
+    en: 'In 2012 and 2018 the two Voyagers each crossed the heliopause — the edge of the Sun’s solar-wind bubble — into true interstellar space (the Pioneers fell silent before reaching it, and New Horizons hasn’t yet). Notice the two Voyagers reach that boundary at almost the same distance (about 120 AU) despite flying in very different directions: not a coincidence, but evidence the heliosphere itself is roughly spherical.',
+  },
+  'msg.milestones.h': { zh: '关键节点', en: 'Milestones' },
+  'msg.now': { zh: '现在（{date}）：{list}', en: 'Right now ({date}): {list}' },
+  'msg.present': { zh: '至今', en: 'now' },
+  'msg.stillActive': { zh: '仍在运行', en: 'still active' },
+  'msg.signalLost': { zh: '已失联', en: 'signal lost' },
+  'msg.source': { zh: '轨迹数据：NASA / JPL-Caltech Horizons 星历系统（黄道 J2000 坐标，每 5 天采样一次）。', en: 'Trajectory data: NASA / JPL-Caltech Horizons ephemeris system (ecliptic J2000, sampled every 5 days).' },
+  'msg.play': { zh: '▶ 播放', en: '▶ Play' },
+  'msg.pause': { zh: '⏸ 暂停', en: '⏸ Pause' },
+  'msg.timelineLabel': { zh: '{name} 播放进度', en: '{name} playback progress' },
+  'msg.panel.open': { zh: 'ℹ️ 说明', en: 'ℹ️ Info' },
+  'msg.hint': { zh: '拖动 = 环绕旋转 · 滚轮 = 缩放 · 把视角拉起来，看旅行者 1 号爬向黄道以北、2 号扑向以南', en: 'Drag = orbit · Scroll = zoom · Tilt the view and watch Voyager 1 climb north of the ecliptic while Voyager 2 dives south' },
+  'msg.helio': { zh: '日球层顶', en: 'Heliopause' },
+  'msg.sun': { zh: '太阳', en: 'Sun' },
+  'msg.loadError': { zh: '轨迹数据加载失败——请通过本地服务器打开本页（file:// 会被浏览器拦截）。', en: 'Failed to load trajectory data — please open this page via a local server (file:// is blocked by the browser).' },
+  'msg.planet.mercury': { zh: '水星', en: 'Mercury' },
+  'msg.planet.venus': { zh: '金星', en: 'Venus' },
+  'msg.planet.earth': { zh: '地球', en: 'Earth' },
+  'msg.planet.mars': { zh: '火星', en: 'Mars' },
+  'msg.planet.jupiter': { zh: '木星', en: 'Jupiter' },
+  'msg.planet.saturn': { zh: '土星', en: 'Saturn' },
+  'msg.planet.uranus': { zh: '天王星', en: 'Uranus' },
+  'msg.planet.neptune': { zh: '海王星', en: 'Neptune' },
+  'nav.home': { zh: '← 回到星空探索器', en: '← Back to the explorer' },
+  'nav.solar': { zh: '太阳系 →', en: 'Solar System →' },
+  'nav.stations': { zh: '空间站 →', en: 'Space Stations →' },
+  'nav.observatories': { zh: '观星台 →', en: 'Observatories →' },
+  'nav.reference': { zh: '来源 →', en: 'Sources →' },
+  'nav.constellations': { zh: '星座 →', en: 'Constellations →' },
+})
+</script>
+<style>
+  :root {
+    --bg: #04060c;
+    --panel: rgba(11, 16, 28, 0.72);
+    --line: rgba(148, 170, 220, 0.16);
+    --text: #d8e0f0;
+    --dim: #8fa0be;
+    --accent: #9db8ff;
+    --cyan: #37e0ff;
+    --v1: #4fd8ff;
+    --v2: #9b7bff;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--text);
+    font: 15px/1.6 -apple-system, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif; }
+  #stage { position: fixed; inset: 0; overflow: hidden; }
+  #sky { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
+  #labels { position: absolute; inset: 0; pointer-events: none; }
+
+  /* Projected 3D labels (ring names, Sun, heliopause, satellite tags) */
+  .ring-label { position: absolute; transform: translate(-50%, -160%); white-space: nowrap;
+    font-size: 11px; color: var(--dim); text-shadow: 0 1px 6px rgba(0,0,0,0.9);
+    pointer-events: auto; cursor: pointer; transition: color .15s ease; }
+  .ring-label:hover { color: var(--cyan); text-decoration: underline; }
+  .ring-label.earth { color: #bfe4ff; font-weight: 600; }
+  .ring-label.earth:hover { color: var(--cyan); }
+  .helio-label { position: absolute; transform: translate(-50%, -50%); white-space: nowrap;
+    font-size: 11px; letter-spacing: 0.03em; color: var(--dim); text-shadow: 0 1px 6px rgba(0,0,0,0.9); }
+  .sun-label { position: absolute; transform: translate(-50%, 16px); white-space: nowrap;
+    font-size: 11px; color: #ffdca0; text-shadow: 0 1px 6px rgba(0,0,0,0.9); }
+  .sat-label { position: absolute; transform: translate(-50%, -160%); white-space: nowrap;
+    font-size: 11.5px; font-weight: 600; text-shadow: 0 1px 6px rgba(0,0,0,0.95); }
+
+  /* Milestone markers — small always-on dot, tip expands on hover/tap */
+  .msg-marker { position: absolute; transform: translate(-50%, -50%); pointer-events: auto; cursor: pointer; z-index: 3; }
+  .msg-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--mc);
+    box-shadow: 0 0 6px var(--mc); transition: box-shadow .25s ease; }
+  .msg-marker.passed .msg-dot { box-shadow: 0 0 10px var(--mc), 0 0 20px var(--mc); }
+  .msg-marker.pulse .msg-dot { animation: msgPulse 1s ease-out; }
+  @keyframes msgPulse { 0% { transform: scale(1); } 35% { transform: scale(2.6); } 100% { transform: scale(1); } }
+  .msg-tip { position: absolute; left: 13px; top: -10px; display: none; white-space: nowrap;
+    background: rgba(11,16,28,0.9); border: 1px solid var(--line); border-radius: 8px;
+    padding: 6px 11px; }
+  .msg-tip b { display: block; font-size: 12px; color: var(--text); font-weight: 600; }
+  .msg-tip .meta { display: block; font-size: 11px; color: var(--dim); margin-top: 2px; }
+  .msg-marker:hover .msg-tip, .msg-marker.pinned .msg-tip { display: block; }
+
+  /* Info panel */
+  .panel { position: absolute; top: 18px; left: 18px; width: min(370px, calc(100vw - 36px));
+    max-height: calc(100vh - 36px); overflow-y: auto; background: var(--panel);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--line); border-radius: 16px; padding: 18px 20px 20px; }
+
+  .panel { transition: transform .3s cubic-bezier(.4,0,.2,1), opacity .25s ease; }
+  .panel.collapsed { transform: translateX(calc(-100% - 30px)); opacity: 0; pointer-events: none; }
+  .panel-collapse { position: absolute; top: 12px; right: 14px; z-index: 2;
+    width: 30px; height: 26px; padding: 0; font: inherit; font-size: 17px; line-height: 1;
+    cursor: pointer; color: var(--dim); background: rgba(157,184,255,0.08);
+    border: 1px solid var(--line); border-radius: 999px; }
+  .panel-collapse:hover { border-color: var(--accent); color: var(--text); }
+  .panel-open { position: absolute; top: 18px; left: 18px; z-index: 5; display: none;
+    align-items: center; font: inherit; font-size: 13px; cursor: pointer; color: var(--text);
+    background: var(--panel); border: 1px solid var(--line); border-radius: 999px;
+    padding: 8px 15px; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+  .panel-open:hover { border-color: var(--accent); }
+  .panel.collapsed ~ .panel-open { display: inline-flex; }
+
+  .topnav { position: absolute; top: 18px; right: 18px; z-index: 6;
+    display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px;
+    max-width: min(600px, calc(100vw - 36px)); }
+  .topnav .back, .topnav .lang-toggle { background: rgba(11,16,28,0.7);
+    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+
+  .eyebrow { font-size: 11.5px; letter-spacing: 0.16em; color: var(--dim); text-transform: none; }
+  h1 { font-size: 20px; line-height: 1.35; margin: 6px 0 8px; }
+  .lede { color: var(--dim); font-size: 13.5px; margin: 0 0 10px; }
+  .lede.small { font-size: 12px; margin: 0 0 14px; }
+  .back { display: inline-block; color: var(--accent); text-decoration: none; font-size: 12px;
+    border: 1px solid var(--line); border-radius: 999px; padding: 3px 11px; }
+  .back:hover { border-color: var(--accent); }
+  .lang-toggle { font: inherit; font-size: 12px; cursor: pointer; color: var(--accent);
+    background: rgba(157,184,255,0.08); border: 1px solid var(--line); border-radius: 999px; padding: 3px 12px; }
+  .section { border-top: 1px solid var(--line); padding-top: 12px; margin-top: 14px; }
+  .section h2 { font-size: 13.5px; margin: 0 0 7px; color: var(--text); }
+  .section p { font-size: 12.5px; color: var(--dim); margin: 0 0 8px; }
+  .source { font-size: 11px; color: var(--dim); margin-top: 12px; }
+
+  /* Probe visibility chips */
+  .probe-picker { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 14px; }
+  .probe-chip { display: inline-flex; align-items: center; gap: 7px; font: inherit; font-size: 12.5px;
+    cursor: pointer; color: var(--dim); background: rgba(157,184,255,0.06);
+    border: 1px solid var(--line); border-radius: 999px; padding: 5px 13px 5px 10px;
+    transition: border-color .15s, color .15s, opacity .15s; opacity: 0.55; }
+  .probe-chip .chip-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--mc); box-shadow: 0 0 6px var(--mc); }
+  .probe-chip.active { color: var(--text); border-color: var(--mc); opacity: 1; }
+  .probe-chip:hover { border-color: var(--mc); }
+
+  /* Milestone list */
+  .mile-list { list-style: none; padding: 0; margin: 0; }
+  .mile-item { display: flex; align-items: flex-start; gap: 9px; font-size: 12px;
+    padding: 6px 4px; border-bottom: 1px dashed rgba(148,170,220,0.10); cursor: pointer;
+    border-radius: 6px; transition: background .15s; }
+  .mile-item:hover { background: rgba(157,184,255,0.06); }
+  .mile-item:last-child { border-bottom: 0; }
+  .mile-dot { flex: none; width: 8px; height: 8px; border-radius: 50%; margin-top: 4px; background: var(--mc); box-shadow: 0 0 5px var(--mc); }
+  .mile-item b { display: block; color: var(--text); font-weight: 600; }
+  .mile-item .meta { color: var(--dim); font-size: 11px; }
+  .now-line { font-size: 11.5px; color: var(--dim); margin-top: 10px; }
+
+  /* Bottom controls: one independent transport row per probe (own scrubber,
+     own play/pause, own date readout) — see Change 1 in HANDOFF/task notes. */
+  .dock { position: absolute; left: 50%; bottom: 22px; transform: translateX(-50%);
+    display: flex; flex-direction: column; align-items: stretch; gap: 8px; width: min(560px, calc(100vw - 36px)); }
+  .transport { display: flex; align-items: center; gap: 10px;
+    background: rgba(11,16,28,0.7); border: 1px solid var(--line); border-radius: 999px;
+    padding: 7px 16px 7px 12px; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+  .transport .t-dot { flex: none; width: 9px; height: 9px; border-radius: 50%; background: var(--mc); box-shadow: 0 0 6px var(--mc); }
+  .transport .t-name { flex: none; min-width: 62px; font-size: 12px; font-weight: 600; color: var(--text); white-space: nowrap; }
+  .transport .t-range { flex: 1; min-width: 40px; accent-color: var(--mc); cursor: pointer; }
+  .transport .t-play { flex: none; width: 32px; height: 28px; padding: 0; line-height: 1;
+    font: inherit; font-size: 13px; cursor: pointer; color: var(--mc);
+    background: transparent; border: 1px solid var(--mc); border-radius: 999px;
+    transition: background .15s, color .15s; }
+  .transport .t-play:hover, .transport .t-play.playing { background: var(--mc); color: var(--bg); }
+  .transport .t-date { flex: none; min-width: 78px; text-align: right; font-size: 11px; color: var(--dim); white-space: nowrap; }
+  .transport .t-date .t-year { display: block; font-size: 13.5px; font-weight: 700; color: var(--text); }
+  .hint { position: absolute; right: 18px; bottom: 22px; max-width: 270px; text-align: right;
+    font-size: 11.5px; color: var(--dim); }
+  @media (max-width: 720px) {
+    .hint { display: none; }
+    .panel { top: 12px; left: 12px; padding: 14px 16px; }
+    .panel-open { top: 12px; left: 12px; }
+    .topnav { top: 54px; right: 12px; gap: 6px; max-width: calc(100vw - 24px); }
+    .topnav .back, .topnav .lang-toggle { font-size: 11px; padding: 3px 9px; }
+    h1 { font-size: 17px; }
+    .transport { padding: 6px 10px; gap: 6px; }
+    .transport .t-name { min-width: 0; max-width: 44px; overflow: hidden; text-overflow: ellipsis; font-size: 11px; }
+    .transport .t-date { min-width: 50px; font-size: 10px; }
+    .transport .t-date .t-year { font-size: 12px; }
+  }
+</style>
+</head>
+<body>
+<div id="stage">
+  <canvas id="sky"></canvas>
+  <div id="labels"></div>
+
+  <nav class="topnav">
+    <a class="back" href="./" data-i18n="nav.home">← 回到星空探索器</a>
+    <a class="back" href="solar.html" data-i18n="nav.solar">太阳系 →</a>
+    <a class="back" href="stations.html" data-i18n="nav.stations">空间站 →</a>
+    <a class="back" href="observatories.html" data-i18n="nav.observatories">观星台 →</a>
+    <a class="back" href="reference.html" data-i18n="nav.reference">来源 →</a>
+    <a class="back" href="constellations.html" data-i18n="nav.constellations">星座 →</a>
+    <button class="lang-toggle" type="button" data-lang-toggle>EN</button>
+  </nav>
+
+  <div class="panel">
+    <button class="panel-collapse" type="button" data-panel-collapse aria-label="收起说明 / Hide panel">‹</button>
+    <div class="eyebrow" data-i18n="msg.eyebrow">真实数据 / 太阳系俯视图</div>
+    <h1 data-i18n="msg.title">深空信使</h1>
+    <p class="lede" data-i18n="msg.lede1"></p>
+    <p class="lede small" data-i18n="msg.lede2"></p>
+
+    <div class="section">
+      <h2 data-i18n="msg.probes.h">显示探测器</h2>
+      <div class="probe-picker" data-probe-picker></div>
+    </div>
+
+    <div class="section">
+      <h2 data-i18n="msg.about.h">这是怎么回事</h2>
+      <p data-i18n="msg.about.p1"></p>
+      <p data-i18n="msg.about.p2"></p>
+    </div>
+
+    <div class="section">
+      <h2 data-i18n="msg.milestones.h">关键节点</h2>
+      <ul class="mile-list" data-mile-list></ul>
+      <p class="now-line" data-now-line></p>
+      <p class="source" data-i18n="msg.source"></p>
+    </div>
+
+    <div class="site-credit" data-i18n="credit.madeby" style="margin-top:14px;font-size:11px;opacity:.5;letter-spacing:.03em"></div>
+  </div>
+
+  <button class="panel-open" type="button" data-panel-open data-i18n="msg.panel.open" aria-expanded="false">ℹ️ 说明</button>
+
+  <div class="dock" data-dock></div>
+  <div class="hint" data-i18n="msg.hint">拖动 = 环绕旋转 · 滚轮 = 缩放</div>
+</div>
+
+<script>
+(function () {
+  'use strict'
+
+  const I18N = window.I18N
+  const canvas = document.getElementById('sky')
+  const labelLayer = document.getElementById('labels')
+
+  // --- Radial scale compression: direction-preserving sqrt compression, applied
+  //     identically to every spatial thing (trajectories, milestones, planet
+  //     rings, heliopause). Keeps angular direction exact while compressing
+  //     radius, so 1 AU Earth and 170+ AU Voyager 1 both fit on screen and the
+  //     fan-out / flyby kinks stay faithful. Tuned visually: BASE = 6 keeps the
+  //     four inner planets distinct while leaving headroom for the heliopause. ---
+  const BASE = 6
+  function compress(x, y, z) {
+    const r = Math.hypot(x, y, z)
+    if (r < 1e-6) return [0, 0, 0]
+    const rp = BASE * Math.sqrt(r)
+    const k = rp / r
+    return [x * k, y * k, z * k]
+  }
+  const ringRadius = (au) => BASE * Math.sqrt(au)
+
+  const PLANETS = [
+    { key: 'mercury', au: 0.39 },
+    { key: 'venus', au: 0.72 },
+    { key: 'earth', au: 1.00, emphasize: true },
+    { key: 'mars', au: 1.52 },
+    { key: 'jupiter', au: 5.20 },
+    { key: 'saturn', au: 9.58 },
+    { key: 'uranus', au: 19.2 },
+    { key: 'neptune', au: 30.1 },
+  ]
+  const HELIOPAUSE_AU = 120
+  const HELIO_LABEL_ANGLE = (-62 * Math.PI) / 180  // lower-right, clear of ring labels
+
+  const PROBE_COLORS = {
+    'voyager-1': '#4fd8ff', 'voyager-2': '#9b7bff',
+    'pioneer-10': '#ffb454', 'pioneer-11': '#ff6f91', 'new-horizons': '#66d99a',
+  }
+  const PROBE_GLOW = {
+    'voyager-1': ['rgba(79,216,255,0.55)', 'rgba(79,216,255,0)'],
+    'voyager-2': ['rgba(155,123,255,0.55)', 'rgba(155,123,255,0)'],
+    'pioneer-10': ['rgba(255,180,84,0.55)', 'rgba(255,180,84,0)'],
+    'pioneer-11': ['rgba(255,111,145,0.55)', 'rgba(255,111,145,0)'],
+    'new-horizons': ['rgba(102,217,154,0.55)', 'rgba(102,217,154,0)'],
+  }
+  // Each probe now plays on its own independent transport (own progress, own
+  // play state) instead of a single shared clock — see the per-probe dock
+  // below. Traverse duration is independently tunable per probe; V2 runs
+  // slightly longer than V1 because its compressed path has ~15% more total
+  // arc length (it visits two extra planets), so equal seconds would make it
+  // visibly outrun V1 on screen — this keeps their on-screen speeds matched.
+  // Traverse duration per probe (seconds), independently tunable. Because playback
+  // is arc-length paced, longer/twistier paths need more seconds to keep on-screen
+  // speed matched across probes; missing ids fall back to 40 (see `|| 40` below).
+  const PROBE_SECONDS = {
+    'voyager-1': 40, 'voyager-2': 46,
+    'pioneer-10': 40, 'pioneer-11': 40, 'new-horizons': 30,
+  }
+
+  const load = (src) => new Promise((res, rej) => {
+    const s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = rej
+    document.head.appendChild(s)
+  })
+  Promise.all([
+    load('vendor/three.min.js').then(() => load('vendor/OrbitControls.js')),
+    fetch('data/probe_vectors.json').then((r) => r.json()),
+    fetch('data/planets.json').then((r) => r.json()),
+  ]).then(([, probesData, planetsData]) => start(probesData, planetsData)).catch((err) => {
+    console.error(err)
+    const el = document.querySelector('[data-dock]')
+    if (el) el.textContent = I18N.t('msg.loadError')
+  })
+
+  function pick(zh, en) { return I18N.getLang() === 'zh' ? zh : en }
+
+  // Emoji satellite marker on a soft colored glow, drawn once per probe.
+  function satelliteTexture(THREE, glowInner, glowOuter) {
+    const c = document.createElement('canvas'); c.width = c.height = 128
+    const g = c.getContext('2d')
+    const grd = g.createRadialGradient(64, 64, 4, 64, 64, 62)
+    grd.addColorStop(0, glowInner); grd.addColorStop(1, glowOuter)
+    g.fillStyle = grd; g.fillRect(0, 0, 128, 128)
+    g.font = '62px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif'
+    g.textAlign = 'center'; g.textBaseline = 'middle'
+    g.fillText('🛰', 64, 70)
+    return new THREE.CanvasTexture(c)
+  }
+
+  // Small soft-glow dot marking a planet's REAL heliocentric position on its
+  // ring (Change 2) — same radial-gradient-on-canvas idiom as sunTexture /
+  // satelliteTexture, just a plain colored disc instead of an emoji or corona.
+  function planetDotTexture(THREE, colorHex) {
+    const c = document.createElement('canvas'); c.width = c.height = 64
+    const g = c.getContext('2d')
+    const grd = g.createRadialGradient(32, 32, 0, 32, 32, 30)
+    grd.addColorStop(0, colorHex)
+    grd.addColorStop(0.5, colorHex)
+    grd.addColorStop(1, 'rgba(0,0,0,0)')
+    g.fillStyle = grd; g.fillRect(0, 0, 64, 64)
+    return new THREE.CanvasTexture(c)
+  }
+
+  function sunTexture(THREE) {
+    const c = document.createElement('canvas'); c.width = c.height = 128
+    const g = c.getContext('2d')
+    const grd = g.createRadialGradient(64, 64, 0, 64, 64, 64)
+    grd.addColorStop(0.0, 'rgba(255,246,220,1)')
+    grd.addColorStop(0.25, 'rgba(255,214,140,0.9)')
+    grd.addColorStop(0.6, 'rgba(255,170,90,0.28)')
+    grd.addColorStop(1.0, 'rgba(255,170,90,0)')
+    g.fillStyle = grd; g.fillRect(0, 0, 128, 128)
+    return new THREE.CanvasTexture(c)
+  }
+
+  function ringPositions(radius, segments) {
+    const arr = new Float32Array(segments * 3)
+    for (let i = 0; i < segments; i++) {
+      const a = (i / segments) * Math.PI * 2
+      arr[i * 3] = radius * Math.cos(a)
+      arr[i * 3 + 1] = radius * Math.sin(a)
+      arr[i * 3 + 2] = 0
+    }
+    return arr
+  }
+  // Closed (first point repeated) so LineDashedMaterial's cumulative distances
+  // wrap the full loop cleanly instead of leaving a seam at the closing edge.
+  function closedRingPositions(radius, segments) {
+    const arr = new Float32Array((segments + 1) * 3)
+    for (let i = 0; i <= segments; i++) {
+      const a = (i / segments) * Math.PI * 2
+      arr[i * 3] = radius * Math.cos(a)
+      arr[i * 3 + 1] = radius * Math.sin(a)
+      arr[i * 3 + 2] = 0
+    }
+    return arr
+  }
+
+  // Continuous sample-index (e.g. 109.4, between samples 109 and 110) ->
+  // arc-length fraction 0..1, by linearly interpolating the cumulative-arc
+  // table. Used once per milestone to precompute where it falls in arc space.
+  function arcFractionAtIndex(cumArc, totalArc, contIdx) {
+    const n = cumArc.length
+    const i = Math.max(0, Math.min(n - 1, Math.floor(contIdx)))
+    const f = contIdx - i
+    const a = cumArc[i]
+    const b = cumArc[Math.min(i + 1, n - 1)]
+    return (a + (b - a) * f) / totalArc
+  }
+
+  // Inverse: arc-length fraction 0..1 -> continuous sample-index. Binary
+  // search for the bracketing samples, then interpolate within that segment.
+  function indexAtArcFraction(probe, s) {
+    const cumArc = probe.cumArc
+    const target = Math.max(0, Math.min(1, s)) * probe.totalArc
+    let lo = 0, hi = cumArc.length - 1
+    while (lo < hi) {
+      const mid = (lo + hi) >> 1
+      if (cumArc[mid] < target) lo = mid + 1
+      else hi = mid
+    }
+    if (lo === 0) return 0
+    const prev = cumArc[lo - 1]
+    const span = cumArc[lo] - prev || 1
+    return (lo - 1) + Math.min(1, Math.max(0, (target - prev) / span))
+  }
+
+  function start(probesData, planetsData) {
+    const THREE = window.THREE
+    // Real planet data — id -> real heliocentric position [x,y,z] AU (the dot)
+    // and the real orbit as an inclined 3D polyline (the ring). Same ecliptic
+    // frame/units as the probe paths. The orbits are genuinely non-coplanar:
+    // each is tilted by its true inclination (Mercury ~7°, the rest ~1–3°), so
+    // the planets form a thin tilted pancake, not a fake flat disc.
+    const planetPosByKey = {}
+    const planetOrbitByKey = {}
+    const planetInclByKey = {}
+    ;(planetsData.planets || []).forEach((pl) => {
+      planetPosByKey[pl.id] = pl.pos
+      planetOrbitByKey[pl.id] = pl.orbit
+      planetInclByKey[pl.id] = pl.incl_deg
+    })
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true })
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5))
+    renderer.outputEncoding = THREE.sRGBEncoding
+    const scene = new THREE.Scene()
+    const camera = new THREE.PerspectiveCamera(44, 1, 0.1, 4000)
+
+    // --- Background starfield ---
+    const bgGeo = new THREE.BufferGeometry()
+    const bgN = 900, bgArr = new Float32Array(bgN * 3)
+    for (let i = 0; i < bgN; i++) {
+      const th = Math.random() * Math.PI * 2, ph = Math.acos(Math.random() * 2 - 1), r = 1600
+      bgArr[i * 3] = r * Math.sin(ph) * Math.cos(th)
+      bgArr[i * 3 + 1] = r * Math.sin(ph) * Math.sin(th)
+      bgArr[i * 3 + 2] = r * Math.cos(ph)
+    }
+    bgGeo.setAttribute('position', new THREE.BufferAttribute(bgArr, 3))
+    scene.add(new THREE.Points(bgGeo, new THREE.PointsMaterial({ color: 0x9fb0d0, size: 2.4, sizeAttenuation: false, transparent: true, opacity: 0.55 })))
+
+    // --- Sun ---
+    const sunCore = new THREE.Mesh(
+      new THREE.SphereGeometry(1.1, 24, 18),
+      new THREE.MeshBasicMaterial({ color: 0xfff2c8 }),
+    )
+    scene.add(sunCore)
+    const sunGlow = new THREE.Sprite(new THREE.SpriteMaterial({
+      map: sunTexture(THREE), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+    }))
+    sunGlow.scale.set(9, 9, 1)
+    scene.add(sunGlow)
+    const sunLabel = document.createElement('div'); sunLabel.className = 'sun-label'
+    labelLayer.appendChild(sunLabel)
+
+    // --- Planet orbits drawn as their REAL inclined 3D ellipses + a dot at each
+    //     planet's REAL current position on that orbit. The orbit polyline comes
+    //     from planets.json (true a/e/i/Ω/ω), so the orbits are tilted relative
+    //     to each other — the planets are NOT coplanar, matching reality. Falls
+    //     back to a flat circle only if a planet's orbit is ever missing. ---
+    const planetRings = []
+    PLANETS.forEach((p) => {
+      const radius = ringRadius(p.au)
+      const orbitAU = planetOrbitByKey[p.key]
+      const geo = new THREE.BufferGeometry()
+      if (orbitAU && orbitAU.length) {
+        const arr = new Float32Array(orbitAU.length * 3)
+        for (let i = 0; i < orbitAU.length; i++) {
+          const c = compress(orbitAU[i][0], orbitAU[i][1], orbitAU[i][2])
+          arr[i * 3] = c[0]; arr[i * 3 + 1] = c[1]; arr[i * 3 + 2] = c[2]
+        }
+        geo.setAttribute('position', new THREE.BufferAttribute(arr, 3))
+      } else {
+        geo.setAttribute('position', new THREE.BufferAttribute(ringPositions(radius, 128), 3))
+      }
+      const mat = new THREE.LineBasicMaterial({
+        color: p.emphasize ? 0x8fd6ff : 0x6f84ac,
+        transparent: true, opacity: p.emphasize ? 0.65 : 0.32,
+      })
+      const ring = new THREE.LineLoop(geo, mat)
+      scene.add(ring)
+
+      const realPos = planetPosByKey[p.key]
+      const [dx, dy, dz] = realPos
+        ? compress(realPos[0], realPos[1], realPos[2])
+        : [radius, 0, 0] // defensive fallback if a planet is ever missing from planets.json
+      const dotVec = new THREE.Vector3(dx, dy, dz)
+      const dot = new THREE.Sprite(new THREE.SpriteMaterial({
+        map: planetDotTexture(THREE, p.emphasize ? '#bfe4ff' : '#9fb0d0'),
+        transparent: true, depthTest: false, depthWrite: false,
+      }))
+      const dotScale = p.emphasize ? 1.1 : 0.75
+      dot.scale.set(dotScale, dotScale, 1)
+      dot.position.copy(dotVec)
+      dot.renderOrder = 5
+      scene.add(dot)
+
+      const labelEl = document.createElement('div')
+      labelEl.className = 'ring-label' + (p.emphasize ? ' earth' : '')
+      labelEl.style.cursor = 'pointer'
+      labelEl.title = '在太阳系里看它 →'
+      labelEl.addEventListener('click', () => { window.location.href = 'solar.html#body-' + p.key })
+      labelLayer.appendChild(labelEl)
+      planetRings.push({ planet: p, radius, labelEl, dotVec })
+    })
+
+    // --- Heliopause: dashed ecliptic ring + faint wireframe sphere. Both share
+    //     the same compressed radius, so a probe's interstellar-entry milestone
+    //     (r ≈ 120 AU) lands right on the sphere — the alignment is the payoff. ---
+    const helioRadius = ringRadius(HELIOPAUSE_AU)
+    const helioGeo = new THREE.BufferGeometry()
+    helioGeo.setAttribute('position', new THREE.BufferAttribute(closedRingPositions(helioRadius, 160), 3))
+    const helioLine = new THREE.Line(helioGeo, new THREE.LineDashedMaterial({
+      color: 0x9fb0d0, transparent: true, opacity: 0.5, dashSize: helioRadius * 0.02, gapSize: helioRadius * 0.014,
+    }))
+    helioLine.computeLineDistances()
+    scene.add(helioLine)
+    const helioSphere = new THREE.Mesh(
+      new THREE.SphereGeometry(helioRadius, 20, 10),
+      new THREE.MeshBasicMaterial({ color: 0x6f84ac, wireframe: true, transparent: true, opacity: 0.08 }),
+    )
+    // SphereGeometry's poles default to the local Y axis; rotate them onto Z so
+    // the wireframe's "latitude" rings lie flat in the ecliptic (reading as clean
+    // concentric circles from the top-down default view) and its "longitude"
+    // lines run pole-to-pole along ecliptic north/south — matching the page's
+    // north/south narrative instead of an arbitrary crisscross lattice.
+    helioSphere.rotation.x = Math.PI / 2
+    scene.add(helioSphere)
+    const helioLabel = document.createElement('div'); helioLabel.className = 'helio-label'
+    labelLayer.appendChild(helioLabel)
+
+    // --- Per-probe trajectories, satellites, milestones ---
+    const probes = probesData.map((p) => {
+      const colorHex = PROBE_COLORS[p.id] || '#9db8ff'
+      const color = new THREE.Color(colorHex)
+      const compressedPath = p.path.map(([x, y, z]) => {
+        const [cx, cy, cz] = compress(x, y, z)
+        return new THREE.Vector3(cx, cy, cz)
+      })
+
+      // Cumulative on-screen (compressed) arc length along the path. Playback
+      // advances linearly in THIS, not in time index — the inner planetary
+      // tour is spatially twisty (lots of arc length per sample) while the
+      // late interstellar cruise is a near-straight, slowly-lengthening line
+      // (little arc length per sample), so a constant-time clock made the
+      // cruise crawl. Constant arc-length speed fixes that: see
+      // indexAtArcFraction() / applyProbeArc() below.
+      const cumArc = new Float64Array(compressedPath.length)
+      for (let i = 1; i < compressedPath.length; i++) {
+        cumArc[i] = cumArc[i - 1] + compressedPath[i - 1].distanceTo(compressedPath[i])
+      }
+      const totalArc = cumArc[cumArc.length - 1] || 1
+
+      // Glowing "tube" trajectory: a real Catmull-Rom curve threaded through
+      // every true sample (5-day resolution), so flyby bends stay faithful —
+      // only the tube's polygon budget (tubularSegments) is capped for perf.
+      const curve = new THREE.CatmullRomCurve3(compressedPath, false, 'catmullrom', 0.5)
+      const tubularSegments = Math.min(900, compressedPath.length)
+      const core = new THREE.Mesh(
+        new THREE.TubeGeometry(curve, tubularSegments, 0.32, 6, false),
+        new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.95 }),
+      )
+      const glow = new THREE.Mesh(
+        new THREE.TubeGeometry(curve, tubularSegments, 1.15, 8, false),
+        new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.16, blending: THREE.AdditiveBlending, depthWrite: false }),
+      )
+      const group = new THREE.Group()
+      group.add(glow); group.add(core)
+      scene.add(group)
+
+      // Satellite rider — the animation this page exists to preserve.
+      const sat = new THREE.Sprite(new THREE.SpriteMaterial({
+        map: satelliteTexture(THREE, PROBE_GLOW[p.id][0], PROBE_GLOW[p.id][1]),
+        transparent: true, depthTest: false, depthWrite: false,
+      }))
+      sat.scale.set(3.4, 3.4, 1)
+      sat.renderOrder = 10
+      scene.add(sat)
+      const satLabel = document.createElement('div')
+      satLabel.className = 'sat-label'
+      satLabel.style.color = colorHex
+      labelLayer.appendChild(satLabel)
+
+      // Milestone markers (HTML overlay, hover/click expands the tip). Each
+      // milestone's arrival is stored in arc-length terms (arcFrac) so
+      // "passed" can be compared directly against the arc-paced playback
+      // progress below.
+      const milestones = p.milestones.map((m) => {
+        const [mx, my, mz] = compress(m.pos[0], m.pos[1], m.pos[2])
+        const posVec = new THREE.Vector3(mx, my, mz)
+        const arcFrac = arcFractionAtIndex(cumArc, totalArc, m.t * (p.samples - 1))
+        const el = document.createElement('div')
+        el.className = 'msg-marker'
+        el.style.setProperty('--mc', colorHex)
+        el.innerHTML = '<div class="msg-dot"></div><div class="msg-tip"><b></b><span class="meta"></span></div>'
+        el.addEventListener('click', (e) => { e.stopPropagation(); el.classList.toggle('pinned') })
+        labelLayer.appendChild(el)
+        return { m, posVec, el, tipB: el.querySelector('b'), tipMeta: el.querySelector('.meta'), everPassed: false, arcFrac }
+      })
+
+      return {
+        id: p.id, label: p.label, labelEn: p.label_en, start: p.start, lastContact: p.last_contact, samples: p.samples,
+        stepDays: p.step_days, distAu: p.dist_au, colorHex, compressedPath, group, sat, satLabel, milestones,
+        visible: true, cumArc, totalArc, seconds: PROBE_SECONDS[p.id] || 40,
+        // Independent per-probe transport state (Change 1): own progress (s,
+        // an arc-length fraction 0..1) and own play flag. Default s = 1 keeps
+        // the existing "today" default the satellite used to open on.
+        s: 1, playing: false, dock: null,
+      }
+    })
+
+    // Combined, chronologically sorted milestone list for the panel.
+    const allMilestones = []
+    probes.forEach((probe) => probe.milestones.forEach((entry) => allMilestones.push({ probe, entry })))
+    allMilestones.sort((a, b) => a.entry.m.date.localeCompare(b.entry.m.date))
+
+    // --- Camera + controls: a tilted 3/4 view over the ecliptic (+Z up). The
+    //     default is deliberately NOT straight-down so you immediately see the
+    //     real 3D structure — the planets lie on a flat disc (the solar system
+    //     really is that flat, all within ~7° of the ecliptic) while the probes
+    //     escape it: Voyager 1 climbs north, Voyager 2 dives south. Drag to spin
+    //     to a top-down or edge-on view. camera.up MUST be set before constructing
+    //     OrbitControls — it bakes the pole axis into its internal quaternion at
+    //     construction time and won't pick up a later change. ---
+    camera.up.set(0, 0, 1)
+    let maxTip = helioRadius
+    probes.forEach((p) => { maxTip = Math.max(maxTip, p.compressedPath[p.compressedPath.length - 1].length()) })
+    const initialDistance = (maxTip / Math.tan((22 * Math.PI) / 180)) * 1.28
+    // ~40° off the pole: enough tilt to read the planet disc AND the probes'
+    // north/south break-out, without foreshortening the in-plane fan too hard.
+    camera.position.set(initialDistance * 0.166, -initialDistance * 0.621, initialDistance * 0.766)
+    const controls = new THREE.OrbitControls(camera, renderer.domElement)
+    controls.target.set(0, 0, 0)
+    controls.enableDamping = true
+    controls.dampingFactor = 0.08
+    controls.rotateSpeed = 0.5
+    controls.enablePan = false
+    controls.minDistance = 3
+    controls.maxDistance = initialDistance * 3.2
+    controls.update()
+
+    // --- Per-probe transport state ---
+    // Advance/scrub probe by arc-length fraction s (0..1): interpolate the
+    // satellite's on-screen position between the two bracketing samples, then
+    // round to the nearest sample for the date readout and milestone
+    // triggering — this is the "arc-length -> interpolate -> nearest index"
+    // pipeline the task calls for, decoupled per probe.
+    function applyProbeArc(probe, s) {
+      probe.s = Math.min(1, Math.max(0, s))
+      const contIdx = indexAtArcFraction(probe, probe.s)
+      const i = Math.floor(contIdx)
+      const f = contIdx - i
+      const a = probe.compressedPath[i]
+      const b = probe.compressedPath[Math.min(i + 1, probe.compressedPath.length - 1)]
+      probe.sat.position.lerpVectors(a, b, f)
+
+      probe.milestones.forEach((entry) => {
+        const passed = probe.s >= entry.arcFrac
+        const wasPassed = entry.everPassed
+        entry.el.classList.toggle('passed', passed)
+        if (passed && !wasPassed) {
+          entry.el.classList.add('pulse')
+          requestAnimationFrame(() => setTimeout(() => entry.el.classList.remove('pulse'), 1000))
+        }
+        entry.everPassed = passed
+      })
+
+      if (probe.dock) {
+        // The date column is a static life-span label (set once in buildDock); only
+        // the scrubber position tracks playback progress here.
+        probe.dock.rangeEl.value = String(Math.round(probe.s * 1000))
+      }
+    }
+
+    function setPlayBtnState(probe) {
+      const btn = probe.dock.playBtn
+      btn.textContent = probe.playing ? '⏸' : '▶'
+      btn.classList.toggle('playing', probe.playing)
+      btn.setAttribute('aria-label', I18N.t(probe.playing ? 'msg.pause' : 'msg.play'))
+    }
+    function stopProbePlay(probe) {
+      if (!probe.playing) return
+      probe.playing = false
+      setPlayBtnState(probe)
+    }
+    function toggleProbePlay(probe) {
+      if (probe.playing) { stopProbePlay(probe); return }
+      if (probe.s >= 0.999) applyProbeArc(probe, 0) // ▶ from the end restarts from 0
+      probe.playing = true
+      setPlayBtnState(probe)
+    }
+
+    // --- Per-probe transport dock: one compact row per probe (dot + name +
+    //     scrubber + play/pause + date), fully independent of one another. ---
+    const dockEl = document.querySelector('[data-dock]')
+    function buildDock() {
+      dockEl.innerHTML = ''
+      probes.forEach((probe) => {
+        const row = document.createElement('div')
+        row.className = 'transport'
+        row.style.setProperty('--mc', probe.colorHex)
+        row.innerHTML =
+          '<span class="t-dot"></span>' +
+          '<span class="t-name"></span>' +
+          '<input type="range" class="t-range" min="0" max="1000" value="0">' +
+          '<button type="button" class="t-play">▶</button>' +
+          '<span class="t-date"><span class="t-year"></span><span class="t-full"></span></span>'
+        row.querySelector('.t-name').textContent = pick(probe.label, probe.labelEn)
+        const rangeEl = row.querySelector('.t-range')
+        const playBtn = row.querySelector('.t-play')
+        const yearEl = row.querySelector('.t-year')
+        const fullEl = row.querySelector('.t-full')
+        rangeEl.setAttribute('aria-label', I18N.t('msg.timelineLabel', { name: pick(probe.label, probe.labelEn) }))
+
+        probe.dock = { rangeEl, playBtn, yearEl, fullEl }
+
+        // Static life-span per probe: launch year – last-signal year (or 至今 if still
+        // active). The trajectories are propagated to the present, so a live scrub date
+        // made every player read the same "today" — as if they all hit the wall now.
+        // The span tells each probe's real active life instead (Pioneers fell silent
+        // 2003 / 1995; the Voyagers and New Horizons are still talking).
+        const startYear = probe.start.slice(0, 4)
+        const active = !probe.lastContact
+        yearEl.textContent = startYear + '–' + (active ? I18N.t('msg.present') : probe.lastContact.slice(0, 4))
+        fullEl.textContent = I18N.t(active ? 'msg.stillActive' : 'msg.signalLost')
+
+        rangeEl.addEventListener('input', () => {
+          stopProbePlay(probe) // dragging a probe's scrubber pauses only that probe
+          applyProbeArc(probe, Number(rangeEl.value) / 1000)
+        })
+        playBtn.addEventListener('click', () => toggleProbePlay(probe))
+
+        dockEl.appendChild(row)
+        setPlayBtnState(probe)
+        applyProbeArc(probe, probe.s) // sync the fresh DOM to current progress
+      })
+    }
+
+    // --- Probe visibility chips ---
+    const pickerEl = document.querySelector('[data-probe-picker]')
+    function renderPicker() {
+      pickerEl.innerHTML = ''
+      probes.forEach((probe) => {
+        const b = document.createElement('button')
+        b.type = 'button'
+        b.className = 'probe-chip' + (probe.visible ? ' active' : '')
+        b.style.setProperty('--mc', probe.colorHex)
+        b.innerHTML = '<span class="chip-dot"></span><span></span>'
+        b.querySelector('span:last-child').textContent = pick(probe.label, probe.labelEn)
+        b.addEventListener('click', () => {
+          probe.visible = !probe.visible
+          probe.group.visible = probe.visible
+          probe.sat.visible = probe.visible
+          probe.satLabel.style.display = probe.visible ? '' : 'none'
+          probe.milestones.forEach((entry) => { entry.el.style.display = probe.visible ? '' : 'none' })
+          b.classList.toggle('active', probe.visible)
+        })
+        pickerEl.appendChild(b)
+      })
+    }
+
+    // --- Milestone list (panel) ---
+    const mileListEl = document.querySelector('[data-mile-list]')
+    const nowLineEl = document.querySelector('[data-now-line]')
+    function renderMileList() {
+      mileListEl.innerHTML = ''
+      allMilestones.forEach(({ probe, entry }) => {
+        const li = document.createElement('li')
+        li.className = 'mile-item'
+        li.innerHTML = '<span class="mile-dot" style="background:' + probe.colorHex + ';box-shadow:0 0 5px ' + probe.colorHex + '"></span><span></span>'
+        const txt = li.querySelector('span:last-child')
+        const label = pick(probe.label, probe.labelEn) + ' · ' + pick(entry.m.zh, entry.m.en)
+        txt.innerHTML = '<b></b><span class="meta"></span>'
+        txt.querySelector('b').textContent = label
+        txt.querySelector('.meta').textContent = entry.m.date + ' · ' + entry.m.r_au + ' AU'
+        li.addEventListener('click', () => { stopProbePlay(probe); applyProbeArc(probe, entry.arcFrac) })
+        mileListEl.appendChild(li)
+      })
+      const dataEndDate = probesData[0].end
+      const list = probes.map((probe) => pick(probe.label, probe.labelEn) + ' ' + probe.distAu + ' AU').join(' · ')
+      nowLineEl.textContent = I18N.t('msg.now', { date: dataEndDate, list })
+    }
+
+    // Re-render language-dependent dynamic text on toggle.
+    I18N.onChange(() => { renderPicker(); renderMileList(); updateAllLabelText(); buildDock() })
+
+    function updateAllLabelText() {
+      sunLabel.textContent = I18N.t('msg.sun')
+      helioLabel.textContent = I18N.t('msg.helio')
+      planetRings.forEach(({ planet, labelEl }) => { labelEl.textContent = I18N.t('msg.planet.' + planet.key) })
+      probes.forEach((probe) => { probe.satLabel.textContent = pick(probe.label, probe.labelEn) })
+      probes.forEach((probe) => probe.milestones.forEach((entry) => {
+        entry.tipB.textContent = pick(entry.m.zh, entry.m.en)
+        entry.tipMeta.textContent = entry.m.date + ' · ' + entry.m.r_au + ' AU'
+      }))
+    }
+
+    // --- Collapsible panel (mobile-first collapse, matches the sibling pages) ---
+    const panelEl = document.querySelector('.panel')
+    const openBtn = document.querySelector('[data-panel-open]')
+    const setPanelCollapsed = (collapsed) => {
+      panelEl.classList.toggle('collapsed', collapsed)
+      openBtn.setAttribute('aria-expanded', String(!collapsed))
+    }
+    document.querySelector('[data-panel-collapse]').addEventListener('click', () => setPanelCollapsed(true))
+    openBtn.addEventListener('click', () => setPanelCollapsed(false))
+    if (window.matchMedia('(max-width: 720px)').matches) setPanelCollapsed(true)
+
+    // --- Projection + render loop ---
+    const proj = new THREE.Vector3()
+    function toScreen(v3, w, h) {
+      proj.copy(v3).project(camera)
+      if (proj.z > 1) return null
+      return { x: (proj.x * 0.5 + 0.5) * w, y: (-proj.y * 0.5 + 0.5) * h }
+    }
+    function placeLabel(el, worldVec, w, h) {
+      const p = toScreen(worldVec, w, h)
+      if (p) { el.style.display = ''; el.style.left = p.x + 'px'; el.style.top = p.y + 'px' }
+      else el.style.display = 'none'
+    }
+
+    function resize() {
+      const w = canvas.clientWidth, h = canvas.clientHeight
+      renderer.setSize(w, h, false)
+      camera.aspect = w / h
+      camera.updateProjectionMatrix()
+    }
+    window.addEventListener('resize', resize)
+
+    const originVec = new THREE.Vector3(0, 0, 0)
+    function draw(w, h) {
+      placeLabel(sunLabel, originVec, w, h)
+      planetRings.forEach(({ labelEl, dotVec }) => { placeLabel(labelEl, dotVec, w, h) })
+      placeLabel(helioLabel, new THREE.Vector3(helioRadius * Math.cos(HELIO_LABEL_ANGLE), helioRadius * Math.sin(HELIO_LABEL_ANGLE), 0), w, h)
+      probes.forEach((probe) => {
+        if (probe.visible) placeLabel(probe.satLabel, probe.sat.position, w, h)
+        probe.milestones.forEach((entry) => { if (probe.visible) placeLabel(entry.el, entry.posVec, w, h) })
+      })
+      renderer.render(scene, camera)
+    }
+
+    let lastTime = null
+    function tick(now) {
+      if (lastTime == null) lastTime = now
+      const dt = Math.min(now - lastTime, 100) // clamp so a hidden-tab gap can't jump the timeline
+      lastTime = now
+      // Each probe advances independently, at its own arc-length pace, on its
+      // own play flag — playing/scrubbing one never touches the other.
+      probes.forEach((probe) => {
+        if (!probe.playing) return
+        const next = probe.s + dt / (probe.seconds * 1000)
+        if (next >= 1) { applyProbeArc(probe, 1); stopProbePlay(probe) } else applyProbeArc(probe, next)
+      })
+      controls.update()
+      const w = canvas.clientWidth, h = canvas.clientHeight
+      draw(w, h)
+      requestAnimationFrame(tick)
+    }
+
+    renderPicker()
+    renderMileList()
+    updateAllLabelText()
+    buildDock()
+    resize()
+    requestAnimationFrame(tick)
+  }
+})()
+</script>
+</body>
+</html>
