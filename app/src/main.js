@@ -146,6 +146,7 @@ app.innerHTML = `
         <div class="badge" data-i18n="nav.overview">银河总览</div>
         <a class="badge badge-link" href="constellations.html" data-i18n="nav.constellations">星座 3D →</a>
         <a class="badge badge-link" href="solar.html" data-i18n="nav.solar">太阳系 →</a>
+        <a class="badge badge-link" href="messengers.html" data-i18n="nav.messengers">深空信使 →</a>
         <a class="badge badge-link" href="stations.html" data-i18n="nav.stations">空间站 →</a>
         <a class="badge badge-link" href="observatories.html" data-i18n="nav.observatories">观星台 →</a>
         <a class="badge badge-link" href="reference.html" data-i18n="nav.reference">来源 →</a>
@@ -213,6 +214,7 @@ app.innerHTML = `
               <button class="primary-button" type="button" data-probe-play>▶ 从头播放</button>
               <button class="ghost-button" type="button" data-probe-parallax data-i18n="probe.parallaxBtn" aria-expanded="false">为什么是弹簧形？</button>
             </div>
+            <p class="panel-copy timeline-realorbit" data-i18n-html="probe.realOrbitNote"></p>
             <div class="explainer-card parallax-card" data-parallax-card hidden>
               <p class="parallax-lead" data-i18n-html="parallax.lead"><strong>你知道吗？</strong>地图上卫星飞的是它真实的直线轨道，但我们从地球看到的其实是一条螺旋。</p>
               <svg class="parallax-diagram" viewBox="0 0 320 132" role="img" aria-label="Parallax diagram">

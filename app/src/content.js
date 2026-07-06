@@ -19,6 +19,7 @@ export const UI = {
   'nav.overview': { zh: '银河总览', en: 'Galaxy Overview' },
   'nav.constellations': { zh: '星座 3D →', en: 'Constellations 3D →' },
   'nav.solar': { zh: '太阳系 →', en: 'Solar System →' },
+  'nav.messengers': { zh: '深空信使 →', en: 'Deep Space Messengers →' },
   'nav.stations': { zh: '空间站 →', en: 'Space Stations →' },
   'nav.observatories': { zh: '观星台 →', en: 'Observatories →' },
   'nav.reference': { zh: '来源 →', en: 'Sources →' },
@@ -59,6 +60,10 @@ export const UI = {
   'probe.play': { zh: '▶ 从头播放', en: '▶ Play from launch' },
   'probe.playing': { zh: '⏸ 暂停', en: '⏸ Pause' },
   'probe.parallaxBtn': { zh: '你知道吗？为什么是螺旋', en: 'Did you know? Why a spiral' },
+  'probe.realOrbitNote': {
+    zh: '地图上画的是<strong>从地球看过去的方向</strong>（演示效果），所以是螺旋。想看探测器真正的三维轨道 → <a class="inline-link" href="messengers.html">深空信使</a>',
+    en: 'The map shows the <strong>direction as seen from Earth</strong> (a demo), which is why it spirals. For each probe’s real 3D orbit → <a class="inline-link" href="messengers.html">Deep Space Messengers</a>',
+  },
   'probe.dateLabel': { zh: '{date} · 它当时在天上的这个方向', en: '{date} · where it appeared in the sky then' },
   'probe.todayLabel': { zh: '今天 · 距离约 {dist} AU', en: 'Today · about {dist} AU away' },
   'probe.detailsSuffix': {

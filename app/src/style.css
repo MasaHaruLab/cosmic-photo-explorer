@@ -461,6 +461,24 @@ h2 {
   color: rgba(233, 241, 255, 0.75);
 }
 
+/* "This is the viewing direction (demo) → real 3D orbit at 深空信使" note under
+   the probe timeline, plus the inline link it carries. */
+.timeline-realorbit {
+  font-size: 13px;
+}
+.inline-link {
+  color: #9db8ff;
+  font-weight: 600;
+  white-space: nowrap;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(157, 184, 255, 0.4);
+  transition: color 160ms ease, border-color 160ms ease;
+}
+.inline-link:hover {
+  color: #c6d8ff;
+  border-color: #c6d8ff;
+}
+
 .panel-actions {
   margin-top: 12px;
   display: flex;
