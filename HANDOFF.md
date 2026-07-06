@@ -2,7 +2,13 @@
 
 Updated: 2026-07-07（**深空信使页：全队列 ✅（数据+页面+双向链接+地球卡+skill+5船+播放器区间+首页注明）**；已部署 master a4f09a3 / gh-pages 7a54c1c）
 
-**跟进修复（2026-07-07·bd0ba30，dist 已重建，未部署 → 待授权推送）**：首页全屏(map-pseudo-full/真全屏，`.hero-view` z-index:60 inset:0)遮住侧栏面板，探测器的说明+▶播放+时间轴+「为何是螺旋」卡全在面板里→CEO 反馈「点击卫星轨道没有动画了 也没有说明」。修法：`selectAnchor` 里当选中的是探测器且正全屏时 `toggleFullscreen()` 退出全屏亮出面板（普通天区锚点不动，它们在地图上本身就有可看的东西）。已 live 复现验证（全屏点旅行者1号→退出全屏+面板显说明+▶+realOrbitNote）。
+**跟进 A（2026-07-07·bd0ba30，全屏点探测器退出全屏亮面板的修复）**：后被跟进 B 取代——首页探测器整层已撤，此修复对 `probePaths`(空) 恒不触发，留作 v3 复活伏笔。
+
+**跟进 B（2026-07-07·首页撤探测器 + 说明搬去深空信使，dist 已重建，未部署 → 待授权推送）**：CEO「银河总览页卫星动画乱，先取消，下次 v3 再说」+「点击轨道后右栏那些内容搬去深空信使每个独自的介绍里」。
+- **首页撤除**：`app/src/main.js` 加 `const SHOW_PROBES = false` 门控 init() 的探测器加载块。因是编译期常量 false，esbuild 直接常量折叠+摇树，探测器渲染代码整段从产物移除（JS 59.7→53.7kB）。首页回到干净真实天图（0 探测器热点、22 真实天体锚点、无橙色轨迹带），「深空信使 →」导航徽章保留=去独立页的入口。源码里 probeCopy/probesToAnchors/buildProbeGeometry 等**留作 v3 重做的伏笔，未删**（门控关，产物已不含）。
+- **说明搬家**：`app/public/messengers.html` 新增「五位信使」面板区块（`PROBE_STORY` 数据=从首页 probeCopy 逐字搬来 summary+details，`renderProbeIntros()` 渲染，每船主题色圆点+名+一句钩子+性格小传，已接 I18N.onChange 中英双语）。**此处现为每船叙事的权威副本**；main.js 的 probeCopy 是 v3 前的休眠重复，改文案以 messengers 为准。
+- Live 验证：首页无探测器层；messengers「五位信使」5 船齐全、颜色对、中英切换正常。
+- 提交：main.js+messengers.html+HANDOFF（本条）。
 
 ## 🚧 当前主线：深空信使页（2026-07-06 起）
 

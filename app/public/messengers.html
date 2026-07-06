@@ -31,6 +31,7 @@ window.I18N.register({
     zh: '2012 和 2018 年，两艘旅行者先后穿过「日球层顶」——太阳风的势力边界，进入了真正的星际空间（先驱者号在失联前、新视野号至今都还没到）。留意两艘旅行者抵达这个边界时的距离几乎相同（约 120 AU），尽管方向完全不同：这不是巧合，是太阳风气泡本身近似球形的证据。',
     en: 'In 2012 and 2018 the two Voyagers each crossed the heliopause — the edge of the Sun’s solar-wind bubble — into true interstellar space (the Pioneers fell silent before reaching it, and New Horizons hasn’t yet). Notice the two Voyagers reach that boundary at almost the same distance (about 120 AU) despite flying in very different directions: not a coincidence, but evidence the heliosphere itself is roughly spherical.',
   },
+  'msg.intro.h': { zh: '五位信使', en: 'Meet the five' },
   'msg.milestones.h': { zh: '关键节点', en: 'Milestones' },
   'msg.now': { zh: '现在（{date}）：{list}', en: 'Right now ({date}): {list}' },
   'msg.present': { zh: '至今', en: 'now' },
@@ -170,6 +171,16 @@ window.I18N.register({
   .mile-item .meta { color: var(--dim); font-size: 11px; }
   .now-line { font-size: 11.5px; color: var(--dim); margin-top: 10px; }
 
+  /* Per-probe intro list */
+  .intro-list { list-style: none; padding: 0; margin: 0; }
+  .intro-item { padding: 9px 0; border-bottom: 1px dashed rgba(148,170,220,0.10); }
+  .intro-item:last-child { border-bottom: 0; }
+  .intro-head { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
+  .intro-dot { flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--mc); box-shadow: 0 0 6px var(--mc); }
+  .intro-name { color: var(--text); font-weight: 600; font-size: 13px; }
+  .intro-summary { margin: 0 0 5px; font-size: 12px; color: var(--text); }
+  .intro-details { margin: 0; font-size: 11.5px; color: var(--dim); line-height: 1.6; }
+
   /* Bottom controls: one independent transport row per probe (own scrubber,
      own play/pause, own date readout) — see Change 1 in HANDOFF/task notes. */
   .dock { position: absolute; left: 50%; bottom: 22px; transform: translateX(-50%);
@@ -234,6 +245,11 @@ window.I18N.register({
       <h2 data-i18n="msg.about.h">这是怎么回事</h2>
       <p data-i18n="msg.about.p1"></p>
       <p data-i18n="msg.about.p2"></p>
+    </div>
+
+    <div class="section">
+      <h2 data-i18n="msg.intro.h">五位信使</h2>
+      <ul class="intro-list" data-intro-list></ul>
     </div>
 
     <div class="section">
@@ -312,6 +328,62 @@ window.I18N.register({
   const PROBE_SECONDS = {
     'voyager-1': 40, 'voyager-2': 46,
     'pioneer-10': 40, 'pioneer-11': 40, 'new-horizons': 30,
+  }
+
+  // Per-probe intro copy, moved here from the homepage side panel so each probe's
+  // own story lives on the page that is actually about the probes. summary = the
+  // one-line hook; details = the character sketch shown beneath it.
+  const PROBE_STORY = {
+    'voyager-1': {
+      summary: {
+        zh: '人类飞得最远的造物。1977 年出发，现在在 255 亿公里外，仍在用微弱的信号回话。',
+        en: 'The most distant object humanity has ever built. Launched in 1977, it is now 25.5 billion kilometres away and still answering with a faint signal.',
+      },
+      details: {
+        zh: '1990 年它回头拍了那张《暗淡蓝点》——地球只是一粒悬浮在阳光里的尘埃。2012 年它穿出日球层，成为第一个进入星际空间的人造物。丝带上的年度小波浪不是它在抖，是地球带着我们绕太阳转圈的视差——证据就画在天上。',
+        en: 'In 1990 it turned back to take the “Pale Blue Dot” — Earth reduced to a mote suspended in a sunbeam. In 2012 it crossed the heliopause to become the first human-made object in interstellar space. The small yearly waves along its ribbon aren’t the probe trembling; they are the parallax of Earth carrying us around the Sun — the proof written across the sky.',
+      },
+    },
+    'voyager-2': {
+      summary: {
+        zh: '唯一近距离看过天王星和海王星的探测器，比 1 号还早出发两周。',
+        en: 'The only probe ever to see Uranus and Neptune up close — and it launched two weeks before Voyager 1.',
+      },
+      details: {
+        zh: '它走了一条更贪心的路线：木星、土星、天王星、海王星四连访，至今无人重复。2018 年它也进入了星际空间。现在朝着南天的孔雀座方向飞去。',
+        en: 'It took the greedier route: a grand tour of Jupiter, Saturn, Uranus and Neptune that no craft has repeated since. In 2018 it too entered interstellar space. It is now heading toward Pavo, the Peacock, in the southern sky.',
+      },
+    },
+    'pioneer-10': {
+      summary: {
+        zh: '第一个穿过小行星带、第一个近距离看木星的探测器，1972 年出发。',
+        en: 'The first probe to cross the asteroid belt and the first to see Jupiter up close, launched in 1972.',
+      },
+      details: {
+        zh: '2003 年地球最后一次收到它的信号，之后它安静地继续飞，方向正对金牛座的毕宿五。它带着一块刻着人类男女形象和太阳系位置的金属板——如果有谁捡到它，那是我们的自我介绍。',
+        en: 'Earth last heard from it in 2003; since then it has flown on in silence, aimed toward Aldebaran in Taurus. It carries a metal plaque engraved with human figures and the location of our Solar System — should anyone ever find it, that is our introduction.',
+      },
+    },
+    'pioneer-11': {
+      summary: {
+        zh: '第一个近距离看土星的探测器，也带着那块著名的人类名片金属板。',
+        en: 'The first probe to see Saturn up close, and it carries the same famous plaque — humanity’s calling card.',
+      },
+      details: {
+        zh: '1979 年它替人类第一次撩开土星的面纱，为后来的旅行者和卡西尼探路。1995 年失联。它现在朝着天鹰座方向漂流，大约几百万年后会路过那里的一颗恒星。',
+        en: 'In 1979 it lifted the veil on Saturn for the first time, scouting the way for the Voyagers and Cassini that followed. Contact was lost in 1995. It now drifts toward Aquila, the Eagle, and in a few million years will pass one of its stars.',
+      },
+    },
+    'new-horizons': {
+      summary: {
+        zh: '2015 年飞掠冥王星，把一颗模糊的光点变成了有冰川和心形平原的世界。',
+        en: 'In 2015 it flew past Pluto, turning a blurry speck of light into a world of glaciers and a heart-shaped plain.',
+      },
+      details: {
+        zh: '它是这五位信使里最年轻的，还在柯伊伯带工作，仍定期回传数据。它出发那年冥王星还是"第九大行星"，飞到一半冥王星被除名——它不在乎，照飞。',
+        en: 'It is the youngest of these five messengers, still at work in the Kuiper Belt and still sending data home. Pluto was the “ninth planet” the year it launched; midway through the journey Pluto was reclassified — the probe didn’t care, and flew on.',
+      },
+    },
   }
 
   const load = (src) => new Promise((res, rej) => {
@@ -796,8 +868,30 @@ window.I18N.register({
       nowLineEl.textContent = I18N.t('msg.now', { date: dataEndDate, list })
     }
 
+    // --- Per-probe intro list (panel): each probe's own story, moved here from
+    //     the homepage side panel. ---
+    const introListEl = document.querySelector('[data-intro-list]')
+    function renderProbeIntros() {
+      introListEl.innerHTML = ''
+      probes.forEach((probe) => {
+        const story = PROBE_STORY[probe.id]
+        if (!story) return
+        const li = document.createElement('li')
+        li.className = 'intro-item'
+        li.style.setProperty('--mc', probe.colorHex)
+        li.innerHTML =
+          '<div class="intro-head"><span class="intro-dot"></span><span class="intro-name"></span></div>' +
+          '<p class="intro-summary"></p>' +
+          '<p class="intro-details"></p>'
+        li.querySelector('.intro-name').textContent = pick(probe.label, probe.labelEn)
+        li.querySelector('.intro-summary').textContent = pick(story.summary.zh, story.summary.en)
+        li.querySelector('.intro-details').textContent = pick(story.details.zh, story.details.en)
+        introListEl.appendChild(li)
+      })
+    }
+
     // Re-render language-dependent dynamic text on toggle.
-    I18N.onChange(() => { renderPicker(); renderMileList(); updateAllLabelText(); buildDock() })
+    I18N.onChange(() => { renderPicker(); renderProbeIntros(); renderMileList(); updateAllLabelText(); buildDock() })
 
     function updateAllLabelText() {
       sunLabel.textContent = I18N.t('msg.sun')
@@ -873,6 +967,7 @@ window.I18N.register({
     }
 
     renderPicker()
+    renderProbeIntros()
     renderMileList()
     updateAllLabelText()
     buildDock()

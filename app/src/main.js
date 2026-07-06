@@ -38,6 +38,12 @@ const PROBE_LABELS = {
 
 const anchorsUrl = 'data/anchors/phase1.json'
 const probesUrl = 'data/probes.json'
+// Probe overlay on the overview sky map is parked for a v3 redesign — it read as
+// clutter over the real sky (orange ribbons + extra hotspots + a spiral the map
+// couldn't honestly draw). Each probe's story now lives on its own page,
+// messengers.html ("深空信使"), reachable from the nav badge. Flip to true to
+// bring the homepage overlay back once v3 reworks how it's presented.
+const SHOW_PROBES = false
 const overviewSurvey = 'CDS/P/DM/flux-color-Rp-G-Bp/I/355/gaiadr3'
 const closeUpSurvey = 'P/DSS2/color'
 const overviewView = { ra: 266.4168, dec: -29.0078, fov: 150 }
@@ -1658,15 +1664,17 @@ async function init() {
   renderBoundary()
   const response = await fetch(anchorsUrl)
   anchors = await response.json()
-  try {
-    const probes = await (await fetch(probesUrl)).json()
-    for (const probe of probes) {
-      buildProbeGeometry(probe)
+  if (SHOW_PROBES) {
+    try {
+      const probes = await (await fetch(probesUrl)).json()
+      for (const probe of probes) {
+        buildProbeGeometry(probe)
+      }
+      probePaths = probes
+      anchors.push(...probesToAnchors(probes))
+    } catch {
+      // Probe layer is optional; the sky anchors must never depend on it.
     }
-    probePaths = probes
-    anchors.push(...probesToAnchors(probes))
-  } catch {
-    // Probe layer is optional; the sky anchors must never depend on it.
   }
   selectedId = anchors[0]?.id ?? null
   renderAnchors()
