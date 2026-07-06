@@ -900,6 +900,15 @@ function selectAnchor(anchorId, options = {}) {
   renderPanel(anchor)
   syncProbeTimeline()
 
+  // A probe's whole story — narrative, ▶ play, the timeline scrubber, the
+  // "why a spiral?" card — lives in the side panel, which the maximized map
+  // covers (z-index:60, inset:0). Selecting a probe is a request to engage that
+  // story, so leave fullscreen to reveal it; otherwise the click silently
+  // redraws an invisible panel — no visible animation, no explanation.
+  if (fsIsOn() && probePaths.some((probe) => probe.id === anchorId)) {
+    toggleFullscreen()
+  }
+
   if (moveSky) {
     // First target click on the static landing page boots the live map, then
     // flies to this anchor once it's up. tweenToView is a no-op while !aladin.
