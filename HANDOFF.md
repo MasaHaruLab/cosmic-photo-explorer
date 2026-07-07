@@ -1,6 +1,14 @@
 # HANDOFF
 
-Updated: 2026-07-07（**深空信使页：全队列 ✅（数据+页面+双向链接+地球卡+skill+5船+播放器区间+首页注明）**；已部署 master a4f09a3 / gh-pages 7a54c1c）
+Updated: 2026-07-07（**深空信使页大扩充已上线**；已部署 src master `b9b22eb` / gh-pages `96ca49d`；**回滚点 gh-pages `a83bc31`**）
+
+**跟进 C（2026-07-07·深空信使页大扩充，src `2846649..b9b22eb`，已部署 gh-pages `a83bc31..96ca49d`）**：CEO 逐点提出、live 逐点验收。全部落在 `app/public/messengers.html` 单文件（部署 diff 仅此一文件，首页早已上线不受影响）。
+- **播放器归位**：每船的独立播放条从底部中央 dock 移进各自「五位信使」卡片、名字正下方；dock 撤除，3D 视图不再被遮（`buildDock` 折进 `renderProbeIntros`）。
+- **可折叠档案**：每船一张默认收起的卡片（名+播放器常显，点标题展开）。展开体含 `facts` 档案：目标/立项/发射(火箭)/寿命/所在，中英双语；寿命行按 `probe.start`+`lastContact` 动态算超期倍数（旅行者约10×、先驱者10号约18×、11号约13×），新视野号自定义行。史实经 NASA/JPL/SwRI 多源核对。
+- **行星真实颜色+真实相对大小**：`PLANETS` 加 `d`(真实直径,地球=1)+`color`；`PLANET_BASE/MIN` 控尺寸（内四颗设可见下限，非严格比例）；太阳光晕 9→7。小字注明「大小是彼此真实比例、非距离同尺度」+ AU 首现处括注。
+- **探测器轨迹带瘦 ~1/3**（tube 半径 core 0.32→0.21、glow 1.15→0.77）；**土星加光环**（黄道面 RingGeometry 扁环）。
+- **节点卡片加探测器名**：milestone tip 顶部加小号、按船着色的 `.who` 行（`tipWho`，随 I18N 更新）。
+- 回滚：`git -C <ghp-worktree> reset --hard a83bc31 && push -f`（或重新 build 旧 src 部署）。
 
 **跟进 A（2026-07-07·bd0ba30，全屏点探测器退出全屏亮面板的修复）**：后被跟进 B 取代——首页探测器整层已撤，此修复对 `probePaths`(空) 恒不触发，留作 v3 复活伏笔。
 
