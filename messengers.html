@@ -18,8 +18,8 @@ window.I18N.register({
     en: 'This isn’t the direction these probes appear in Earth’s sky — it’s where they really are in space right now, a top-down map of the solar system. The homepage sky map demos viewing direction; this one shows the actual road humanity’s five farthest probes travelled: Voyager 1 & 2, Pioneer 10 & 11, and New Horizons — fanning out from near Earth, slung in every direction by the giant planets’ gravity, out past the Sun’s reach.',
   },
   'msg.lede2': {
-    zh: '径向距离做了平方根压缩（方向完全不变），否则 1 AU 的地球和 170 多 AU 的旅行者 1 号没法画在同一张图里。',
-    en: 'Radial distance is square-root compressed (direction is untouched) — otherwise 1 AU Earth and 170-plus AU Voyager 1 could never share one picture.',
+    zh: '径向距离做了平方根压缩（方向完全不变），否则 1 AU（天文单位＝地日平均距离，约 1.5 亿公里）的地球和 170 多 AU 的旅行者 1 号没法画在同一张图里。行星大小按彼此的真实比例画（所以木星最大），但同样没跟距离同尺度——真按那样，行星只是个看不见的点；最内侧几颗还设了可见下限。',
+    en: 'Radial distance is square-root compressed (direction is untouched) — otherwise 1 AU (an astronomical unit = the mean Earth–Sun distance, ~150 million km) Earth and 170-plus AU Voyager 1 could never share one picture. Planet sizes are true to one another (so Jupiter is largest), but likewise not to the distance scale — at that scale a planet would be an invisible dot; the innermost few also carry a visibility floor.',
   },
   'msg.probes.h': { zh: '显示探测器', en: 'Show probes' },
   'msg.about.h': { zh: '这是怎么回事', en: 'What you are looking at' },
@@ -105,6 +105,7 @@ window.I18N.register({
   .msg-tip { position: absolute; left: 13px; top: -10px; display: none; white-space: nowrap;
     background: rgba(11,16,28,0.9); border: 1px solid var(--line); border-radius: 8px;
     padding: 6px 11px; }
+  .msg-tip .who { display: block; font-size: 10px; font-weight: 600; color: var(--mc); letter-spacing: 0.02em; margin-bottom: 1px; }
   .msg-tip b { display: block; font-size: 12px; color: var(--text); font-weight: 600; }
   .msg-tip .meta { display: block; font-size: 11px; color: var(--dim); margin-top: 2px; }
   .msg-marker:hover .msg-tip, .msg-marker.pinned .msg-tip { display: block; }
@@ -171,33 +172,38 @@ window.I18N.register({
   .mile-item .meta { color: var(--dim); font-size: 11px; }
   .now-line { font-size: 11.5px; color: var(--dim); margin-top: 10px; }
 
-  /* Per-probe intro list */
+  /* Per-probe intro list — each probe is a collapsible card: name + player
+     always show; the dossier (summary / facts / story) opens on header click. */
   .intro-list { list-style: none; padding: 0; margin: 0; }
   .intro-item { padding: 9px 0; border-bottom: 1px dashed rgba(148,170,220,0.10); }
   .intro-item:last-child { border-bottom: 0; }
-  .intro-head { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
+  .intro-head { display: flex; align-items: center; gap: 8px; width: 100%; margin: 0 0 6px;
+    padding: 0; background: transparent; border: 0; cursor: pointer; text-align: left; font: inherit; color: inherit; }
   .intro-dot { flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--mc); box-shadow: 0 0 6px var(--mc); }
-  .intro-name { color: var(--text); font-weight: 600; font-size: 13px; }
-  .intro-summary { margin: 0 0 5px; font-size: 12px; color: var(--text); }
-  .intro-details { margin: 0; font-size: 11.5px; color: var(--dim); line-height: 1.6; }
+  .intro-name { flex: 1; color: var(--text); font-weight: 600; font-size: 13px; }
+  .intro-chevron { flex: none; color: var(--dim); font-size: 9px; transition: transform .2s ease; }
+  .intro-head:hover .intro-name { color: var(--mc); }
+  .intro-head[aria-expanded="true"] .intro-chevron { transform: rotate(90deg); }
+  .intro-body[hidden] { display: none; }
+  .intro-summary { margin: 6px 0 0; font-size: 12px; color: var(--text); }
+  .intro-details { margin: 7px 0 0; font-size: 11.5px; color: var(--dim); line-height: 1.6; }
+  .intro-facts { display: grid; grid-template-columns: max-content 1fr; gap: 4px 10px; margin: 8px 0 0; }
+  .intro-facts dt { margin: 0; padding-top: 1px; font-size: 10.5px; color: var(--dim); white-space: nowrap; }
+  .intro-facts dd { margin: 0; font-size: 11.5px; color: var(--text); line-height: 1.5; }
 
-  /* Bottom controls: one independent transport row per probe (own scrubber,
-     own play/pause, own date readout) — see Change 1 in HANDOFF/task notes. */
-  .dock { position: absolute; left: 50%; bottom: 22px; transform: translateX(-50%);
-    display: flex; flex-direction: column; align-items: stretch; gap: 8px; width: min(560px, calc(100vw - 36px)); }
-  .transport { display: flex; align-items: center; gap: 10px;
-    background: rgba(11,16,28,0.7); border: 1px solid var(--line); border-radius: 999px;
-    padding: 7px 16px 7px 12px; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
-  .transport .t-dot { flex: none; width: 9px; height: 9px; border-radius: 50%; background: var(--mc); box-shadow: 0 0 6px var(--mc); }
-  .transport .t-name { flex: none; min-width: 62px; font-size: 12px; font-weight: 600; color: var(--text); white-space: nowrap; }
+  /* Per-probe transport: one independent control (own scrubber, own play/pause,
+     own date readout). It lives inside each probe's card in the 五位信使 panel
+     section, directly under that probe's name — so the control sits with the
+     probe's own story instead of a floating bar covering the 3D view. */
+  .transport { display: flex; align-items: center; gap: 9px; margin: 0 0 7px; }
   .transport .t-range { flex: 1; min-width: 40px; accent-color: var(--mc); cursor: pointer; }
-  .transport .t-play { flex: none; width: 32px; height: 28px; padding: 0; line-height: 1;
-    font: inherit; font-size: 13px; cursor: pointer; color: var(--mc);
+  .transport .t-play { flex: none; width: 30px; height: 26px; padding: 0; line-height: 1;
+    font: inherit; font-size: 12px; cursor: pointer; color: var(--mc);
     background: transparent; border: 1px solid var(--mc); border-radius: 999px;
     transition: background .15s, color .15s; }
   .transport .t-play:hover, .transport .t-play.playing { background: var(--mc); color: var(--bg); }
-  .transport .t-date { flex: none; min-width: 78px; text-align: right; font-size: 11px; color: var(--dim); white-space: nowrap; }
-  .transport .t-date .t-year { display: block; font-size: 13.5px; font-weight: 700; color: var(--text); }
+  .transport .t-date { flex: none; min-width: 74px; text-align: right; font-size: 11px; color: var(--dim); white-space: nowrap; line-height: 1.2; }
+  .transport .t-date .t-year { display: block; font-size: 12.5px; font-weight: 700; color: var(--text); }
   .hint { position: absolute; right: 18px; bottom: 22px; max-width: 270px; text-align: right;
     font-size: 11.5px; color: var(--dim); }
   @media (max-width: 720px) {
@@ -207,10 +213,6 @@ window.I18N.register({
     .topnav { top: 54px; right: 12px; gap: 6px; max-width: calc(100vw - 24px); }
     .topnav .back, .topnav .lang-toggle { font-size: 11px; padding: 3px 9px; }
     h1 { font-size: 17px; }
-    .transport { padding: 6px 10px; gap: 6px; }
-    .transport .t-name { min-width: 0; max-width: 44px; overflow: hidden; text-overflow: ellipsis; font-size: 11px; }
-    .transport .t-date { min-width: 50px; font-size: 10px; }
-    .transport .t-date .t-year { font-size: 12px; }
   }
 </style>
 </head>
@@ -264,7 +266,6 @@ window.I18N.register({
 
   <button class="panel-open" type="button" data-panel-open data-i18n="msg.panel.open" aria-expanded="false">ℹ️ 说明</button>
 
-  <div class="dock" data-dock></div>
   <div class="hint" data-i18n="msg.hint">拖动 = 环绕旋转 · 滚轮 = 缩放</div>
 </div>
 
@@ -292,16 +293,24 @@ window.I18N.register({
   }
   const ringRadius = (au) => BASE * Math.sqrt(au)
 
+  // Planets carry their real relative diameter (d, Earth = 1) and true colour.
+  // Distances stay √-compressed (see compress()); sizes are true to EACH OTHER,
+  // not to the distance scale — at real size-vs-distance a planet is sub-pixel.
   const PLANETS = [
-    { key: 'mercury', au: 0.39 },
-    { key: 'venus', au: 0.72 },
-    { key: 'earth', au: 1.00, emphasize: true },
-    { key: 'mars', au: 1.52 },
-    { key: 'jupiter', au: 5.20 },
-    { key: 'saturn', au: 9.58 },
-    { key: 'uranus', au: 19.2 },
-    { key: 'neptune', au: 30.1 },
+    { key: 'mercury', au: 0.39, d: 0.38, color: '#9c8b78' },
+    { key: 'venus',   au: 0.72, d: 0.95, color: '#e6cfa0' },
+    { key: 'earth',   au: 1.00, d: 1.00, color: '#5aa0e6', emphasize: true },
+    { key: 'mars',    au: 1.52, d: 0.53, color: '#d1653f' },
+    { key: 'jupiter', au: 5.20, d: 11.2, color: '#d9b48a' },
+    { key: 'saturn',  au: 9.58, d: 9.45, color: '#e6d3a3' },
+    { key: 'uranus',  au: 19.2, d: 4.01, color: '#a7dbe0' },
+    { key: 'neptune', au: 30.1, d: 3.88, color: '#4a74d6' },
   ]
+  // True-ratio planet sizes span ~29× (Jupiter vs Mercury); a floor keeps the
+  // tiny inner rocky worlds from dropping below a visible, colour-readable dot
+  // (at strict scale they are sub-pixel next to the giants). Tune to taste.
+  const PLANET_BASE = 0.34
+  const PLANET_MIN = 0.30
   const HELIOPAUSE_AU = 120
   const HELIO_LABEL_ANGLE = (-62 * Math.PI) / 180  // lower-right, clear of ring labels
 
@@ -343,6 +352,26 @@ window.I18N.register({
         zh: '1990 年它回头拍了那张《暗淡蓝点》——地球只是一粒悬浮在阳光里的尘埃。2012 年它穿出日球层，成为第一个进入星际空间的人造物。丝带上的年度小波浪不是它在抖，是地球带着我们绕太阳转圈的视差——证据就画在天上。',
         en: 'In 1990 it turned back to take the “Pale Blue Dot” — Earth reduced to a mote suspended in a sunbeam. In 2012 it crossed the heliopause to become the first human-made object in interstellar space. The small yearly waves along its ribbon aren’t the probe trembling; they are the parallax of Earth carrying us around the Sun — the proof written across the sky.',
       },
+      facts: {
+        mission: {
+          zh: '近距离考察木星、土星,及其光环与主要卫星。',
+          en: 'Close-up study of Jupiter and Saturn — their rings and major moons.',
+        },
+        founded: {
+          zh: '1972 年立项,「水手号木星–土星」任务(「大巡游」的缩减版)。',
+          en: 'Approved 1972 as Mariner Jupiter–Saturn — the trimmed-down heir to the “Grand Tour.”',
+        },
+        launch: {
+          zh: '1977-09-05 · 泰坦 IIIE–半人马座火箭 · 卡纳维拉尔角。',
+          en: '5 Sep 1977 · Titan IIIE-Centaur · Cape Canaveral.',
+        },
+        designText: { zh: '5 年', en: '5 years' },
+        designYears: 5,
+        region: {
+          zh: '星际空间——太阳风势力范围之外;人类造物第一次真正离开太阳的「家」。',
+          en: 'Interstellar space — beyond the reach of the solar wind; the first human-made object truly outside the Sun’s domain.',
+        },
+      },
     },
     'voyager-2': {
       summary: {
@@ -352,6 +381,26 @@ window.I18N.register({
       details: {
         zh: '它走了一条更贪心的路线：木星、土星、天王星、海王星四连访，至今无人重复。2018 年它也进入了星际空间。现在朝着南天的孔雀座方向飞去。',
         en: 'It took the greedier route: a grand tour of Jupiter, Saturn, Uranus and Neptune that no craft has repeated since. In 2018 it too entered interstellar space. It is now heading toward Pavo, the Peacock, in the southern sky.',
+      },
+      facts: {
+        mission: {
+          zh: '木星、土星;又抓住 176 年一遇的行星连珠,续访天王星与海王星。',
+          en: 'Jupiter and Saturn — then, on a once-in-176-years alignment, Uranus and Neptune.',
+        },
+        founded: {
+          zh: '1972 年立项,与 1 号同属「水手号木星–土星」任务。',
+          en: 'Approved 1972, the same Mariner Jupiter–Saturn mission as Voyager 1.',
+        },
+        launch: {
+          zh: '1977-08-20 · 泰坦 IIIE–半人马座火箭 · 卡角 41 号发射台(五船中最先出发)。',
+          en: '20 Aug 1977 · Titan IIIE-Centaur · Cape Canaveral LC-41 — first of the five to leave.',
+        },
+        designText: { zh: '5 年', en: '5 years' },
+        designYears: 5,
+        region: {
+          zh: '星际空间,朝南天孔雀座方向飞去。',
+          en: 'Interstellar space, heading toward Pavo in the southern sky.',
+        },
       },
     },
     'pioneer-10': {
@@ -363,6 +412,26 @@ window.I18N.register({
         zh: '2003 年地球最后一次收到它的信号，之后它安静地继续飞，方向正对金牛座的毕宿五。它带着一块刻着人类男女形象和太阳系位置的金属板——如果有谁捡到它，那是我们的自我介绍。',
         en: 'Earth last heard from it in 2003; since then it has flown on in silence, aimed toward Aldebaran in Taurus. It carries a metal plaque engraved with human figures and the location of our Solar System — should anyone ever find it, that is our introduction.',
       },
+      facts: {
+        mission: {
+          zh: '人类第一次穿越小行星带、第一次近距离拜访木星——为后来者探路。',
+          en: 'First to cross the asteroid belt and first to visit Jupiter up close — scouting for those that followed.',
+        },
+        founded: {
+          zh: '1969 年立项,次年交由 TRW 公司建造。',
+          en: 'Approved 1969; built by TRW the following year.',
+        },
+        launch: {
+          zh: '1972-03-02 · 阿特拉斯–半人马座火箭 · 卡纳维拉尔角。',
+          en: '2 Mar 1972 · Atlas-Centaur · Cape Canaveral.',
+        },
+        designText: { zh: '21 个月', en: '21 months' },
+        designYears: 1.75,
+        region: {
+          zh: '正对金牛座毕宿五漂去,带着那块刻有人类形象的金属名片。',
+          en: 'Drifting toward Aldebaran in Taurus, carrying its engraved human-figure plaque.',
+        },
+      },
     },
     'pioneer-11': {
       summary: {
@@ -372,6 +441,26 @@ window.I18N.register({
       details: {
         zh: '1979 年它替人类第一次撩开土星的面纱，为后来的旅行者和卡西尼探路。1995 年失联。它现在朝着天鹰座方向漂流，大约几百万年后会路过那里的一颗恒星。',
         en: 'In 1979 it lifted the veil on Saturn for the first time, scouting the way for the Voyagers and Cassini that followed. Contact was lost in 1995. It now drifts toward Aquila, the Eagle, and in a few million years will pass one of its stars.',
+      },
+      facts: {
+        mission: {
+          zh: '人类第一个近距离看土星的探测器,替旅行者号先探土星与光环。',
+          en: 'The first probe to see Saturn up close — scouting Saturn and its rings for the Voyagers.',
+        },
+        founded: {
+          zh: '1969 年立项,与 10 号同由 TRW 建造。',
+          en: 'Approved 1969; built by TRW alongside Pioneer 10.',
+        },
+        launch: {
+          zh: '1973-04-06 · 阿特拉斯–半人马座火箭 · 卡纳维拉尔角。',
+          en: '6 Apr 1973 · Atlas-Centaur · Cape Canaveral.',
+        },
+        designText: { zh: '21 个月', en: '21 months' },
+        designYears: 1.75,
+        region: {
+          zh: '朝天鹰座方向漂流,几百万年后将掠过那里的一颗恒星。',
+          en: 'Drifting toward Aquila, the Eagle; in a few million years it will pass one of its stars.',
+        },
       },
     },
     'new-horizons': {
@@ -383,7 +472,38 @@ window.I18N.register({
         zh: '它是这五位信使里最年轻的，还在柯伊伯带工作，仍定期回传数据。它出发那年冥王星还是"第九大行星"，飞到一半冥王星被除名——它不在乎，照飞。',
         en: 'It is the youngest of these five messengers, still at work in the Kuiper Belt and still sending data home. Pluto was the “ninth planet” the year it launched; midway through the journey Pluto was reclassified — the probe didn’t care, and flew on.',
       },
+      facts: {
+        mission: {
+          zh: '人类第一次近距离飞掠冥王星(2015),之后深入柯伊伯带拜访小天体阿罗科斯(2019)。',
+          en: 'The first close flyby of Pluto (2015), then on into the Kuiper Belt to visit Arrokoth (2019).',
+        },
+        founded: {
+          zh: '2001 年立项,约翰·霍普金斯 APL 建造,西南研究院领衔科学。',
+          en: 'Approved 2001; built by Johns Hopkins APL, science led by SwRI.',
+        },
+        launch: {
+          zh: '2006-01-19 · 阿特拉斯 V 551 + Star 48B 上面级 · 史上最快发射(约 5.85 万公里/时)。',
+          en: '19 Jan 2006 · Atlas V 551 + a Star 48B stage · the fastest launch ever (~58,500 km/h).',
+        },
+        life: {
+          zh: '主任务到 2015 年飞掠冥王星;延寿至今,仍在柯伊伯带工作。',
+          en: 'Primary mission ran to the 2015 Pluto flyby; extended, and still working in the Kuiper Belt.',
+        },
+        region: {
+          zh: '柯伊伯带——海王星之外的冰质天体带,是太阳系诞生留下的「化石」。这里的天体 46 亿年几乎未被改动;新视野号在此发现小天体由尘埃「轻轻」聚拢而成,而非猛烈撞击,改写了行星形成的认知。',
+          en: 'The Kuiper Belt — a ring of icy bodies beyond Neptune, fossils from the Solar System’s birth. Barely changed in 4.6 billion years, they revealed (via Arrokoth) that planetary building blocks form by gentle accretion, not violent collision — rewriting how we think planets are made.',
+        },
+      },
     },
+  }
+
+  // Labels for the per-probe dossier rows (五位信使 cards).
+  const FACT_LABELS = {
+    mission: { zh: '目标', en: 'Goal' },
+    founded: { zh: '立项', en: 'Approved' },
+    launch:  { zh: '发射', en: 'Launch' },
+    life:    { zh: '寿命', en: 'Lifespan' },
+    region:  { zh: '所在', en: 'Where' },
   }
 
   const load = (src) => new Promise((res, rej) => {
@@ -396,7 +516,7 @@ window.I18N.register({
     fetch('data/planets.json').then((r) => r.json()),
   ]).then(([, probesData, planetsData]) => start(probesData, planetsData)).catch((err) => {
     console.error(err)
-    const el = document.querySelector('[data-dock]')
+    const el = document.querySelector('[data-intro-list]')
     if (el) el.textContent = I18N.t('msg.loadError')
   })
 
@@ -423,7 +543,7 @@ window.I18N.register({
     const g = c.getContext('2d')
     const grd = g.createRadialGradient(32, 32, 0, 32, 32, 30)
     grd.addColorStop(0, colorHex)
-    grd.addColorStop(0.5, colorHex)
+    grd.addColorStop(0.62, colorHex)   // firmer disk so planets read as bodies, not fog
     grd.addColorStop(1, 'rgba(0,0,0,0)')
     g.fillStyle = grd; g.fillRect(0, 0, 64, 64)
     return new THREE.CanvasTexture(c)
@@ -535,7 +655,7 @@ window.I18N.register({
     const sunGlow = new THREE.Sprite(new THREE.SpriteMaterial({
       map: sunTexture(THREE), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
     }))
-    sunGlow.scale.set(9, 9, 1)
+    sunGlow.scale.set(7, 7, 1) // trimmed so it no longer swallows the inner planets
     scene.add(sunGlow)
     const sunLabel = document.createElement('div'); sunLabel.className = 'sun-label'
     labelLayer.appendChild(sunLabel)
@@ -573,14 +693,31 @@ window.I18N.register({
         : [radius, 0, 0] // defensive fallback if a planet is ever missing from planets.json
       const dotVec = new THREE.Vector3(dx, dy, dz)
       const dot = new THREE.Sprite(new THREE.SpriteMaterial({
-        map: planetDotTexture(THREE, p.emphasize ? '#bfe4ff' : '#9fb0d0'),
+        map: planetDotTexture(THREE, p.color),
         transparent: true, depthTest: false, depthWrite: false,
       }))
-      const dotScale = p.emphasize ? 1.1 : 0.75
+      // Size from the planet's real diameter (Earth = 1), floored so the tiniest
+      // inner worlds stay visible. Gas giants dominate — as they truly do.
+      const dotScale = Math.max(PLANET_MIN, PLANET_BASE * p.d)
       dot.scale.set(dotScale, dotScale, 1)
       dot.position.copy(dotVec)
       dot.renderOrder = 5
       scene.add(dot)
+
+      // Saturn's iconic rings: a flat annulus in the ecliptic plane, so it reads
+      // as rings from the top-down default view and foreshortens when orbited.
+      if (p.key === 'saturn') {
+        const ring = new THREE.Mesh(
+          new THREE.RingGeometry(dotScale * 0.62, dotScale * 1.05, 60),
+          new THREE.MeshBasicMaterial({
+            color: 0xe7d6ad, transparent: true, opacity: 0.5,
+            side: THREE.DoubleSide, depthTest: false, depthWrite: false,
+          }),
+        )
+        ring.position.copy(dotVec)
+        ring.renderOrder = 4
+        scene.add(ring)
+      }
 
       const labelEl = document.createElement('div')
       labelEl.className = 'ring-label' + (p.emphasize ? ' earth' : '')
@@ -644,11 +781,11 @@ window.I18N.register({
       const curve = new THREE.CatmullRomCurve3(compressedPath, false, 'catmullrom', 0.5)
       const tubularSegments = Math.min(900, compressedPath.length)
       const core = new THREE.Mesh(
-        new THREE.TubeGeometry(curve, tubularSegments, 0.32, 6, false),
+        new THREE.TubeGeometry(curve, tubularSegments, 0.21, 6, false),   // slimmed ~1/3 to declutter the center
         new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.95 }),
       )
       const glow = new THREE.Mesh(
-        new THREE.TubeGeometry(curve, tubularSegments, 1.15, 8, false),
+        new THREE.TubeGeometry(curve, tubularSegments, 0.77, 8, false),   // slimmed ~1/3 to declutter the center
         new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.16, blending: THREE.AdditiveBlending, depthWrite: false }),
       )
       const group = new THREE.Group()
@@ -679,10 +816,10 @@ window.I18N.register({
         const el = document.createElement('div')
         el.className = 'msg-marker'
         el.style.setProperty('--mc', colorHex)
-        el.innerHTML = '<div class="msg-dot"></div><div class="msg-tip"><b></b><span class="meta"></span></div>'
+        el.innerHTML = '<div class="msg-dot"></div><div class="msg-tip"><span class="who"></span><b></b><span class="meta"></span></div>'
         el.addEventListener('click', (e) => { e.stopPropagation(); el.classList.toggle('pinned') })
         labelLayer.appendChild(el)
-        return { m, posVec, el, tipB: el.querySelector('b'), tipMeta: el.querySelector('.meta'), everPassed: false, arcFrac }
+        return { m, posVec, el, tipWho: el.querySelector('.who'), tipB: el.querySelector('b'), tipMeta: el.querySelector('.meta'), everPassed: false, arcFrac }
       })
 
       return {
@@ -777,52 +914,6 @@ window.I18N.register({
       setPlayBtnState(probe)
     }
 
-    // --- Per-probe transport dock: one compact row per probe (dot + name +
-    //     scrubber + play/pause + date), fully independent of one another. ---
-    const dockEl = document.querySelector('[data-dock]')
-    function buildDock() {
-      dockEl.innerHTML = ''
-      probes.forEach((probe) => {
-        const row = document.createElement('div')
-        row.className = 'transport'
-        row.style.setProperty('--mc', probe.colorHex)
-        row.innerHTML =
-          '<span class="t-dot"></span>' +
-          '<span class="t-name"></span>' +
-          '<input type="range" class="t-range" min="0" max="1000" value="0">' +
-          '<button type="button" class="t-play">▶</button>' +
-          '<span class="t-date"><span class="t-year"></span><span class="t-full"></span></span>'
-        row.querySelector('.t-name').textContent = pick(probe.label, probe.labelEn)
-        const rangeEl = row.querySelector('.t-range')
-        const playBtn = row.querySelector('.t-play')
-        const yearEl = row.querySelector('.t-year')
-        const fullEl = row.querySelector('.t-full')
-        rangeEl.setAttribute('aria-label', I18N.t('msg.timelineLabel', { name: pick(probe.label, probe.labelEn) }))
-
-        probe.dock = { rangeEl, playBtn, yearEl, fullEl }
-
-        // Static life-span per probe: launch year – last-signal year (or 至今 if still
-        // active). The trajectories are propagated to the present, so a live scrub date
-        // made every player read the same "today" — as if they all hit the wall now.
-        // The span tells each probe's real active life instead (Pioneers fell silent
-        // 2003 / 1995; the Voyagers and New Horizons are still talking).
-        const startYear = probe.start.slice(0, 4)
-        const active = !probe.lastContact
-        yearEl.textContent = startYear + '–' + (active ? I18N.t('msg.present') : probe.lastContact.slice(0, 4))
-        fullEl.textContent = I18N.t(active ? 'msg.stillActive' : 'msg.signalLost')
-
-        rangeEl.addEventListener('input', () => {
-          stopProbePlay(probe) // dragging a probe's scrubber pauses only that probe
-          applyProbeArc(probe, Number(rangeEl.value) / 1000)
-        })
-        playBtn.addEventListener('click', () => toggleProbePlay(probe))
-
-        dockEl.appendChild(row)
-        setPlayBtnState(probe)
-        applyProbeArc(probe, probe.s) // sync the fresh DOM to current progress
-      })
-    }
-
     // --- Probe visibility chips ---
     const pickerEl = document.querySelector('[data-probe-picker]')
     function renderPicker() {
@@ -871,27 +962,117 @@ window.I18N.register({
     // --- Per-probe intro list (panel): each probe's own story, moved here from
     //     the homepage side panel. ---
     const introListEl = document.querySelector('[data-intro-list]')
+
+    // Append one dossier row (label + value) to a card's <dl>, skipping empties.
+    function addFact(dl, key, value) {
+      if (!value) return
+      const dt = document.createElement('dt'); dt.textContent = pick(FACT_LABELS[key].zh, FACT_LABELS[key].en)
+      const dd = document.createElement('dd'); dd.textContent = value
+      dl.appendChild(dt); dl.appendChild(dd)
+    }
+
+    // "Designed for X → flying/served N years, ~R×, still talking / lost YYYY".
+    // Reuses probe.start + probe.lastContact so the elapsed count never goes stale.
+    // A facts.life override (e.g. New Horizons) short-circuits the formula.
+    function lifeLine(probe, facts) {
+      if (facts.life) return pick(facts.life.zh, facts.life.en)
+      if (!facts.designText) return ''
+      const launchY = Number(probe.start.slice(0, 4))
+      const active = !probe.lastContact
+      const endY = active ? new Date().getFullYear() : Number(probe.lastContact.slice(0, 4))
+      const served = endY - launchY
+      const ratio = facts.designYears ? Math.round(served / facts.designYears) : 0
+      const dText = pick(facts.designText.zh, facts.designText.en)
+      if (I18N.getLang() === 'zh') {
+        return '设计 ' + dText + ' → ' + (active ? '已飞行 ' : '服役 ') + served + ' 年' +
+          (ratio >= 2 ? ',约 ' + ratio + ' 倍' : '') + (active ? ',仍在通信' : ',' + endY + ' 年失联')
+      }
+      return 'Designed for ' + dText + ' → ' + (active ? 'flying ' : 'ran ') + served + ' years' +
+        (ratio >= 2 ? ', ~' + ratio + '×' : '') + (active ? ', still in contact' : ', lost ' + endY)
+    }
+
     function renderProbeIntros() {
       introListEl.innerHTML = ''
       probes.forEach((probe) => {
         const story = PROBE_STORY[probe.id]
-        if (!story) return
         const li = document.createElement('li')
         li.className = 'intro-item'
         li.style.setProperty('--mc', probe.colorHex)
+        // Collapsible card: the header (name) + the player always show; the dossier
+        // (summary / facts / story) lives in .intro-body, collapsed by default so
+        // five detailed probes don't stack into one very tall panel.
         li.innerHTML =
-          '<div class="intro-head"><span class="intro-dot"></span><span class="intro-name"></span></div>' +
-          '<p class="intro-summary"></p>' +
-          '<p class="intro-details"></p>'
+          '<button type="button" class="intro-head" aria-expanded="false">' +
+            '<span class="intro-dot"></span>' +
+            '<span class="intro-name"></span>' +
+            '<span class="intro-chevron">▶</span>' +
+          '</button>' +
+          '<div class="transport">' +
+            '<button type="button" class="t-play">▶</button>' +
+            '<input type="range" class="t-range" min="0" max="1000" value="0">' +
+            '<span class="t-date"><span class="t-year"></span><span class="t-full"></span></span>' +
+          '</div>' +
+          '<div class="intro-body" hidden>' +
+            '<p class="intro-summary"></p>' +
+            '<dl class="intro-facts"></dl>' +
+            '<p class="intro-details"></p>' +
+          '</div>'
         li.querySelector('.intro-name').textContent = pick(probe.label, probe.labelEn)
-        li.querySelector('.intro-summary').textContent = pick(story.summary.zh, story.summary.en)
-        li.querySelector('.intro-details').textContent = pick(story.details.zh, story.details.en)
+
+        // Wire this probe's independent transport. setPlayBtnState / applyProbeArc
+        // read probe.dock, so we populate it here (was set in the old buildDock).
+        const rangeEl = li.querySelector('.t-range')
+        const playBtn = li.querySelector('.t-play')
+        const yearEl = li.querySelector('.t-year')
+        const fullEl = li.querySelector('.t-full')
+        rangeEl.setAttribute('aria-label', I18N.t('msg.timelineLabel', { name: pick(probe.label, probe.labelEn) }))
+        probe.dock = { rangeEl, playBtn, yearEl, fullEl }
+
+        const startYear = probe.start.slice(0, 4)
+        const active = !probe.lastContact
+        yearEl.textContent = startYear + '–' + (active ? I18N.t('msg.present') : probe.lastContact.slice(0, 4))
+        fullEl.textContent = I18N.t(active ? 'msg.stillActive' : 'msg.signalLost')
+
+        rangeEl.addEventListener('input', () => {
+          stopProbePlay(probe) // dragging a probe's scrubber pauses only that probe
+          applyProbeArc(probe, Number(rangeEl.value) / 1000)
+        })
+        playBtn.addEventListener('click', () => toggleProbePlay(probe))
+
+        // Dossier body: one-line hook, the fact rows, then the narrative.
+        const body = li.querySelector('.intro-body')
+        if (story) {
+          li.querySelector('.intro-summary').textContent = pick(story.summary.zh, story.summary.en)
+          li.querySelector('.intro-details').textContent = pick(story.details.zh, story.details.en)
+          const f = story.facts
+          if (f) {
+            const dl = li.querySelector('.intro-facts')
+            addFact(dl, 'mission', pick(f.mission.zh, f.mission.en))
+            addFact(dl, 'founded', pick(f.founded.zh, f.founded.en))
+            addFact(dl, 'launch', pick(f.launch.zh, f.launch.en))
+            addFact(dl, 'life', lifeLine(probe, f))
+            addFact(dl, 'region', pick(f.region.zh, f.region.en))
+          }
+        } else if (body) {
+          body.remove()
+        }
+
+        // Collapse toggle — each card opens/closes on its own (not an accordion).
+        const head = li.querySelector('.intro-head')
+        head.addEventListener('click', () => {
+          const open = head.getAttribute('aria-expanded') === 'true'
+          head.setAttribute('aria-expanded', open ? 'false' : 'true')
+          if (body && body.isConnected) body.hidden = open
+        })
+
         introListEl.appendChild(li)
+        setPlayBtnState(probe)
+        applyProbeArc(probe, probe.s) // sync the fresh DOM to current progress
       })
     }
 
     // Re-render language-dependent dynamic text on toggle.
-    I18N.onChange(() => { renderPicker(); renderProbeIntros(); renderMileList(); updateAllLabelText(); buildDock() })
+    I18N.onChange(() => { renderPicker(); renderProbeIntros(); renderMileList(); updateAllLabelText() })
 
     function updateAllLabelText() {
       sunLabel.textContent = I18N.t('msg.sun')
@@ -899,6 +1080,7 @@ window.I18N.register({
       planetRings.forEach(({ planet, labelEl }) => { labelEl.textContent = I18N.t('msg.planet.' + planet.key) })
       probes.forEach((probe) => { probe.satLabel.textContent = pick(probe.label, probe.labelEn) })
       probes.forEach((probe) => probe.milestones.forEach((entry) => {
+        entry.tipWho.textContent = pick(probe.label, probe.labelEn) // which probe this event belongs to
         entry.tipB.textContent = pick(entry.m.zh, entry.m.en)
         entry.tipMeta.textContent = entry.m.date + ' · ' + entry.m.r_au + ' AU'
       }))
@@ -970,7 +1152,6 @@ window.I18N.register({
     renderProbeIntros()
     renderMileList()
     updateAllLabelText()
-    buildDock()
     resize()
     requestAnimationFrame(tick)
   }
