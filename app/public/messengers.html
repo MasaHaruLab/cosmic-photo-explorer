@@ -105,6 +105,7 @@ window.I18N.register({
   .msg-tip { position: absolute; left: 13px; top: -10px; display: none; white-space: nowrap;
     background: rgba(11,16,28,0.9); border: 1px solid var(--line); border-radius: 8px;
     padding: 6px 11px; }
+  .msg-tip .who { display: block; font-size: 10px; font-weight: 600; color: var(--mc); letter-spacing: 0.02em; margin-bottom: 1px; }
   .msg-tip b { display: block; font-size: 12px; color: var(--text); font-weight: 600; }
   .msg-tip .meta { display: block; font-size: 11px; color: var(--dim); margin-top: 2px; }
   .msg-marker:hover .msg-tip, .msg-marker.pinned .msg-tip { display: block; }
@@ -815,10 +816,10 @@ window.I18N.register({
         const el = document.createElement('div')
         el.className = 'msg-marker'
         el.style.setProperty('--mc', colorHex)
-        el.innerHTML = '<div class="msg-dot"></div><div class="msg-tip"><b></b><span class="meta"></span></div>'
+        el.innerHTML = '<div class="msg-dot"></div><div class="msg-tip"><span class="who"></span><b></b><span class="meta"></span></div>'
         el.addEventListener('click', (e) => { e.stopPropagation(); el.classList.toggle('pinned') })
         labelLayer.appendChild(el)
-        return { m, posVec, el, tipB: el.querySelector('b'), tipMeta: el.querySelector('.meta'), everPassed: false, arcFrac }
+        return { m, posVec, el, tipWho: el.querySelector('.who'), tipB: el.querySelector('b'), tipMeta: el.querySelector('.meta'), everPassed: false, arcFrac }
       })
 
       return {
@@ -1079,6 +1080,7 @@ window.I18N.register({
       planetRings.forEach(({ planet, labelEl }) => { labelEl.textContent = I18N.t('msg.planet.' + planet.key) })
       probes.forEach((probe) => { probe.satLabel.textContent = pick(probe.label, probe.labelEn) })
       probes.forEach((probe) => probe.milestones.forEach((entry) => {
+        entry.tipWho.textContent = pick(probe.label, probe.labelEn) // which probe this event belongs to
         entry.tipB.textContent = pick(entry.m.zh, entry.m.en)
         entry.tipMeta.textContent = entry.m.date + ' · ' + entry.m.r_au + ' AU'
       }))
