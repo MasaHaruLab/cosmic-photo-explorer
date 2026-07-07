@@ -292,16 +292,24 @@ window.I18N.register({
   }
   const ringRadius = (au) => BASE * Math.sqrt(au)
 
+  // Planets carry their real relative diameter (d, Earth = 1) and true colour.
+  // Distances stay √-compressed (see compress()); sizes are true to EACH OTHER,
+  // not to the distance scale — at real size-vs-distance a planet is sub-pixel.
   const PLANETS = [
-    { key: 'mercury', au: 0.39 },
-    { key: 'venus', au: 0.72 },
-    { key: 'earth', au: 1.00, emphasize: true },
-    { key: 'mars', au: 1.52 },
-    { key: 'jupiter', au: 5.20 },
-    { key: 'saturn', au: 9.58 },
-    { key: 'uranus', au: 19.2 },
-    { key: 'neptune', au: 30.1 },
+    { key: 'mercury', au: 0.39, d: 0.38, color: '#9c8b78' },
+    { key: 'venus',   au: 0.72, d: 0.95, color: '#e6cfa0' },
+    { key: 'earth',   au: 1.00, d: 1.00, color: '#5aa0e6', emphasize: true },
+    { key: 'mars',    au: 1.52, d: 0.53, color: '#d1653f' },
+    { key: 'jupiter', au: 5.20, d: 11.2, color: '#d9b48a' },
+    { key: 'saturn',  au: 9.58, d: 9.45, color: '#e6d3a3' },
+    { key: 'uranus',  au: 19.2, d: 4.01, color: '#a7dbe0' },
+    { key: 'neptune', au: 30.1, d: 3.88, color: '#4a74d6' },
   ]
+  // True-ratio planet sizes span ~29× (Jupiter vs Mercury); a floor keeps the
+  // tiny inner rocky worlds from dropping below a visible, colour-readable dot
+  // (at strict scale they are sub-pixel next to the giants). Tune to taste.
+  const PLANET_BASE = 0.34
+  const PLANET_MIN = 0.30
   const HELIOPAUSE_AU = 120
   const HELIO_LABEL_ANGLE = (-62 * Math.PI) / 180  // lower-right, clear of ring labels
 
@@ -534,7 +542,7 @@ window.I18N.register({
     const g = c.getContext('2d')
     const grd = g.createRadialGradient(32, 32, 0, 32, 32, 30)
     grd.addColorStop(0, colorHex)
-    grd.addColorStop(0.5, colorHex)
+    grd.addColorStop(0.62, colorHex)   // firmer disk so planets read as bodies, not fog
     grd.addColorStop(1, 'rgba(0,0,0,0)')
     g.fillStyle = grd; g.fillRect(0, 0, 64, 64)
     return new THREE.CanvasTexture(c)
@@ -646,7 +654,7 @@ window.I18N.register({
     const sunGlow = new THREE.Sprite(new THREE.SpriteMaterial({
       map: sunTexture(THREE), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
     }))
-    sunGlow.scale.set(9, 9, 1)
+    sunGlow.scale.set(7, 7, 1) // trimmed so it no longer swallows the inner planets
     scene.add(sunGlow)
     const sunLabel = document.createElement('div'); sunLabel.className = 'sun-label'
     labelLayer.appendChild(sunLabel)
@@ -684,10 +692,12 @@ window.I18N.register({
         : [radius, 0, 0] // defensive fallback if a planet is ever missing from planets.json
       const dotVec = new THREE.Vector3(dx, dy, dz)
       const dot = new THREE.Sprite(new THREE.SpriteMaterial({
-        map: planetDotTexture(THREE, p.emphasize ? '#bfe4ff' : '#9fb0d0'),
+        map: planetDotTexture(THREE, p.color),
         transparent: true, depthTest: false, depthWrite: false,
       }))
-      const dotScale = p.emphasize ? 1.1 : 0.75
+      // Size from the planet's real diameter (Earth = 1), floored so the tiniest
+      // inner worlds stay visible. Gas giants dominate — as they truly do.
+      const dotScale = Math.max(PLANET_MIN, PLANET_BASE * p.d)
       dot.scale.set(dotScale, dotScale, 1)
       dot.position.copy(dotVec)
       dot.renderOrder = 5
