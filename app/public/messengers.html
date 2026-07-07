@@ -703,6 +703,21 @@ window.I18N.register({
       dot.renderOrder = 5
       scene.add(dot)
 
+      // Saturn's iconic rings: a flat annulus in the ecliptic plane, so it reads
+      // as rings from the top-down default view and foreshortens when orbited.
+      if (p.key === 'saturn') {
+        const ring = new THREE.Mesh(
+          new THREE.RingGeometry(dotScale * 0.62, dotScale * 1.05, 60),
+          new THREE.MeshBasicMaterial({
+            color: 0xe7d6ad, transparent: true, opacity: 0.5,
+            side: THREE.DoubleSide, depthTest: false, depthWrite: false,
+          }),
+        )
+        ring.position.copy(dotVec)
+        ring.renderOrder = 4
+        scene.add(ring)
+      }
+
       const labelEl = document.createElement('div')
       labelEl.className = 'ring-label' + (p.emphasize ? ' earth' : '')
       labelEl.style.cursor = 'pointer'
@@ -765,11 +780,11 @@ window.I18N.register({
       const curve = new THREE.CatmullRomCurve3(compressedPath, false, 'catmullrom', 0.5)
       const tubularSegments = Math.min(900, compressedPath.length)
       const core = new THREE.Mesh(
-        new THREE.TubeGeometry(curve, tubularSegments, 0.32, 6, false),
+        new THREE.TubeGeometry(curve, tubularSegments, 0.21, 6, false),   // slimmed ~1/3 to declutter the center
         new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.95 }),
       )
       const glow = new THREE.Mesh(
-        new THREE.TubeGeometry(curve, tubularSegments, 1.15, 8, false),
+        new THREE.TubeGeometry(curve, tubularSegments, 0.77, 8, false),   // slimmed ~1/3 to declutter the center
         new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.16, blending: THREE.AdditiveBlending, depthWrite: false }),
       )
       const group = new THREE.Group()
