@@ -181,23 +181,19 @@ window.I18N.register({
   .intro-summary { margin: 0 0 5px; font-size: 12px; color: var(--text); }
   .intro-details { margin: 0; font-size: 11.5px; color: var(--dim); line-height: 1.6; }
 
-  /* Bottom controls: one independent transport row per probe (own scrubber,
-     own play/pause, own date readout) — see Change 1 in HANDOFF/task notes. */
-  .dock { position: absolute; left: 50%; bottom: 22px; transform: translateX(-50%);
-    display: flex; flex-direction: column; align-items: stretch; gap: 8px; width: min(560px, calc(100vw - 36px)); }
-  .transport { display: flex; align-items: center; gap: 10px;
-    background: rgba(11,16,28,0.7); border: 1px solid var(--line); border-radius: 999px;
-    padding: 7px 16px 7px 12px; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
-  .transport .t-dot { flex: none; width: 9px; height: 9px; border-radius: 50%; background: var(--mc); box-shadow: 0 0 6px var(--mc); }
-  .transport .t-name { flex: none; min-width: 62px; font-size: 12px; font-weight: 600; color: var(--text); white-space: nowrap; }
+  /* Per-probe transport: one independent control (own scrubber, own play/pause,
+     own date readout). It lives inside each probe's card in the 五位信使 panel
+     section, directly under that probe's name — so the control sits with the
+     probe's own story instead of a floating bar covering the 3D view. */
+  .transport { display: flex; align-items: center; gap: 9px; margin: 0 0 7px; }
   .transport .t-range { flex: 1; min-width: 40px; accent-color: var(--mc); cursor: pointer; }
-  .transport .t-play { flex: none; width: 32px; height: 28px; padding: 0; line-height: 1;
-    font: inherit; font-size: 13px; cursor: pointer; color: var(--mc);
+  .transport .t-play { flex: none; width: 30px; height: 26px; padding: 0; line-height: 1;
+    font: inherit; font-size: 12px; cursor: pointer; color: var(--mc);
     background: transparent; border: 1px solid var(--mc); border-radius: 999px;
     transition: background .15s, color .15s; }
   .transport .t-play:hover, .transport .t-play.playing { background: var(--mc); color: var(--bg); }
-  .transport .t-date { flex: none; min-width: 78px; text-align: right; font-size: 11px; color: var(--dim); white-space: nowrap; }
-  .transport .t-date .t-year { display: block; font-size: 13.5px; font-weight: 700; color: var(--text); }
+  .transport .t-date { flex: none; min-width: 74px; text-align: right; font-size: 11px; color: var(--dim); white-space: nowrap; line-height: 1.2; }
+  .transport .t-date .t-year { display: block; font-size: 12.5px; font-weight: 700; color: var(--text); }
   .hint { position: absolute; right: 18px; bottom: 22px; max-width: 270px; text-align: right;
     font-size: 11.5px; color: var(--dim); }
   @media (max-width: 720px) {
@@ -207,10 +203,6 @@ window.I18N.register({
     .topnav { top: 54px; right: 12px; gap: 6px; max-width: calc(100vw - 24px); }
     .topnav .back, .topnav .lang-toggle { font-size: 11px; padding: 3px 9px; }
     h1 { font-size: 17px; }
-    .transport { padding: 6px 10px; gap: 6px; }
-    .transport .t-name { min-width: 0; max-width: 44px; overflow: hidden; text-overflow: ellipsis; font-size: 11px; }
-    .transport .t-date { min-width: 50px; font-size: 10px; }
-    .transport .t-date .t-year { font-size: 12px; }
   }
 </style>
 </head>
@@ -264,7 +256,6 @@ window.I18N.register({
 
   <button class="panel-open" type="button" data-panel-open data-i18n="msg.panel.open" aria-expanded="false">ℹ️ 说明</button>
 
-  <div class="dock" data-dock></div>
   <div class="hint" data-i18n="msg.hint">拖动 = 环绕旋转 · 滚轮 = 缩放</div>
 </div>
 
@@ -396,7 +387,7 @@ window.I18N.register({
     fetch('data/planets.json').then((r) => r.json()),
   ]).then(([, probesData, planetsData]) => start(probesData, planetsData)).catch((err) => {
     console.error(err)
-    const el = document.querySelector('[data-dock]')
+    const el = document.querySelector('[data-intro-list]')
     if (el) el.textContent = I18N.t('msg.loadError')
   })
 
@@ -777,52 +768,6 @@ window.I18N.register({
       setPlayBtnState(probe)
     }
 
-    // --- Per-probe transport dock: one compact row per probe (dot + name +
-    //     scrubber + play/pause + date), fully independent of one another. ---
-    const dockEl = document.querySelector('[data-dock]')
-    function buildDock() {
-      dockEl.innerHTML = ''
-      probes.forEach((probe) => {
-        const row = document.createElement('div')
-        row.className = 'transport'
-        row.style.setProperty('--mc', probe.colorHex)
-        row.innerHTML =
-          '<span class="t-dot"></span>' +
-          '<span class="t-name"></span>' +
-          '<input type="range" class="t-range" min="0" max="1000" value="0">' +
-          '<button type="button" class="t-play">▶</button>' +
-          '<span class="t-date"><span class="t-year"></span><span class="t-full"></span></span>'
-        row.querySelector('.t-name').textContent = pick(probe.label, probe.labelEn)
-        const rangeEl = row.querySelector('.t-range')
-        const playBtn = row.querySelector('.t-play')
-        const yearEl = row.querySelector('.t-year')
-        const fullEl = row.querySelector('.t-full')
-        rangeEl.setAttribute('aria-label', I18N.t('msg.timelineLabel', { name: pick(probe.label, probe.labelEn) }))
-
-        probe.dock = { rangeEl, playBtn, yearEl, fullEl }
-
-        // Static life-span per probe: launch year – last-signal year (or 至今 if still
-        // active). The trajectories are propagated to the present, so a live scrub date
-        // made every player read the same "today" — as if they all hit the wall now.
-        // The span tells each probe's real active life instead (Pioneers fell silent
-        // 2003 / 1995; the Voyagers and New Horizons are still talking).
-        const startYear = probe.start.slice(0, 4)
-        const active = !probe.lastContact
-        yearEl.textContent = startYear + '–' + (active ? I18N.t('msg.present') : probe.lastContact.slice(0, 4))
-        fullEl.textContent = I18N.t(active ? 'msg.stillActive' : 'msg.signalLost')
-
-        rangeEl.addEventListener('input', () => {
-          stopProbePlay(probe) // dragging a probe's scrubber pauses only that probe
-          applyProbeArc(probe, Number(rangeEl.value) / 1000)
-        })
-        playBtn.addEventListener('click', () => toggleProbePlay(probe))
-
-        dockEl.appendChild(row)
-        setPlayBtnState(probe)
-        applyProbeArc(probe, probe.s) // sync the fresh DOM to current progress
-      })
-    }
-
     // --- Probe visibility chips ---
     const pickerEl = document.querySelector('[data-probe-picker]')
     function renderPicker() {
@@ -875,23 +820,62 @@ window.I18N.register({
       introListEl.innerHTML = ''
       probes.forEach((probe) => {
         const story = PROBE_STORY[probe.id]
-        if (!story) return
         const li = document.createElement('li')
         li.className = 'intro-item'
         li.style.setProperty('--mc', probe.colorHex)
+        // Each probe's transport (scrubber + play/pause + date) now sits right under
+        // its name here, instead of a shared bar over the 3D view. Layout: name →
+        // control → summary → details.
         li.innerHTML =
           '<div class="intro-head"><span class="intro-dot"></span><span class="intro-name"></span></div>' +
+          '<div class="transport">' +
+            '<button type="button" class="t-play">▶</button>' +
+            '<input type="range" class="t-range" min="0" max="1000" value="0">' +
+            '<span class="t-date"><span class="t-year"></span><span class="t-full"></span></span>' +
+          '</div>' +
           '<p class="intro-summary"></p>' +
           '<p class="intro-details"></p>'
         li.querySelector('.intro-name').textContent = pick(probe.label, probe.labelEn)
-        li.querySelector('.intro-summary').textContent = pick(story.summary.zh, story.summary.en)
-        li.querySelector('.intro-details').textContent = pick(story.details.zh, story.details.en)
+
+        // Wire this probe's independent transport. setPlayBtnState / applyProbeArc
+        // read probe.dock, so we populate it here (was set in the old buildDock).
+        const rangeEl = li.querySelector('.t-range')
+        const playBtn = li.querySelector('.t-play')
+        const yearEl = li.querySelector('.t-year')
+        const fullEl = li.querySelector('.t-full')
+        rangeEl.setAttribute('aria-label', I18N.t('msg.timelineLabel', { name: pick(probe.label, probe.labelEn) }))
+        probe.dock = { rangeEl, playBtn, yearEl, fullEl }
+
+        // Static life-span label: launch year – last-signal year (or 至今 if still
+        // active). Pioneers fell silent 2003 / 1995; the Voyagers and New Horizons
+        // are still talking.
+        const startYear = probe.start.slice(0, 4)
+        const active = !probe.lastContact
+        yearEl.textContent = startYear + '–' + (active ? I18N.t('msg.present') : probe.lastContact.slice(0, 4))
+        fullEl.textContent = I18N.t(active ? 'msg.stillActive' : 'msg.signalLost')
+
+        rangeEl.addEventListener('input', () => {
+          stopProbePlay(probe) // dragging a probe's scrubber pauses only that probe
+          applyProbeArc(probe, Number(rangeEl.value) / 1000)
+        })
+        playBtn.addEventListener('click', () => toggleProbePlay(probe))
+
+        if (story) {
+          li.querySelector('.intro-summary').textContent = pick(story.summary.zh, story.summary.en)
+          li.querySelector('.intro-details').textContent = pick(story.details.zh, story.details.en)
+        } else {
+          li.querySelector('.intro-summary').remove()
+          li.querySelector('.intro-details').remove()
+        }
+
         introListEl.appendChild(li)
+        setPlayBtnState(probe)
+        applyProbeArc(probe, probe.s) // sync the fresh DOM to current progress
       })
     }
 
     // Re-render language-dependent dynamic text on toggle.
-    I18N.onChange(() => { renderPicker(); renderProbeIntros(); renderMileList(); updateAllLabelText(); buildDock() })
+    I18N.onChange(() => { renderPicker(); renderProbeIntros(); renderMileList(); updateAllLabelText() })
 
     function updateAllLabelText() {
       sunLabel.textContent = I18N.t('msg.sun')
@@ -970,7 +954,6 @@ window.I18N.register({
     renderProbeIntros()
     renderMileList()
     updateAllLabelText()
-    buildDock()
     resize()
     requestAnimationFrame(tick)
   }
