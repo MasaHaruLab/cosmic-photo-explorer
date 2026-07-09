@@ -1,5 +1,16 @@
 # HANDOFF
 
+Updated: 2026-07-09（**🚀 已上线部署**：全量真实化 + 深空信使补全 + 移动端/布局修复，已推 gh-pages 并前台确认生效）
+
+**LIVE**: https://masaharulab.github.io/cosmic-photo-explorer/
+- **gh-pages `6dcba84`**（src `de30593`）；**回滚点 = 上一版 gh-pages `96ca49d`（src b9b22eb）**，一条命令可退。
+- master 已推 origin（`c0a755f → de30593`）。
+- 本次上线含批 1–10 + 两处真机修复：首页绕银道极刚性自转、solar 真实轴倾/自转/月火自转/22°相机、messengers 真行星+真太阳球+地球月亮(自转+公转)+CCW+环与标签遮挡+轨迹随缩放变细+真实自转方向、各子页导航接线、星座页手机端解释栏垂直居中、空间站页 4 图等宽单列。
+- **下一步（当前主线）= 录屏出片**：CEO 用 Screen Studio 对着**线上版**静音录 → 剪映按 `docs/演示脚本-v2-分镜配音.md` 的【念白】出字幕 → 克隆音配音 → BGM。我方交付=解说稿+分镜停留（已同步到线上功能，随录制反馈微调）。管线跑通后提炼「视频生成 workflow skill」。
+- 演示脚本已随上线同步：S4 补入真太阳/地球月亮/遮挡/轨迹变细，标注均已上线。
+
+---
+
 Updated: 2026-07-09（**batch7 完成：messengers 方向/环遮挡 + solar 环回退/月火自转/相机抬高**；只本地改，未部署/未 push，未碰首页）
 
 **本批结果（来自 `scratchpad/cosmic-batch7-brief.md`）**：
