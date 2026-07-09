@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title data-i18n="solar.pageTitle">太阳系 · 星空照片探索器</title>
+<script src="./cosmic-motion.js"></script>
 <script src="./i18n.js"></script>
 <script>
 // Page dictionary — { zh, en } pairs, human-written English. Registered during
@@ -13,12 +14,13 @@ window.I18N.register({
   'solar.eyebrow': { zh: '解释层 / 我们自己的后院', en: 'Explainer / Our own backyard' },
   'solar.title': { zh: '太阳系：从别人的星光回到自己的行星', en: 'The Solar System: from distant starlight back to our own planets' },
   'solar.lede': { zh: '银河看久了，别忘了我们自己也住在一颗行星上。月球和火星的表面是真实探测器测绘的全图——可以一路拉近到山和陨石坑；其余行星是各任务拍下的原版照片。', en: "After all that Milky Way, don't forget we live on a planet too. The surfaces of the Moon and Mars here are full maps built by real spacecraft — you can zoom all the way in to mountains and craters; the other planets are original photos taken by individual missions." },
-  'nav.home': { zh: '← 回到星空探索器', en: '← Back to the Explorer' },
-  'nav.messengers': { zh: '深空信使 →', en: 'Deep Space Messengers →' },
+  'nav.home': { zh: '← 回到星空探索器', en: '← Back to the explorer' },
+  'nav.constellations': { zh: '星座', en: 'Constellations' },
+  'nav.messengers': { zh: '深空信使', en: 'Deep Space Messengers' },
   'nav.messengers_back': { zh: '← 深空信使', en: '← Deep Space Messengers' },
-  'nav.stations': { zh: '空间站 →', en: 'Space Stations →' },
-  'nav.observatories': { zh: '观星台 →', en: 'Observatories →' },
-  'nav.reference': { zh: '来源 →', en: 'Sources →' },
+  'nav.stations': { zh: '空间站', en: 'Space Stations' },
+  'nav.observatories': { zh: '观星台', en: 'Observatories' },
+  'nav.reference': { zh: '来源', en: 'Sources' },
   'solar.flyto': { zh: '飞到', en: 'Fly to' },
   'solar.basemap': { zh: '底图', en: 'Base map' },
 
@@ -86,7 +88,7 @@ window.I18N.register({
     margin: 0; background: var(--bg); color: var(--text);
     font: 15px/1.75 -apple-system, "PingFang SC", "Hiragino Sans GB", sans-serif;
   }
-  .wrap { max-width: 980px; margin: 0 auto; padding: 40px 24px 80px; }
+  .wrap { max-width: min(1280px, 92vw); margin: 0 auto; padding: 40px 24px 80px; }
   .eyebrow { font-size: 12px; letter-spacing: 0.18em; color: var(--dim); }
   h1 { margin: 6px 0 10px; font-size: 30px; letter-spacing: 0.02em; }
   h2 { margin: 40px 0 4px; font-size: 22px; }
@@ -97,6 +99,8 @@ window.I18N.register({
     text-decoration: none; border: 1px solid var(--line); border-radius: 999px;
     padding: 6px 16px; font-size: 13px;
   }
+  .back.nav-prev::before { content: "← "; }
+  .back.nav-next::after { content: " →"; }
   .back:hover { border-color: var(--accent); }
   /* Always-visible "return to Deep Space Messengers", shown when arriving via a deep-link. */
   .return-msg {
@@ -121,7 +125,7 @@ window.I18N.register({
     background: var(--panel); border: 1px solid var(--line); border-radius: 14px;
     overflow: hidden; margin: 14px 0 8px;
   }
-  .viewer { width: 100%; height: 480px; background: #000; }
+  .viewer { width: 100%; height: min(68vh, 680px); min-height: 620px; background: #000; }
   .controls { padding: 12px 16px 16px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
   .controls .label { font-size: 12px; color: var(--dim); letter-spacing: 0.1em; margin-right: 4px; }
   .spot, .layer {
@@ -207,7 +211,8 @@ window.I18N.register({
     color: var(--dim); font-size: 13px; letter-spacing: 0.08em;
   }
   .globe-loading[hidden] { display: none; }
-  @media (max-width: 900px) { .viewer { height: 340px; } }
+  @media (max-width: 900px) { .viewer { height: min(58vh, 460px); min-height: 420px; } }
+  @media (max-width: 520px) { .viewer { height: 400px; min-height: 0; } }
 </style>
 <script src="https://aladin.cds.unistra.fr/AladinLite/api/v3/latest/aladin.js" charset="utf-8"></script>
 </head>
@@ -219,10 +224,11 @@ window.I18N.register({
   <p class="lede" data-i18n="solar.lede">银河看久了，别忘了我们自己也住在一颗行星上。月球和火星的表面是真实探测器测绘的全图——可以一路拉近到山和陨石坑；其余行星是各任务拍下的原版照片。</p>
   <nav class="navbar">
     <a class="back" href="./" data-i18n="nav.home">← 回到星空探索器</a>
-    <a class="back" href="messengers.html" data-i18n="nav.messengers">深空信使 →</a>
-    <a class="back" href="stations.html" data-i18n="nav.stations">空间站 →</a>
-    <a class="back" href="observatories.html" data-i18n="nav.observatories">观星台 →</a>
-    <a class="back" href="reference.html" data-i18n="nav.reference">来源 →</a>
+    <a class="back nav-prev" href="constellations.html" data-i18n="nav.constellations">星座</a>
+    <a class="back nav-next" href="messengers.html" data-i18n="nav.messengers">深空信使</a>
+    <a class="back nav-next" href="stations.html" data-i18n="nav.stations">空间站</a>
+    <a class="back nav-next" href="observatories.html" data-i18n="nav.observatories">观星台</a>
+    <a class="back nav-next" href="reference.html" data-i18n="nav.reference">来源</a>
     <button class="lang-toggle" type="button" data-lang-toggle>EN</button>
   </nav>
 
@@ -303,27 +309,115 @@ window.I18N.register({
 
 <script>
   const viewers = {}
+  const globeSpinDegPerSec = 15
+  const surfaceAutoRotateDegPerSec = globeSpinDegPerSec
+  const globeCameraDistance = 3.2
+  const globeCameraPitchDeg = 22
+  const autoRotateResumeDelay = window.COSMIC_ROTATION_RESUME_DELAY_MS || 3000
+  const viewerStates = {}
+  let surfaceAutoRotateFrame = 0
 
-  function makeViewer(id, survey, fov) {
-    return A.aladin(id, {
+  function normalizeLon(lon) {
+    return ((lon + 180) % 360 + 360) % 360 - 180
+  }
+
+  function readViewerCenter(viewer) {
+    if (!viewer || typeof viewer.getRaDec !== 'function') return null
+    const value = viewer.getRaDec()
+    if (!value) return null
+    const lon = Number(value[0])
+    const lat = Number(value[1])
+    return Number.isFinite(lon) && Number.isFinite(lat) ? { lon: normalizeLon(lon), lat } : null
+  }
+
+  function syncViewerState(state) {
+    const center = readViewerCenter(state.viewer)
+    if (center) {
+      state.lon = center.lon
+      state.lat = center.lat
+    }
+  }
+
+  function holdSurfaceAutoRotate(body) {
+    const state = viewerStates[body]
+    if (!state) return
+    syncViewerState(state)
+    state.autoHold = true
+    state.lastTick = null
+  }
+
+  function resumeSurfaceAutoRotateSoon(body) {
+    const state = viewerStates[body]
+    if (!state) return
+    syncViewerState(state)
+    state.autoHold = false
+    state.autoResumeAt = performance.now() + autoRotateResumeDelay
+    state.lastTick = null
+  }
+
+  function attachSurfaceAutoRotateControls(id, body) {
+    const el = document.querySelector(id)
+    if (!el) return
+    el.addEventListener('pointerdown', () => holdSurfaceAutoRotate(body))
+    el.addEventListener('wheel', () => resumeSurfaceAutoRotateSoon(body), { passive: true })
+    window.addEventListener('pointerup', () => resumeSurfaceAutoRotateSoon(body))
+  }
+
+  function startSurfaceAutoRotate() {
+    if (surfaceAutoRotateFrame) return
+    function tick(now) {
+      surfaceAutoRotateFrame = requestAnimationFrame(tick)
+      for (const state of Object.values(viewerStates)) {
+        const dt = state.lastTick == null ? 0 : Math.min(now - state.lastTick, 100) / 1000
+        state.lastTick = now
+        if (!dt || state.autoHold || now < state.autoResumeAt) continue
+        syncViewerState(state)
+        state.lon = normalizeLon(state.lon + surfaceAutoRotateDegPerSec * dt)
+        state.viewer.gotoRaDec(state.lon, state.lat)
+      }
+    }
+    surfaceAutoRotateFrame = requestAnimationFrame(tick)
+  }
+
+  function makeViewer(id, survey, fov, body) {
+    const viewer = A.aladin(id, {
       survey,
       fov,
       showFullscreenControl: false, showLayersControl: false,
       showGotoControl: false, showZoomControl: false, showFrame: false,
       showCooGrid: false, showProjectionControl: false,
     })
+    viewerStates[body] = {
+      viewer,
+      lon: 0,
+      lat: 0,
+      autoHold: false,
+      autoResumeAt: 0,
+      lastTick: null,
+    }
+    attachSurfaceAutoRotateControls(id, body)
+    return viewer
   }
 
   A.init.then(() => {
-    viewers.moon = makeViewer('#moon-view', 'https://alasky.cds.unistra.fr/Planets/CDS_P_Moon_LROC-WAC-100m', 90)
-    viewers.mars = makeViewer('#mars-view', 'https://alasky.cds.unistra.fr/Planets/Mars_Viking_MDIM21', 90)
+    viewers.moon = makeViewer('#moon-view', 'https://alasky.cds.unistra.fr/Planets/CDS_P_Moon_LROC-WAC-100m', 90, 'moon')
+    viewers.mars = makeViewer('#mars-view', 'https://alasky.cds.unistra.fr/Planets/Mars_Viking_MDIM21', 90, 'mars')
+    startSurfaceAutoRotate()
 
     for (const btn of document.querySelectorAll('.spot')) {
       btn.addEventListener('click', () => {
         const v = viewers[btn.dataset.body]
         if (!v) return
-        v.gotoRaDec(Number(btn.dataset.lon), Number(btn.dataset.lat))
+        const state = viewerStates[btn.dataset.body]
+        const lon = Number(btn.dataset.lon)
+        const lat = Number(btn.dataset.lat)
+        if (state) {
+          state.lon = normalizeLon(lon)
+          state.lat = lat
+        }
+        v.gotoRaDec(lon, lat)
         v.setFoV(Number(btn.dataset.fov))
+        resumeSurfaceAutoRotateSoon(btn.dataset.body)
       })
     }
 
@@ -332,6 +426,7 @@ window.I18N.register({
         const v = viewers[btn.dataset.body]
         if (!v) return
         v.setImageSurvey(btn.dataset.survey)
+        resumeSurfaceAutoRotateSoon(btn.dataset.body)
         for (const other of document.querySelectorAll(`.layer[data-body="${btn.dataset.body}"]`)) {
           other.classList.toggle('is-active', other === btn)
         }
@@ -372,6 +467,19 @@ window.I18N.register({
   const globeLoading = document.querySelector('[data-globe-loading]')
   const globeHint = document.querySelector('.globe-hint')
   const globePhotoBtn = document.querySelector('[data-globe-photo]')
+  const panoAutoRotateDegPerSec = globeSpinDegPerSec
+  const BODY_SPIN = {
+    mercury: { obliquity: 0.03, direction: 1 },
+    venus: { obliquity: 177.4, direction: -1 },
+    earth: { obliquity: 23.4, direction: 1 },
+    moon: { obliquity: 6.7, direction: 1 },
+    mars: { obliquity: 25.2, direction: 1 },
+    jupiter: { obliquity: 3.1, direction: 1 },
+    saturn: { obliquity: 26.7, direction: 1 },
+    uranus: { obliquity: 97.8, direction: -1 },
+    neptune: { obliquity: 28.3, direction: 1 },
+    pluto: { obliquity: 122.5, direction: -1 },
+  }
   let three = null
   let currentFig = null
   let threeReady = null
@@ -392,26 +500,29 @@ window.I18N.register({
     renderer.outputEncoding = THREE.sRGBEncoding
     const scene = new THREE.Scene()
     const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 100)
-    camera.position.set(0, 0, 3.2)
+    const pitch = globeCameraPitchDeg * Math.PI / 180
+    camera.position.set(0, globeCameraDistance * Math.sin(pitch), globeCameraDistance * Math.cos(pitch))
     scene.add(camera)
     scene.add(new THREE.AmbientLight(0xffffff, 0.42))
     const headlight = new THREE.DirectionalLight(0xffffff, 0.95)
     headlight.position.set(0.4, 0.3, 1)   // fixed relative to camera → facing side always lit
     camera.add(headlight)
-    const tilt = new THREE.Group(); scene.add(tilt)
+    const axis = new THREE.Group(); scene.add(axis)
+    const spin = new THREE.Group(); axis.add(spin)
     const sphere = new THREE.Mesh(
       new THREE.SphereGeometry(1, 64, 48),
       new THREE.MeshStandardMaterial({ roughness: 1, metalness: 0 })
     )
     sphere.visible = false
-    tilt.add(sphere)
+    spin.add(sphere)
     const controls = new THREE.OrbitControls(camera, renderer.domElement)
     controls.enablePan = false
     controls.enableDamping = true; controls.dampingFactor = 0.09; controls.rotateSpeed = 0.5
     controls.minDistance = 1.5; controls.maxDistance = 6
-    controls.autoRotate = true; controls.autoRotateSpeed = 0.55
-    three = { renderer, scene, camera, controls, sphere, tilt, ringMesh: null, texCache: {}, raf: 0,
-              loader: new THREE.TextureLoader(), mode: 'globe', panoMesh: null, lon: 0, lat: 0, latMax: 45, dragging: false, px: 0, py: 0 }
+    controls.autoRotate = false
+    three = { renderer, scene, camera, controls, sphere, axis, spin, ringMesh: null, texCache: {}, raf: 0,
+              loader: new THREE.TextureLoader(), mode: 'globe', panoMesh: null, lon: 0, lat: 0, latMax: 45, dragging: false, px: 0, py: 0,
+              autoHold: false, autoResumeAt: 0, lastTick: null, spinDirection: 1 }
   }
 
   function makeRing(tex) {
@@ -441,15 +552,44 @@ window.I18N.register({
     three.camera.lookAt(Math.sin(phi) * Math.cos(theta), Math.cos(phi), Math.sin(phi) * Math.sin(theta))
   }
 
-  function tick() {
+  function holdAutoRotate() {
+    if (!three) return
+    three.autoHold = true
+    three.lastTick = null
+  }
+
+  function resumeAutoRotateSoon() {
+    if (!three) return
+    three.autoHold = false
+    three.autoResumeAt = performance.now() + autoRotateResumeDelay
+    three.lastTick = null
+  }
+
+  function tick(now) {
     three.raf = requestAnimationFrame(tick)
+    const dt = three.lastTick == null ? 0 : Math.min(now - three.lastTick, 100) / 1000
+    three.lastTick = now
+    const canAutoRotate = !three.autoHold && now >= three.autoResumeAt
     if (three.mode === 'pano') {
-      if (!three.dragging) three.lon += 0.03   // gentle auto-pan when idle
+      if (!three.dragging && canAutoRotate) three.lon += panoAutoRotateDegPerSec * dt
       updatePanoCamera()
     } else {
+      if (canAutoRotate) three.spin.rotation.y += three.spinDirection * globeSpinDegPerSec * Math.PI / 180 * dt
       three.controls.update()
     }
     three.renderer.render(three.scene, three.camera)
+  }
+
+  function bodyKeyFromFigure(fig) {
+    return (fig.id || '').replace(/^body-/, '') || ''
+  }
+
+  function applyBodySpin(fig) {
+    const key = bodyKeyFromFigure(fig)
+    const spin = BODY_SPIN[key] || { obliquity: 0, direction: 1 }
+    three.axis.rotation.set(0, 0, THREE.MathUtils.degToRad(spin.obliquity))
+    three.spin.rotation.set(0, 0, 0)
+    three.spinDirection = spin.direction
   }
 
   async function openGlobe(fig) {
@@ -461,6 +601,9 @@ window.I18N.register({
     globeLoading.hidden = false; globeLoading.textContent = window.I18N.t('solar.globe.loading')
     await ensureThree()
     if (!three) buildScene()
+    three.autoHold = false
+    three.autoResumeAt = 0
+    three.lastTick = null
     // (re)enter globe mode — undo anything panorama mode changed
     three.mode = 'globe'
     three.controls.enabled = true
@@ -470,18 +613,18 @@ window.I18N.register({
     globePhotoBtn.style.display = ''
     globeHint.setAttribute('data-i18n', 'solar.globe.hint'); globeHint.textContent = window.I18N.t('solar.globe.hint')
     resize()
-    three.camera.position.set(0, 0, 3.2); three.controls.target.set(0, 0, 0)
-    three.controls.autoRotate = true; three.controls.update()
+    const pitch = globeCameraPitchDeg * Math.PI / 180
+    three.camera.position.set(0, globeCameraDistance * Math.sin(pitch), globeCameraDistance * Math.cos(pitch))
+    three.controls.target.set(0, 0, 0)
+    three.controls.autoRotate = false; three.controls.update()
     three.sphere.visible = false
     const isSaturn = !!fig.dataset.ring
-    // Tilt around X opens the ring plane toward the camera (a proper ellipse, not edge-on);
-    // a little Z keeps it from lying dead-horizontal. Other planets get a gentle lean.
-    three.tilt.rotation.set(THREE.MathUtils.degToRad(isSaturn ? 26.7 : 10), 0, THREE.MathUtils.degToRad(isSaturn ? 6 : 0))
+    applyBodySpin(fig)
     if (three.ringMesh) three.ringMesh.visible = false
     if (isSaturn) {
       const rurl = fig.dataset.ring
       const showRing = (rtex) => {
-        if (!three.ringMesh) { three.ringMesh = makeRing(rtex); three.tilt.add(three.ringMesh) }
+        if (!three.ringMesh) { three.ringMesh = makeRing(rtex); three.spin.add(three.ringMesh) }
         three.ringMesh.visible = true
       }
       if (three.texCache[rurl]) showRing(three.texCache[rurl])
@@ -525,6 +668,9 @@ window.I18N.register({
     globeHint.setAttribute('data-i18n', 'solar.pano.hint'); globeHint.textContent = window.I18N.t('solar.pano.hint')
     await ensureThree()
     if (!three) buildScene()
+    three.autoHold = false
+    three.autoResumeAt = 0
+    three.lastTick = null
     three.mode = 'pano'
     three.controls.enabled = false
     three.sphere.visible = false
@@ -548,14 +694,19 @@ window.I18N.register({
   }
 
   // manual look-around for panorama mode (OrbitControls stays disabled while mode === 'pano')
-  canvas.addEventListener('pointerdown', (e) => { if (three && three.mode === 'pano') { three.dragging = true; three.px = e.clientX; three.py = e.clientY } })
+  canvas.addEventListener('pointerdown', (e) => {
+    if (!three) return
+    holdAutoRotate()
+    if (three.mode === 'pano') { three.dragging = true; three.px = e.clientX; three.py = e.clientY }
+  })
   window.addEventListener('pointermove', (e) => {
     if (!three || three.mode !== 'pano' || !three.dragging) return
     three.lon -= (e.clientX - three.px) * 0.12
     three.lat += (e.clientY - three.py) * 0.12
     three.px = e.clientX; three.py = e.clientY
   })
-  window.addEventListener('pointerup', () => { if (three) three.dragging = false })
+  window.addEventListener('pointerup', () => { if (three) { three.dragging = false; resumeAutoRotateSoon() } })
+  canvas.addEventListener('wheel', resumeAutoRotateSoon, { passive: true })
   for (const btn of document.querySelectorAll('.pano-btn')) {
     btn.addEventListener('click', () => openPano(btn))
   }
