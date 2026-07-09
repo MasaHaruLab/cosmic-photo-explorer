@@ -1,5 +1,15 @@
 # HANDOFF
 
+Updated: 2026-07-09（**🚀 删「光污染阶梯」已上线**：删掉自渲染 Bortle 图，按 CEO 指示只推此增量，未捎带工作树里那批未上线 backlog）
+
+**LIVE**: https://masaharulab.github.io/cosmic-photo-explorer/
+- **gh-pages `ce103ad`**（src `f60f32d`）；**回滚点 = 上一版 gh-pages `6dcba84`（src de30593）**，`git push -f origin 6dcba84:gh-pages` 一条命令可退。
+- master 已推 origin（`de30593 → f60f32d`，含中间两个 docs commit）。
+- 本次增量：首页「解释层」删掉「光污染阶梯」按钮 + 自渲染 Bortle 示意图 + 说明卡；数据与来源页删掉「光污染阶梯（Bortle 等级）」署名卡；JS 接线（selector/函数/监听）+ i18n 文案一并清净；图片文件 `explainers/bortle_scale.jpg` 已删。部署 diff 仅 index.html + JS bundle + reference.html + 删图，子页未动。CDN 边缘缓存约 10 分钟生效。
+- ⚠️ 工作树仍压着一批**未提交、未上线**的 backlog（constellations/messengers/solar/stations 子页 + style.css + main.js 里 +95 行 `__cosmicDebug` + 新文件 cosmic-demo.js），本次**未动**——按 CEO「只推删光污染阶梯」的指示保留原样，需要时再单独处理。
+
+---
+
 Updated: 2026-07-09（**🚀 已上线部署**：全量真实化 + 深空信使补全 + 移动端/布局修复，已推 gh-pages 并前台确认生效）
 
 **LIVE**: https://masaharulab.github.io/cosmic-photo-explorer/
