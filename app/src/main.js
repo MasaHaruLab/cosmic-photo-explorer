@@ -261,16 +261,11 @@ app.innerHTML = `
         <div class="panel-section">
           <div class="panel-label" data-i18n="panel.explain">解释层</div>
           <div class="panel-actions">
-            <button class="ghost-button" type="button" data-toggle-bortle data-i18n="btn.bortle" aria-expanded="false">光污染阶梯</button>
             <button class="ghost-button" type="button" data-toggle-galaxy data-i18n="btn.galaxy" aria-expanded="false">跳出银河系</button>
             <button class="ghost-button" type="button" data-toggle-apod data-i18n="btn.apod" aria-expanded="false">NASA 今天看什么</button>
           </div>
           <div class="explainer-card" data-apod-card hidden>
             <div class="panel-copy" data-apod-content>正在向 NASA 查询今天的天文图…</div>
-          </div>
-          <div class="explainer-card" data-bortle-card hidden>
-            <img src="explainers/bortle_scale.jpg" data-i18n-attr="alt:img.bortleAlt" alt="Bortle 光污染等级示意图" />
-            <p data-i18n="bortle.text">Bortle 标尺用 1 到 9 级描述夜空黑暗程度，级别越高，城市灯光对星空的遮蔽越明显。今天许多人看不到照片里的银河，主要不是银河消失了，而是城市光污染把它淹没在夜空背景里。</p>
           </div>
           <div class="explainer-card" data-galaxy-card hidden>
             <img src="explainers/milky_way_topdown.jpg" data-i18n-attr="alt:img.galaxyAlt" alt="银河系俯视示意图（艺术想象，基于真实测量）" />
@@ -339,8 +334,6 @@ const panelBoundaryCopy = document.querySelector('[data-panel-boundary-copy]')
 const panelNext = document.querySelector('[data-panel-next]')
 const resetButton = document.querySelector('[data-reset-view]')
 const tourButton = document.querySelector('[data-tour-toggle]')
-const bortleButton = document.querySelector('[data-toggle-bortle]')
-const bortleCard = document.querySelector('[data-bortle-card]')
 const galaxyButton = document.querySelector('[data-toggle-galaxy]')
 const galaxyCard = document.querySelector('[data-galaxy-card]')
 const apodButton = document.querySelector('[data-toggle-apod]')
@@ -1180,12 +1173,6 @@ function startSkyAutoRotate() {
   skyAutoRotateFrame = requestAnimationFrame(tick)
 }
 
-function toggleBortleCard() {
-  const nextOpen = bortleCard.hidden
-  bortleCard.hidden = !nextOpen
-  bortleButton.setAttribute('aria-expanded', String(nextOpen))
-}
-
 function toggleGalaxyCard() {
   const nextOpen = galaxyCard.hidden
   galaxyCard.hidden = !nextOpen
@@ -1786,7 +1773,6 @@ resetButton.addEventListener('click', resetView)
 tourButton.addEventListener('click', toggleTour)
 probePlayButton.addEventListener('click', toggleProbePlay)
 parallaxButton.addEventListener('click', toggleParallaxCard)
-bortleButton.addEventListener('click', toggleBortleCard)
 galaxyButton.addEventListener('click', toggleGalaxyCard)
 apodButton.addEventListener('click', toggleApodCard)
 nasaOpenButton.addEventListener('click', openNasaModal)

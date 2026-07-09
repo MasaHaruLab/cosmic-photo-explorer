@@ -94,7 +94,6 @@ export const UI = {
   },
 
   // ---- Explainer buttons + cards ----
-  'btn.bortle': { zh: '光污染阶梯', en: 'Light-Pollution Ladder' },
   'btn.galaxy': { zh: '跳出银河系', en: 'Step Outside the Galaxy' },
   'btn.apod': { zh: 'NASA 今天看什么', en: 'NASA’s Picture Today' },
   'apod.loading': { zh: '正在向 NASA 查询今天的天文图…', en: 'Asking NASA for today’s astronomy picture…' },
@@ -103,11 +102,6 @@ export const UI = {
   'apod.videoLink': { zh: '今天是段视频，去看 ↗', en: 'Today’s picture is a video — watch it ↗' },
   'apod.explainZh': { zh: '{text}…（英文原文，<a href="https://apod.nasa.gov/apod/astropix.html" target="_blank" rel="noreferrer">APOD 官网 ↗</a>）', en: '{text}… (<a href="https://apod.nasa.gov/apod/astropix.html" target="_blank" rel="noreferrer">full text at APOD ↗</a>)' },
   'apod.failed': { zh: '查询失败——NASA 的免费接口偶尔限流，过一会儿再点一次。', en: 'The query failed — NASA’s free endpoint is occasionally rate-limited; try again in a moment.' },
-  'img.bortleAlt': { zh: 'Bortle 光污染等级示意图', en: 'Diagram of the Bortle light-pollution scale' },
-  'bortle.text': {
-    zh: 'Bortle 标尺用 1 到 9 级描述夜空黑暗程度，级别越高，城市灯光对星空的遮蔽越明显。今天许多人看不到照片里的银河，主要不是银河消失了，而是城市光污染把它淹没在夜空背景里。',
-    en: 'The Bortle scale rates how dark the night sky is from 1 to 9 — the higher the number, the more city light drowns out the stars. Most people today can’t see the Milky Way from these photos not because it has vanished, but because urban light pollution washes it into the background glow.',
-  },
   'img.galaxyAlt': { zh: '银河系俯视示意图（艺术想象，基于真实测量）', en: 'Top-down illustration of the Milky Way (artist’s impression, grounded in real measurements)' },
   'galaxy.p1': {
     zh: '这是银河系的俯视示意图（NASA/JPL-Caltech/R. Hurt，基于真实测量绘制）。注意"示意"两个字：人类没有任何一张从外面拍的银河系照片——飞得最远的旅行者 1 号走了近 50 年，也才离家 0.003 光年，而想拍到全貌得飞出去几万光年。所有"银河系全景"都是根据真实测量画出来的。',
