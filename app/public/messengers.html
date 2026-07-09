@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title data-i18n="msg.pageTitle">深空信使：五艘探测器的真实航迹 · 星空照片探索器</title>
+<script src="./cosmic-motion.js"></script>
 <script src="./i18n.js"></script>
 <script>
 // Page dictionary — { zh, en } pairs. Milestone / probe-label copy is data-driven
@@ -20,6 +21,10 @@ window.I18N.register({
   'msg.lede2': {
     zh: '径向距离做了平方根压缩（方向完全不变），否则 1 AU（天文单位＝地日平均距离，约 1.5 亿公里）的地球和 170 多 AU 的旅行者 1 号没法画在同一张图里。行星大小按彼此的真实比例画（所以木星最大），但同样没跟距离同尺度——真按那样，行星只是个看不见的点；最内侧几颗还设了可见下限。',
     en: 'Radial distance is square-root compressed (direction is untouched) — otherwise 1 AU (an astronomical unit = the mean Earth–Sun distance, ~150 million km) Earth and 170-plus AU Voyager 1 could never share one picture. Planet sizes are true to one another (so Jupiter is largest), but likewise not to the distance scale — at that scale a planet would be an invisible dot; the innermost few also carry a visibility floor.',
+  },
+  'msg.trueScale': {
+    zh: '图中行星是夸张放大的，真实比例差得远。把太阳缩成一个篮球（24 厘米）的话，真实大小是：水星 沙粒（0.8 毫米）、金星 胡椒粒（2.1 毫米）、地球 胡椒粒（2.2 毫米）、火星 小米粒（1.2 毫米）、木星 弹珠（2.4 厘米）、土星 弹珠（2.0 厘米）、天王星 豌豆（8.7 毫米）、海王星 豌豆（8.5 毫米）、冥王星 一粒尘（0.4 毫米）。真按这比例，行星在这张图上根本看不见。',
+    en: "The planets here are exaggerated — real sizes differ hugely. Shrink the Sun to a basketball (240 mm) and the real sizes are: Mercury a grain of sand (0.8 mm), Venus a peppercorn (2.1 mm), Earth a peppercorn (2.2 mm), Mars a pinhead (1.2 mm), Jupiter a marble (24 mm), Saturn a marble (20 mm), Uranus a pea (8.7 mm), Neptune a pea (8.5 mm), Pluto a speck of dust (0.4 mm). At true scale you couldn't see the planets in this picture.",
   },
   'msg.probes.h': { zh: '显示探测器', en: 'Show probes' },
   'msg.about.h': { zh: '这是怎么回事', en: 'What you are looking at' },
@@ -55,11 +60,11 @@ window.I18N.register({
   'msg.planet.uranus': { zh: '天王星', en: 'Uranus' },
   'msg.planet.neptune': { zh: '海王星', en: 'Neptune' },
   'nav.home': { zh: '← 回到星空探索器', en: '← Back to the explorer' },
-  'nav.solar': { zh: '太阳系 →', en: 'Solar System →' },
-  'nav.stations': { zh: '空间站 →', en: 'Space Stations →' },
-  'nav.observatories': { zh: '观星台 →', en: 'Observatories →' },
-  'nav.reference': { zh: '来源 →', en: 'Sources →' },
-  'nav.constellations': { zh: '星座 →', en: 'Constellations →' },
+  'nav.solar': { zh: '太阳系', en: 'Solar System' },
+  'nav.stations': { zh: '空间站', en: 'Space Stations' },
+  'nav.observatories': { zh: '观星台', en: 'Observatories' },
+  'nav.reference': { zh: '来源', en: 'Sources' },
+  'nav.constellations': { zh: '星座', en: 'Constellations' },
 })
 </script>
 <style>
@@ -142,6 +147,8 @@ window.I18N.register({
   .lede.small { font-size: 12px; margin: 0 0 14px; }
   .back { display: inline-block; color: var(--accent); text-decoration: none; font-size: 12px;
     border: 1px solid var(--line); border-radius: 999px; padding: 3px 11px; }
+  .back.nav-prev::before { content: "← "; }
+  .back.nav-next::after { content: " →"; }
   .back:hover { border-color: var(--accent); }
   .lang-toggle { font: inherit; font-size: 12px; cursor: pointer; color: var(--accent);
     background: rgba(157,184,255,0.08); border: 1px solid var(--line); border-radius: 999px; padding: 3px 12px; }
@@ -223,11 +230,11 @@ window.I18N.register({
 
   <nav class="topnav">
     <a class="back" href="./" data-i18n="nav.home">← 回到星空探索器</a>
-    <a class="back" href="solar.html" data-i18n="nav.solar">太阳系 →</a>
-    <a class="back" href="stations.html" data-i18n="nav.stations">空间站 →</a>
-    <a class="back" href="observatories.html" data-i18n="nav.observatories">观星台 →</a>
-    <a class="back" href="reference.html" data-i18n="nav.reference">来源 →</a>
-    <a class="back" href="constellations.html" data-i18n="nav.constellations">星座 →</a>
+    <a class="back nav-prev" href="constellations.html" data-i18n="nav.constellations">星座</a>
+    <a class="back nav-prev" href="solar.html" data-i18n="nav.solar">太阳系</a>
+    <a class="back nav-next" href="stations.html" data-i18n="nav.stations">空间站</a>
+    <a class="back nav-next" href="observatories.html" data-i18n="nav.observatories">观星台</a>
+    <a class="back nav-next" href="reference.html" data-i18n="nav.reference">来源</a>
     <button class="lang-toggle" type="button" data-lang-toggle>EN</button>
   </nav>
 
@@ -237,6 +244,7 @@ window.I18N.register({
     <h1 data-i18n="msg.title">深空信使</h1>
     <p class="lede" data-i18n="msg.lede1"></p>
     <p class="lede small" data-i18n="msg.lede2"></p>
+    <p class="lede small" data-i18n="msg.trueScale"></p>
 
     <div class="section">
       <h2 data-i18n="msg.probes.h">显示探测器</h2>
@@ -276,6 +284,9 @@ window.I18N.register({
   const I18N = window.I18N
   const canvas = document.getElementById('sky')
   const labelLayer = document.getElementById('labels')
+  const autoRotateDegPerSec = window.COSMIC_ROTATION_DEG_PER_SEC || 2
+  const autoRotateRadPerSec = autoRotateDegPerSec * Math.PI / 180
+  const autoRotateResumeDelay = window.COSMIC_ROTATION_RESUME_DELAY_MS || 3000
 
   // --- Radial scale compression: direction-preserving sqrt compression, applied
   //     identically to every spatial thing (trajectories, milestones, planet
@@ -297,20 +308,43 @@ window.I18N.register({
   // Distances stay √-compressed (see compress()); sizes are true to EACH OTHER,
   // not to the distance scale — at real size-vs-distance a planet is sub-pixel.
   const PLANETS = [
-    { key: 'mercury', au: 0.39, d: 0.38, color: '#9c8b78' },
-    { key: 'venus',   au: 0.72, d: 0.95, color: '#e6cfa0' },
-    { key: 'earth',   au: 1.00, d: 1.00, color: '#5aa0e6', emphasize: true },
-    { key: 'mars',    au: 1.52, d: 0.53, color: '#d1653f' },
-    { key: 'jupiter', au: 5.20, d: 11.2, color: '#d9b48a' },
-    { key: 'saturn',  au: 9.58, d: 9.45, color: '#e6d3a3' },
-    { key: 'uranus',  au: 19.2, d: 4.01, color: '#a7dbe0' },
-    { key: 'neptune', au: 30.1, d: 3.88, color: '#4a74d6' },
+    { key: 'mercury', au: 0.39, d: 0.38, color: '#9c8b78', texture: 'textures/2k_mercury.jpg' },
+    { key: 'venus',   au: 0.72, d: 0.95, color: '#e6cfa0', texture: 'textures/2k_venus_surface.jpg' },
+    { key: 'earth',   au: 1.00, d: 1.00, color: '#5aa0e6', texture: 'textures/2k_earth.jpg', emphasize: true },
+    { key: 'mars',    au: 1.52, d: 0.53, color: '#d1653f', texture: 'textures/2k_mars.jpg' },
+    { key: 'jupiter', au: 5.20, d: 11.2, color: '#d9b48a', texture: 'textures/2k_jupiter.jpg' },
+    { key: 'saturn',  au: 9.58, d: 9.45, color: '#e6d3a3', texture: 'textures/2k_saturn.jpg', ringTexture: 'textures/2k_saturn_ring_alpha.png' },
+    { key: 'uranus',  au: 19.2, d: 4.01, color: '#a7dbe0', texture: 'textures/2k_uranus.jpg' },
+    { key: 'neptune', au: 30.1, d: 3.88, color: '#4a74d6', texture: 'textures/2k_neptune.jpg' },
   ]
   // True-ratio planet sizes span ~29× (Jupiter vs Mercury); a floor keeps the
   // tiny inner rocky worlds from dropping below a visible, colour-readable dot
   // (at strict scale they are sub-pixel next to the giants). Tune to taste.
   const PLANET_BASE = 0.34
   const PLANET_MIN = 0.30
+  const PLANET_SPIN_DEG_PER_SEC = 18
+  const TRAJ_CORE_RADIUS = 0.21
+  const TRAJ_GLOW_RADIUS = 0.77
+  const TRAJ_MIN_FACTOR = 0.5
+  const TRAJ_REF_SCALE = 1
+  const TRAJ_REBUILD_THRESHOLD = 0.08
+  const SUN_RADIUS = 1.8
+  const SUN_SPIN_DEG_PER_SEC = 9
+  const MOON_RADIUS_RATIO = 0.27
+  const MOON_MIN_RADIUS = 0.07
+  const MOON_ORBIT_RADIUS_RATIO = 2.4
+  const MOON_ORBIT_DEG_PER_SEC = 30
+  const MOON_SPIN_DEG_PER_SEC = 18
+  const BODY_SPIN = {
+    mercury: { obliquity: 0.03, direction: 1 },
+    venus: { obliquity: 177.4, direction: -1 },
+    earth: { obliquity: 23.4, direction: 1 },
+    mars: { obliquity: 25.2, direction: 1 },
+    jupiter: { obliquity: 3.1, direction: 1 },
+    saturn: { obliquity: 26.7, direction: 1 },
+    uranus: { obliquity: 97.8, direction: -1 },
+    neptune: { obliquity: 28.3, direction: 1 },
+  }
   const HELIOPAUSE_AU = 120
   const HELIO_LABEL_ANGLE = (-62 * Math.PI) / 180  // lower-right, clear of ring labels
 
@@ -535,20 +569,6 @@ window.I18N.register({
     return new THREE.CanvasTexture(c)
   }
 
-  // Small soft-glow dot marking a planet's REAL heliocentric position on its
-  // ring (Change 2) — same radial-gradient-on-canvas idiom as sunTexture /
-  // satelliteTexture, just a plain colored disc instead of an emoji or corona.
-  function planetDotTexture(THREE, colorHex) {
-    const c = document.createElement('canvas'); c.width = c.height = 64
-    const g = c.getContext('2d')
-    const grd = g.createRadialGradient(32, 32, 0, 32, 32, 30)
-    grd.addColorStop(0, colorHex)
-    grd.addColorStop(0.62, colorHex)   // firmer disk so planets read as bodies, not fog
-    grd.addColorStop(1, 'rgba(0,0,0,0)')
-    g.fillStyle = grd; g.fillRect(0, 0, 64, 64)
-    return new THREE.CanvasTexture(c)
-  }
-
   function sunTexture(THREE) {
     const c = document.createElement('canvas'); c.width = c.height = 128
     const g = c.getContext('2d')
@@ -559,6 +579,30 @@ window.I18N.register({
     grd.addColorStop(1.0, 'rgba(255,170,90,0)')
     g.fillStyle = grd; g.fillRect(0, 0, 128, 128)
     return new THREE.CanvasTexture(c)
+  }
+
+  function prepPlanetTexture(THREE, renderer, tex) {
+    tex.encoding = THREE.sRGBEncoding
+    const maxAnisotropy = renderer.capabilities.getMaxAnisotropy ? renderer.capabilities.getMaxAnisotropy() : 1
+    tex.anisotropy = Math.min(4, maxAnisotropy || 1)
+    return tex
+  }
+
+  function makeSaturnRing(THREE, dotScale) {
+    const inner = dotScale * 0.62
+    const outer = dotScale * 1.08
+    const geo = new THREE.RingGeometry(inner, outer, 96)
+    const pos = geo.attributes.position, uv = geo.attributes.uv, v = new THREE.Vector3()
+    for (let i = 0; i < pos.count; i++) {
+      v.fromBufferAttribute(pos, i)
+      uv.setXY(i, (v.length() - inner) / (outer - inner), 0.5)
+    }
+    const mesh = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({
+      color: 0xe7d6ad, transparent: true, opacity: 0.72,
+      side: THREE.DoubleSide, depthTest: true, depthWrite: false,
+    }))
+    mesh.rotation.x = Math.PI / 2
+    return mesh
   }
 
   function ringPositions(radius, segments) {
@@ -633,6 +677,8 @@ window.I18N.register({
     renderer.outputEncoding = THREE.sRGBEncoding
     const scene = new THREE.Scene()
     const camera = new THREE.PerspectiveCamera(44, 1, 0.1, 4000)
+    const textureLoader = new THREE.TextureLoader()
+    const occluders = []
 
     // --- Background starfield ---
     const bgGeo = new THREE.BufferGeometry()
@@ -647,15 +693,29 @@ window.I18N.register({
     scene.add(new THREE.Points(bgGeo, new THREE.PointsMaterial({ color: 0x9fb0d0, size: 2.4, sizeAttenuation: false, transparent: true, opacity: 0.55 })))
 
     // --- Sun ---
+    const sphereNorth = new THREE.Vector3(0, 1, 0)
+    const sunAxisGroup = new THREE.Group()
+    const sunTilt = THREE.MathUtils.degToRad(7.25)
+    sunAxisGroup.quaternion.setFromUnitVectors(sphereNorth, new THREE.Vector3(0, Math.sin(sunTilt), Math.cos(sunTilt)).normalize())
+    scene.add(sunAxisGroup)
+    const sunSpinGroup = new THREE.Group()
+    sunAxisGroup.add(sunSpinGroup)
+    const sunCoreMat = new THREE.MeshBasicMaterial({ color: 0xfff2c8 })
     const sunCore = new THREE.Mesh(
-      new THREE.SphereGeometry(1.1, 24, 18),
-      new THREE.MeshBasicMaterial({ color: 0xfff2c8 }),
+      new THREE.SphereGeometry(SUN_RADIUS, 48, 24),
+      sunCoreMat,
     )
-    scene.add(sunCore)
+    sunSpinGroup.add(sunCore)
+    occluders.push(sunCore)
+    textureLoader.load('textures/2k_sun.jpg', (tex) => {
+      sunCoreMat.map = prepPlanetTexture(THREE, renderer, tex)
+      sunCoreMat.color.set(0xffffff)
+      sunCoreMat.needsUpdate = true
+    })
     const sunGlow = new THREE.Sprite(new THREE.SpriteMaterial({
       map: sunTexture(THREE), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
     }))
-    sunGlow.scale.set(7, 7, 1) // trimmed so it no longer swallows the inner planets
+    sunGlow.scale.set(5.2, 5.2, 1) // trimmed so it no longer swallows the inner planets
     scene.add(sunGlow)
     const sunLabel = document.createElement('div'); sunLabel.className = 'sun-label'
     labelLayer.appendChild(sunLabel)
@@ -666,6 +726,9 @@ window.I18N.register({
     //     to each other — the planets are NOT coplanar, matching reality. Falls
     //     back to a flat circle only if a planet's orbit is ever missing. ---
     const planetRings = []
+    const planetSpins = []
+    let moonOrbit = null
+    let moonMesh = null
     PLANETS.forEach((p) => {
       const radius = ringRadius(p.au)
       const orbitAU = planetOrbitByKey[p.key]
@@ -691,32 +754,70 @@ window.I18N.register({
       const [dx, dy, dz] = realPos
         ? compress(realPos[0], realPos[1], realPos[2])
         : [radius, 0, 0] // defensive fallback if a planet is ever missing from planets.json
-      const dotVec = new THREE.Vector3(dx, dy, dz)
-      const dot = new THREE.Sprite(new THREE.SpriteMaterial({
-        map: planetDotTexture(THREE, p.color),
-        transparent: true, depthTest: false, depthWrite: false,
-      }))
+      const planetVec = new THREE.Vector3(dx, dy, dz)
       // Size from the planet's real diameter (Earth = 1), floored so the tiniest
       // inner worlds stay visible. Gas giants dominate — as they truly do.
       const dotScale = Math.max(PLANET_MIN, PLANET_BASE * p.d)
-      dot.scale.set(dotScale, dotScale, 1)
-      dot.position.copy(dotVec)
-      dot.renderOrder = 5
-      scene.add(dot)
+      const spin = BODY_SPIN[p.key] || { obliquity: 0, direction: 1 }
+      const axisGroup = new THREE.Group()
+      axisGroup.position.copy(planetVec)
+      const tilt = THREE.MathUtils.degToRad(spin.obliquity)
+      const spinAxis = new THREE.Vector3(0, Math.sin(tilt), Math.cos(tilt)).normalize()
+      axisGroup.quaternion.setFromUnitVectors(sphereNorth, spinAxis)
+      scene.add(axisGroup)
+      const spinGroup = new THREE.Group()
+      axisGroup.add(spinGroup)
+      const planetMat = new THREE.MeshBasicMaterial({ color: new THREE.Color(p.color) })
+      const planetMesh = new THREE.Mesh(
+        new THREE.SphereGeometry(dotScale * 0.5, p.texture ? 48 : 24, p.texture ? 24 : 16),
+        planetMat,
+      )
+      planetMesh.renderOrder = 5
+      spinGroup.add(planetMesh)
+      occluders.push(planetMesh)
+      planetSpins.push({ group: spinGroup, direction: spin.direction })
+      if (p.texture) {
+        textureLoader.load(p.texture, (tex) => {
+          planetMat.map = prepPlanetTexture(THREE, renderer, tex)
+          planetMat.color.set(0xffffff)
+          planetMat.needsUpdate = true
+        })
+      }
+      if (p.key === 'earth') {
+        const earthRadius = dotScale * 0.5
+        const moonRadius = Math.max(MOON_MIN_RADIUS, earthRadius * MOON_RADIUS_RATIO)
+        const moonOrbitR = earthRadius * MOON_ORBIT_RADIUS_RATIO
+        const moonSystem = new THREE.Group()
+        moonSystem.position.copy(planetVec)
+        scene.add(moonSystem)
+        moonOrbit = new THREE.Group()
+        moonSystem.add(moonOrbit)
+        const moonMat = new THREE.MeshBasicMaterial({ color: 0xd7d7d0 })
+        moonMesh = new THREE.Mesh(new THREE.SphereGeometry(moonRadius, 32, 16), moonMat)
+        moonMesh.position.set(moonOrbitR, 0, 0)
+        moonMesh.renderOrder = 5
+        moonOrbit.add(moonMesh)
+        occluders.push(moonMesh)
+        textureLoader.load('textures/2k_moon.jpg', (tex) => {
+          moonMat.map = prepPlanetTexture(THREE, renderer, tex)
+          moonMat.color.set(0xffffff)
+          moonMat.needsUpdate = true
+        })
+      }
 
-      // Saturn's iconic rings: a flat annulus in the ecliptic plane, so it reads
-      // as rings from the top-down default view and foreshortens when orbited.
+      // Saturn's ring shares the real axial tilt but is not attached to the
+      // spinning sphere, so it does not roll with the texture.
       if (p.key === 'saturn') {
-        const ring = new THREE.Mesh(
-          new THREE.RingGeometry(dotScale * 0.62, dotScale * 1.05, 60),
-          new THREE.MeshBasicMaterial({
-            color: 0xe7d6ad, transparent: true, opacity: 0.5,
-            side: THREE.DoubleSide, depthTest: false, depthWrite: false,
-          }),
-        )
-        ring.position.copy(dotVec)
-        ring.renderOrder = 4
-        scene.add(ring)
+        const saturnRing = makeSaturnRing(THREE, dotScale)
+        saturnRing.renderOrder = 4
+        axisGroup.add(saturnRing)
+        if (p.ringTexture) {
+          textureLoader.load(p.ringTexture, (tex) => {
+            saturnRing.material.map = prepPlanetTexture(THREE, renderer, tex)
+            saturnRing.material.color.set(0xffffff)
+            saturnRing.material.needsUpdate = true
+          })
+        }
       }
 
       const labelEl = document.createElement('div')
@@ -725,7 +826,7 @@ window.I18N.register({
       labelEl.title = '在太阳系里看它 →'
       labelEl.addEventListener('click', () => { window.location.href = 'solar.html#body-' + p.key })
       labelLayer.appendChild(labelEl)
-      planetRings.push({ planet: p, radius, labelEl, dotVec })
+      planetRings.push({ planet: p, radius, labelEl, dotVec: planetVec, mesh: planetMesh })
     })
 
     // --- Heliopause: dashed ecliptic ring + faint wireframe sphere. Both share
@@ -781,11 +882,11 @@ window.I18N.register({
       const curve = new THREE.CatmullRomCurve3(compressedPath, false, 'catmullrom', 0.5)
       const tubularSegments = Math.min(900, compressedPath.length)
       const core = new THREE.Mesh(
-        new THREE.TubeGeometry(curve, tubularSegments, 0.21, 6, false),   // slimmed ~1/3 to declutter the center
+        new THREE.TubeGeometry(curve, tubularSegments, TRAJ_CORE_RADIUS, 6, false),   // slimmed ~1/3 to declutter the center
         new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.95 }),
       )
       const glow = new THREE.Mesh(
-        new THREE.TubeGeometry(curve, tubularSegments, 0.77, 8, false),   // slimmed ~1/3 to declutter the center
+        new THREE.TubeGeometry(curve, tubularSegments, TRAJ_GLOW_RADIUS, 8, false),   // slimmed ~1/3 to declutter the center
         new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.16, blending: THREE.AdditiveBlending, depthWrite: false }),
       )
       const group = new THREE.Group()
@@ -826,6 +927,7 @@ window.I18N.register({
         id: p.id, label: p.label, labelEn: p.label_en, start: p.start, lastContact: p.last_contact, samples: p.samples,
         stepDays: p.step_days, distAu: p.dist_au, colorHex, compressedPath, group, sat, satLabel, milestones,
         visible: true, cumArc, totalArc, seconds: PROBE_SECONDS[p.id] || 40,
+        curve, tubularSegments, core, glow, trajectoryFactor: 1,
         // Independent per-probe transport state (Change 1): own progress (s,
         // an arc-length fraction 0..1) and own play flag. Default s = 1 keeps
         // the existing "today" default the satellite used to open on.
@@ -862,6 +964,54 @@ window.I18N.register({
     controls.minDistance = 3
     controls.maxDistance = initialDistance * 3.2
     controls.update()
+    function trajectoryFactor() {
+      return THREE.MathUtils.clamp((camera.position.length() / initialDistance) * TRAJ_REF_SCALE, TRAJ_MIN_FACTOR, 1)
+    }
+    function rebuildProbeTrajectory(probe, factor) {
+      const oldCore = probe.core.geometry
+      const oldGlow = probe.glow.geometry
+      probe.core.geometry = new THREE.TubeGeometry(probe.curve, probe.tubularSegments, TRAJ_CORE_RADIUS * factor, 6, false)
+      probe.glow.geometry = new THREE.TubeGeometry(probe.curve, probe.tubularSegments, TRAJ_GLOW_RADIUS * factor, 8, false)
+      oldCore.dispose()
+      oldGlow.dispose()
+      probe.trajectoryFactor = factor
+    }
+    function updateTrajectoryWidths(force) {
+      const factor = trajectoryFactor()
+      probes.forEach((probe) => {
+        const relativeChange = Math.abs(factor / probe.trajectoryFactor - 1)
+        if (force || relativeChange >= TRAJ_REBUILD_THRESHOLD) rebuildProbeTrajectory(probe, factor)
+      })
+    }
+    let trajectoryRebuildTimer = 0
+    function scheduleTrajectoryWidthUpdate() {
+      if (trajectoryRebuildTimer) clearTimeout(trajectoryRebuildTimer)
+      trajectoryRebuildTimer = setTimeout(() => {
+        trajectoryRebuildTimer = 0
+        updateTrajectoryWidths(false)
+      }, 90)
+    }
+    const orbitAxis = new THREE.Vector3(0, 0, -1)
+    let autoRotateHold = false
+    let autoRotateResumeAt = 0
+    function holdAutoRotate() {
+      autoRotateHold = true
+      lastTime = null
+    }
+    function resumeAutoRotateSoon() {
+      autoRotateHold = false
+      autoRotateResumeAt = performance.now() + autoRotateResumeDelay
+      lastTime = null
+    }
+    controls.addEventListener('start', holdAutoRotate)
+    controls.addEventListener('end', () => {
+      resumeAutoRotateSoon()
+      scheduleTrajectoryWidthUpdate()
+    })
+    canvas.addEventListener('wheel', () => {
+      resumeAutoRotateSoon()
+      scheduleTrajectoryWidthUpdate()
+    }, { passive: true })
 
     // --- Per-probe transport state ---
     // Advance/scrub probe by arc-length fraction s (0..1): interpolate the
@@ -1099,15 +1249,33 @@ window.I18N.register({
 
     // --- Projection + render loop ---
     const proj = new THREE.Vector3()
+    const labelRayDir = new THREE.Vector3()
+    const helioLabelVec = new THREE.Vector3()
+    const labelOcclusionRay = new THREE.Raycaster()
+    const LABEL_OCCLUSION_EPS = 1e-3
     function toScreen(v3, w, h) {
       proj.copy(v3).project(camera)
       if (proj.z > 1) return null
       return { x: (proj.x * 0.5 + 0.5) * w, y: (-proj.y * 0.5 + 0.5) * h }
     }
-    function placeLabel(el, worldVec, w, h) {
+    function placeLabel(el, worldVec, w, h, ignoreMesh) {
       const p = toScreen(worldVec, w, h)
-      if (p) { el.style.display = ''; el.style.left = p.x + 'px'; el.style.top = p.y + 'px' }
-      else el.style.display = 'none'
+      if (!p) { el.style.display = 'none'; return }
+      labelRayDir.copy(worldVec).sub(camera.position)
+      const distToLabel = labelRayDir.length()
+      if (distToLabel > LABEL_OCCLUSION_EPS) {
+        labelOcclusionRay.set(camera.position, labelRayDir.normalize())
+        labelOcclusionRay.far = distToLabel - LABEL_OCCLUSION_EPS
+        const hit = labelOcclusionRay.intersectObjects(
+          occluders.filter((mesh) => mesh !== ignoreMesh && mesh.visible),
+          false,
+        )[0]
+        if (hit && hit.distance < distToLabel - LABEL_OCCLUSION_EPS) {
+          el.style.display = 'none'
+          return
+        }
+      }
+      el.style.display = ''; el.style.left = p.x + 'px'; el.style.top = p.y + 'px'
     }
 
     function resize() {
@@ -1120,12 +1288,15 @@ window.I18N.register({
 
     const originVec = new THREE.Vector3(0, 0, 0)
     function draw(w, h) {
-      placeLabel(sunLabel, originVec, w, h)
-      planetRings.forEach(({ labelEl, dotVec }) => { placeLabel(labelEl, dotVec, w, h) })
-      placeLabel(helioLabel, new THREE.Vector3(helioRadius * Math.cos(HELIO_LABEL_ANGLE), helioRadius * Math.sin(HELIO_LABEL_ANGLE), 0), w, h)
+      scene.updateMatrixWorld(true)
+      camera.updateMatrixWorld(true)
+      placeLabel(sunLabel, originVec, w, h, sunCore)
+      planetRings.forEach(({ labelEl, dotVec, mesh }) => { placeLabel(labelEl, dotVec, w, h, mesh) })
+      helioLabelVec.set(helioRadius * Math.cos(HELIO_LABEL_ANGLE), helioRadius * Math.sin(HELIO_LABEL_ANGLE), 0)
+      placeLabel(helioLabel, helioLabelVec, w, h, null)
       probes.forEach((probe) => {
-        if (probe.visible) placeLabel(probe.satLabel, probe.sat.position, w, h)
-        probe.milestones.forEach((entry) => { if (probe.visible) placeLabel(entry.el, entry.posVec, w, h) })
+        if (probe.visible) placeLabel(probe.satLabel, probe.sat.position, w, h, null)
+        probe.milestones.forEach((entry) => { if (probe.visible) placeLabel(entry.el, entry.posVec, w, h, null) })
       })
       renderer.render(scene, camera)
     }
@@ -1142,6 +1313,18 @@ window.I18N.register({
         const next = probe.s + dt / (probe.seconds * 1000)
         if (next >= 1) { applyProbeArc(probe, 1); stopProbePlay(probe) } else applyProbeArc(probe, next)
       })
+      const planetSpinDelta = PLANET_SPIN_DEG_PER_SEC * Math.PI / 180 * (dt / 1000)
+      planetSpins.forEach(({ group, direction }) => {
+        group.rotation.y += direction * planetSpinDelta
+      })
+      sunSpinGroup.rotation.y += SUN_SPIN_DEG_PER_SEC * Math.PI / 180 * (dt / 1000)
+      if (moonOrbit && moonMesh) {
+        moonOrbit.rotation.y += MOON_ORBIT_DEG_PER_SEC * Math.PI / 180 * (dt / 1000)
+        moonMesh.rotation.y += MOON_SPIN_DEG_PER_SEC * Math.PI / 180 * (dt / 1000)
+      }
+      if (!autoRotateHold && now >= autoRotateResumeAt) {
+        camera.position.applyAxisAngle(orbitAxis, autoRotateRadPerSec * (dt / 1000))
+      }
       controls.update()
       const w = canvas.clientWidth, h = canvas.clientHeight
       draw(w, h)
