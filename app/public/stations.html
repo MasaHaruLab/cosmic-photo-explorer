@@ -124,7 +124,10 @@ window.I18N.register({
     border-radius: 999px; padding: 6px 14px; font-size: 13px;
   }
   .links a:hover { border-color: var(--accent); }
-  .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; margin-top: 16px; }
+  /* Single full-width column so every station visual — the ISS 3D model, both
+     ISS photos, and the Tiangong render — shares one width, stacked top to
+     bottom (matches the mobile layout the CEO liked). */
+  .gallery { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; margin-top: 16px; }
   .gallery figure {
     margin: 0; background: var(--panel); border: 1px solid var(--line); border-radius: 12px;
     overflow: hidden; cursor: zoom-in;
