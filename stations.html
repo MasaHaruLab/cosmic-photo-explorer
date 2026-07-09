@@ -13,10 +13,12 @@ window.I18N.register({
   'st.eyebrow': { zh: '解释层 / 头顶的家', en: 'Explainer / A home overhead' },
   'st.title': { zh: '空间站：一直有人住在天上', en: 'Space Stations: someone has always been living up there' },
   'st.lede': { zh: '空间站离地只有约 400 公里，90 分钟绕地球一圈——一晚上就把整个天空扫一遍，所以钉不到天图的某个点上。但它们值得单独一页：此时此刻，就有人在你头顶生活和做实验。', en: "Space stations orbit just ~400 km up, circling Earth every 90 minutes — they sweep the whole sky in a single night, so they can't be pinned to any one point on a star map. But they earn a page of their own: right now, someone is living and running experiments over your head." },
-  'nav.home': { zh: '← 回到星空探索器', en: '← Back to the Explorer' },
-  'nav.solar': { zh: '太阳系 →', en: 'Solar System →' },
-  'nav.observatories': { zh: '观星台 →', en: 'Observatories →' },
-  'nav.reference': { zh: '来源 →', en: 'Sources →' },
+  'nav.home': { zh: '← 回到星空探索器', en: '← Back to the explorer' },
+  'nav.constellations': { zh: '星座', en: 'Constellations' },
+  'nav.solar': { zh: '太阳系', en: 'Solar System' },
+  'nav.messengers': { zh: '深空信使', en: 'Deep Space Messengers' },
+  'nav.observatories': { zh: '观星台', en: 'Observatories' },
+  'nav.reference': { zh: '来源', en: 'Sources' },
 
   'st.motion.h2': { zh: '它到底怎么动的？——不静止，也不跟着地球自转', en: 'So how does it actually move? — not stationary, and not turning with Earth' },
   'st.motion.lead': { zh: '最常见的误会：以为空间站像挂在天上一样不动，或者跟着地面一起转。都不是。它在约 400 公里高处<strong>独立绕地球飞</strong>，地球在它底下自转，两件事互不同步。', en: 'The most common misconception: that the station hangs motionless in the sky, or turns along with the ground. Neither is true. At about 400 km up it <strong>orbits Earth on its own</strong>, while the Earth rotates beneath it — the two are not in sync.' },
@@ -78,7 +80,7 @@ window.I18N.register({
     margin: 0; background: var(--bg); color: var(--text);
     font: 15px/1.75 -apple-system, "PingFang SC", "Hiragino Sans GB", sans-serif;
   }
-  .wrap { max-width: 980px; margin: 0 auto; padding: 40px 24px 80px; }
+  .wrap { max-width: min(1280px, 92vw); margin: 0 auto; padding: 40px 24px 80px; }
   .eyebrow { font-size: 12px; letter-spacing: 0.18em; color: var(--dim); }
   h1 { margin: 6px 0 10px; font-size: 30px; letter-spacing: 0.02em; }
   h2 { margin: 40px 0 4px; font-size: 22px; }
@@ -89,6 +91,8 @@ window.I18N.register({
     text-decoration: none; border: 1px solid var(--line); border-radius: 999px;
     padding: 6px 16px; font-size: 13px;
   }
+  .back.nav-prev::before { content: "← "; }
+  .back.nav-next::after { content: " →"; }
   .back:hover { border-color: var(--accent); }
   .lang-toggle {
     margin-left: auto; cursor: pointer; font: inherit; font-size: 13px; font-weight: 600;
@@ -120,12 +124,17 @@ window.I18N.register({
     border-radius: 999px; padding: 6px 14px; font-size: 13px;
   }
   .links a:hover { border-color: var(--accent); }
-  .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; margin-top: 16px; }
+  /* Single full-width column so every station visual — the ISS 3D model, both
+     ISS photos, and the Tiangong render — shares one width, stacked top to
+     bottom (matches the mobile layout the CEO liked). */
+  .gallery { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; margin-top: 16px; }
   .gallery figure {
     margin: 0; background: var(--panel); border: 1px solid var(--line); border-radius: 12px;
     overflow: hidden; cursor: zoom-in;
   }
   .gallery img { display: block; width: 100%; aspect-ratio: 3/2; object-fit: cover; }
+  .gallery figure.full-row { grid-column: 1 / -1; }
+  .gallery figure.full-row img { object-fit: contain; background: #03050b; }
   .gallery figcaption { padding: 8px 12px 10px; font-size: 13px; }
   .gallery .sub { color: var(--dim); font-size: 11.5px; display: block; }
   .lightbox {
@@ -148,9 +157,11 @@ window.I18N.register({
   <p class="lede" data-i18n="st.lede">空间站离地只有约 400 公里，90 分钟绕地球一圈——一晚上就把整个天空扫一遍，所以钉不到天图的某个点上。但它们值得单独一页：此时此刻，就有人在你头顶生活和做实验。</p>
   <nav class="navbar">
     <a class="back" href="./" data-i18n="nav.home">← 回到星空探索器</a>
-    <a class="back" href="solar.html" data-i18n="nav.solar">太阳系 →</a>
-    <a class="back" href="observatories.html" data-i18n="nav.observatories">观星台 →</a>
-    <a class="back" href="reference.html" data-i18n="nav.reference">来源 →</a>
+    <a class="back nav-prev" href="constellations.html" data-i18n="nav.constellations">星座</a>
+    <a class="back nav-prev" href="solar.html" data-i18n="nav.solar">太阳系</a>
+    <a class="back nav-prev" href="messengers.html" data-i18n="nav.messengers">深空信使</a>
+    <a class="back nav-next" href="observatories.html" data-i18n="nav.observatories">观星台</a>
+    <a class="back nav-next" href="reference.html" data-i18n="nav.reference">来源</a>
     <button class="lang-toggle" type="button" data-lang-toggle>EN</button>
   </nav>
 
@@ -211,7 +222,7 @@ window.I18N.register({
   <p class="note" data-i18n="st.tg.note">天宫没有公开的官方三维模型，这张是社区制作的全构型渲染图（CC 授权）——天和核心舱居中，问天、梦天两个实验舱在两侧，组成 T 字构型。</p>
 
   <div class="gallery" data-gallery>
-    <figure data-full="stations/tiangong-render.jpg" data-cap="天宫空间站全构型渲染图 · Shujianyang / Wikimedia Commons · CC BY-SA 4.0" data-i18n-attr="data-cap:st.tg.render.cap">
+    <figure class="full-row" data-full="stations/tiangong-render.jpg" data-cap="天宫空间站全构型渲染图 · Shujianyang / Wikimedia Commons · CC BY-SA 4.0" data-i18n-attr="data-cap:st.tg.render.cap">
       <img loading="lazy" src="stations/tiangong-render.jpg" data-i18n-attr="alt:st.tg.render.alt" alt="天宫空间站全构型渲染图" style="aspect-ratio: 16/9">
       <figcaption><span data-i18n="st.tg.render.name">天宫全构型</span><span class="sub" data-i18n="st.tg.render.sub">天和 + 问天 + 梦天，T 字构型渲染图</span></figcaption>
     </figure>

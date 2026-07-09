@@ -13,11 +13,14 @@ window.I18N.register({
   'ref.eyebrow': { zh: '解释层 / 这些东西从哪来', en: 'Explainer / Where all of this comes from' },
   'ref.title': { zh: '数据与来源', en: 'Data & Sources' },
   'ref.lede': { zh: '这个探索器自己不拥有任何一颗星、任何一张照片。它做的事，是把世界上一批公开的天文数据和影像服务接到一起，配上中文（和英文）叙事。这一页把用到的每一个来源都摆出来——既是致谢，也方便你顺着链接自己去看原始的东西。', en: "This explorer owns not a single star nor a single photo of its own. What it does is stitch together a set of the world's open astronomical datasets and image services, and wrap them in a Chinese (and English) narrative. This page lays out every source it draws on — partly as thanks, partly so you can follow the links to the originals yourself." },
-  'nav.home': { zh: '← 回到星空探索器', en: '← Back to the Explorer' },
-  'nav.solar': { zh: '太阳系 →', en: 'Solar System →' },
-  'nav.stations': { zh: '空间站 →', en: 'Space Stations →' },
-  'nav.observatories': { zh: '观星台 →', en: 'Observatories →' },
+  'nav.home': { zh: '← 回到星空探索器', en: '← Back to the explorer' },
+  'nav.constellations': { zh: '星座', en: 'Constellations' },
+  'nav.solar': { zh: '太阳系', en: 'Solar System' },
+  'nav.messengers': { zh: '深空信使', en: 'Deep Space Messengers' },
+  'nav.stations': { zh: '空间站', en: 'Space Stations' },
+  'nav.observatories': { zh: '观星台', en: 'Observatories' },
   'ref.open': { zh: '打开来源 →', en: 'Open source →' },
+  'ref.openObs': { zh: '观星台 →', en: 'Observatories →' },
 
   'ref.sky.h': { zh: '天空底图与影像', en: 'Sky base maps & imagery' },
   'ref.gaia.t': { zh: 'Gaia DR3 全天图', en: 'Gaia DR3 all-sky map' },
@@ -116,6 +119,7 @@ window.I18N.register({
     text-decoration: none; border: 1px solid var(--line); border-radius: 999px;
     padding: 6px 16px; font-size: 13px;
   }
+  .back.nav-prev::before { content: "← "; }
   .back:hover { border-color: var(--accent); }
   .lang-toggle {
     margin-left: auto; cursor: pointer; font: inherit; font-size: 13px; font-weight: 600;
@@ -155,9 +159,11 @@ window.I18N.register({
   <p class="lede" data-i18n="ref.lede">这个探索器自己不拥有任何一颗星、任何一张照片。它做的事，是把世界上一批公开的天文数据和影像服务接到一起，配上中文（和英文）叙事。这一页把用到的每一个来源都摆出来——既是致谢，也方便你顺着链接自己去看原始的东西。</p>
   <nav class="navbar">
     <a class="back" href="./" data-i18n="nav.home">← 回到星空探索器</a>
-    <a class="back" href="solar.html" data-i18n="nav.solar">太阳系 →</a>
-    <a class="back" href="stations.html" data-i18n="nav.stations">空间站 →</a>
-    <a class="back" href="observatories.html" data-i18n="nav.observatories">观星台 →</a>
+    <a class="back nav-prev" href="constellations.html" data-i18n="nav.constellations">星座</a>
+    <a class="back nav-prev" href="solar.html" data-i18n="nav.solar">太阳系</a>
+    <a class="back nav-prev" href="messengers.html" data-i18n="nav.messengers">深空信使</a>
+    <a class="back nav-prev" href="stations.html" data-i18n="nav.stations">空间站</a>
+    <a class="back nav-prev" href="observatories.html" data-i18n="nav.observatories">观星台</a>
     <button class="lang-toggle" type="button" data-lang-toggle>EN</button>
   </nav>
 
@@ -270,7 +276,7 @@ window.I18N.register({
     <div class="src">
       <p data-i18n="ref.photo.d">观星台页每张设施照片都按授权署名。汇总如下：</p>
       <p class="credit" data-i18n="ref.photo.list">ESO；NSF–DOE Vera C. Rubin Observatory / NOIRLab；International Gemini Observatory / NOIRLab / NSF / AURA；ESA / ATG medialab（以上 CC BY 4.0）；SCJiang、Acabashi 摄，来自 Wikimedia Commons（CC BY-SA 4.0）；NASA（公有领域及 CC BY 2.0）；NASA / JPL-Caltech（公有领域）。</p>
-      <a class="open" href="observatories.html" data-i18n="nav.observatories">观星台 →</a>
+      <a class="open" href="observatories.html" data-i18n="ref.openObs">观星台 →</a>
     </div>
   </section>
 
