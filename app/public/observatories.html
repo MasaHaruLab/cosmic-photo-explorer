@@ -14,10 +14,12 @@ window.I18N.register({
   'obs.eyebrow': { zh: '解释层 / 地面上的眼睛', en: 'Explainer / Eyes on the ground' },
   'obs.title': { zh: '观星台：那些正在替我们看宇宙的地方', en: 'Observatories: the places watching the universe for us' },
   'obs.lede': { zh: '你在探索器里看到的每一张照片、每一颗被测量的星，背后都有一座真实存在的天文台。它们大多有非常好的官网——只是我们从来不知道它们的存在。', en: "Every photo you see in the explorer, every star that's been measured, has a real observatory behind it. Most of them have excellent websites — we just never knew they existed." },
-  'nav.home': { zh: '← 回到星空探索器', en: '← Back to the Explorer' },
-  'nav.solar': { zh: '太阳系 →', en: 'Solar System →' },
-  'nav.stations': { zh: '空间站 →', en: 'Space Stations →' },
-  'nav.reference': { zh: '来源 →', en: 'Sources →' },
+  'nav.home': { zh: '← 回到星空探索器', en: '← Back to the explorer' },
+  'nav.constellations': { zh: '星座', en: 'Constellations' },
+  'nav.solar': { zh: '太阳系', en: 'Solar System' },
+  'nav.messengers': { zh: '深空信使', en: 'Deep Space Messengers' },
+  'nav.stations': { zh: '空间站', en: 'Space Stations' },
+  'nav.reference': { zh: '来源', en: 'Sources' },
   'obs.visit': { zh: '打开官网 →', en: 'Open site →' },
   'obs.news': { zh: '最新动态', en: 'Latest news' },
   'obs.gallery': { zh: '图片库', en: 'Image gallery' },
@@ -126,7 +128,7 @@ window.I18N.register({
     margin: 0; background: var(--bg); color: var(--text);
     font: 15px/1.75 -apple-system, "PingFang SC", "Hiragino Sans GB", sans-serif;
   }
-  .wrap { max-width: 980px; margin: 0 auto; padding: 40px 24px 80px; }
+  .wrap { max-width: min(1280px, 92vw); margin: 0 auto; padding: 40px 24px 80px; }
   .eyebrow { font-size: 12px; letter-spacing: 0.18em; color: var(--dim); }
   h1 { margin: 6px 0 10px; font-size: 30px; letter-spacing: 0.02em; }
   .lede { color: var(--dim); max-width: 620px; margin: 0 0 14px; }
@@ -136,6 +138,8 @@ window.I18N.register({
     text-decoration: none; border: 1px solid var(--line); border-radius: 999px;
     padding: 6px 16px; font-size: 13px;
   }
+  .back.nav-prev::before { content: "← "; }
+  .back.nav-next::after { content: " →"; }
   .back:hover { border-color: var(--accent); }
   .lang-toggle {
     margin-left: auto; cursor: pointer; font: inherit; font-size: 13px; font-weight: 600;
@@ -177,9 +181,11 @@ window.I18N.register({
   <p class="lede" data-i18n="obs.lede">你在探索器里看到的每一张照片、每一颗被测量的星，背后都有一座真实存在的天文台。它们大多有非常好的官网——只是我们从来不知道它们的存在。</p>
   <nav class="navbar">
     <a class="back" href="./" data-i18n="nav.home">← 回到星空探索器</a>
-    <a class="back" href="solar.html" data-i18n="nav.solar">太阳系 →</a>
-    <a class="back" href="stations.html" data-i18n="nav.stations">空间站 →</a>
-    <a class="back" href="reference.html" data-i18n="nav.reference">来源 →</a>
+    <a class="back nav-prev" href="constellations.html" data-i18n="nav.constellations">星座</a>
+    <a class="back nav-prev" href="solar.html" data-i18n="nav.solar">太阳系</a>
+    <a class="back nav-prev" href="messengers.html" data-i18n="nav.messengers">深空信使</a>
+    <a class="back nav-prev" href="stations.html" data-i18n="nav.stations">空间站</a>
+    <a class="back nav-next" href="reference.html" data-i18n="nav.reference">来源</a>
     <button class="lang-toggle" type="button" data-lang-toggle>EN</button>
   </nav>
 

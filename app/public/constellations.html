@@ -25,10 +25,11 @@ window.I18N.register({
   'con.pick': { zh: '换一个星座', en: 'Switch constellation' },
   'con.panel.open': { zh: 'ℹ️ 说明', en: 'ℹ️ Info' },
   'nav.home': { zh: '← 回到星空探索器', en: '← Back to the explorer' },
-  'nav.solar': { zh: '太阳系 →', en: 'Solar System →' },
-  'nav.stations': { zh: '空间站 →', en: 'Space Stations →' },
-  'nav.observatories': { zh: '观星台 →', en: 'Observatories →' },
-  'nav.reference': { zh: '来源 →', en: 'Sources →' },
+  'nav.solar': { zh: '太阳系', en: 'Solar System' },
+  'nav.messengers': { zh: '深空信使', en: 'Deep Space Messengers' },
+  'nav.stations': { zh: '空间站', en: 'Space Stations' },
+  'nav.observatories': { zh: '观星台', en: 'Observatories' },
+  'nav.reference': { zh: '来源', en: 'Sources' },
 })
 </script>
 <style>
@@ -93,6 +94,8 @@ window.I18N.register({
   nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 16px; }
   .back { display: inline-block; color: var(--accent); text-decoration: none; font-size: 12px;
     border: 1px solid var(--line); border-radius: 999px; padding: 3px 11px; }
+  .back.nav-prev::before { content: "← "; }
+  .back.nav-next::after { content: " →"; }
   .back:hover { border-color: var(--accent); }
   .lang-toggle { font: inherit; font-size: 12px; cursor: pointer; color: var(--accent);
     background: rgba(157,184,255,0.08); border: 1px solid var(--line); border-radius: 999px; padding: 3px 12px; }
@@ -151,10 +154,11 @@ window.I18N.register({
        section links stay reachable on every device (see .topnav in <style>). -->
   <nav class="topnav">
     <a class="back" href="./" data-i18n="nav.home">← 回到星空探索器</a>
-    <a class="back" href="solar.html" data-i18n="nav.solar">太阳系 →</a>
-    <a class="back" href="stations.html" data-i18n="nav.stations">空间站 →</a>
-    <a class="back" href="observatories.html" data-i18n="nav.observatories">观星台 →</a>
-    <a class="back" href="reference.html" data-i18n="nav.reference">来源 →</a>
+    <a class="back nav-next" href="solar.html" data-i18n="nav.solar">太阳系</a>
+    <a class="back nav-next" href="messengers.html" data-i18n="nav.messengers">深空信使</a>
+    <a class="back nav-next" href="stations.html" data-i18n="nav.stations">空间站</a>
+    <a class="back nav-next" href="observatories.html" data-i18n="nav.observatories">观星台</a>
+    <a class="back nav-next" href="reference.html" data-i18n="nav.reference">来源</a>
     <button class="lang-toggle" type="button" data-lang-toggle>EN</button>
   </nav>
 
