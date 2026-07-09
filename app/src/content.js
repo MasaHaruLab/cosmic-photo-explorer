@@ -17,7 +17,7 @@ export const UI = {
     en: 'Step into the Milky Way through real survey data — take in the whole sky first, then zoom in to regions you can name.',
   },
   'nav.overview': { zh: '银河总览', en: 'Galaxy Overview' },
-  'nav.constellations': { zh: '星座 3D →', en: 'Constellations 3D →' },
+  'nav.constellations': { zh: '星座 →', en: 'Constellations →' },
   'nav.solar': { zh: '太阳系 →', en: 'Solar System →' },
   'nav.messengers': { zh: '深空信使 →', en: 'Deep Space Messengers →' },
   'nav.stations': { zh: '空间站 →', en: 'Space Stations →' },
@@ -28,8 +28,8 @@ export const UI = {
   'hero.kicker': { zh: '真实天空 / 可交互巡天底图', en: 'Real Sky / Interactive Survey Imagery' },
   'hero.title': { zh: '把银河拉近', en: 'Bring the Milky Way Closer' },
   'hero.text': {
-    zh: '拖动天空可以自由探索，点击标记会把视野平滑带到对应天区。总览使用 Gaia DR3，近距离自动切到 DSS2。',
-    en: 'Drag the sky to explore freely; click a marker and the view glides to that region. The overview uses Gaia DR3, and close-ups switch automatically to DSS2.',
+    zh: '拖动天空可以自由探索；闲置时，它会沿银河系真实自转方向缓缓转动。总览使用 Gaia DR3，近距离自动切到 DSS2。',
+    en: 'Drag the sky to explore freely; when idle, it slowly turns along the Milky Way’s real rotation direction. The overview uses Gaia DR3, and close-ups switch automatically to DSS2.',
   },
 
   // ---- Sky-map loading state ----

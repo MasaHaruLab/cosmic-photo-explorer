@@ -4,6 +4,9 @@ import { UI } from './content.js'
 const I18N = window.I18N
 I18N.register(UI)
 
+const autoRotateDegPerSec = window.COSMIC_ROTATION_DEG_PER_SEC || 2
+const autoRotateResumeDelay = window.COSMIC_ROTATION_RESUME_DELAY_MS || 3000
+
 // Resolve a bilingual data field ({ zh, en }) to the active language.
 const L = (field) =>
   field && typeof field === 'object' && !Array.isArray(field)
@@ -47,6 +50,7 @@ const SHOW_PROBES = false
 const overviewSurvey = 'CDS/P/DM/flux-color-Rp-G-Bp/I/355/gaiadr3'
 const closeUpSurvey = 'P/DSS2/color'
 const overviewView = { ra: 266.4168, dec: -29.0078, fov: 150 }
+const northGalacticPole = { ra: 192.8595, dec: 27.1283 }
 const tweenDuration = 2400
 const nasaImageQueries = {
   'galactic-center': 'galactic center milky way',
@@ -150,7 +154,7 @@ app.innerHTML = `
       </div>
       <div class="topbar-actions">
         <div class="badge" data-i18n="nav.overview">银河总览</div>
-        <a class="badge badge-link" href="constellations.html" data-i18n="nav.constellations">星座 3D →</a>
+        <a class="badge badge-link" href="constellations.html" data-i18n="nav.constellations">星座 →</a>
         <a class="badge badge-link" href="solar.html" data-i18n="nav.solar">太阳系 →</a>
         <a class="badge badge-link" href="messengers.html" data-i18n="nav.messengers">深空信使 →</a>
         <a class="badge badge-link" href="stations.html" data-i18n="nav.stations">空间站 →</a>
@@ -396,6 +400,50 @@ function easeInOutCubic(t) {
 
 function normalizeRa(ra) {
   return ((ra % 360) + 360) % 360
+}
+
+const DEG_TO_RAD = Math.PI / 180
+const RAD_TO_DEG = 180 / Math.PI
+
+function skyToUnitVector({ ra, dec }) {
+  const raRad = ra * DEG_TO_RAD
+  const decRad = dec * DEG_TO_RAD
+  const cosDec = Math.cos(decRad)
+  return {
+    x: cosDec * Math.cos(raRad),
+    y: cosDec * Math.sin(raRad),
+    z: Math.sin(decRad),
+  }
+}
+
+function unitVectorToSky({ x, y, z }) {
+  const length = Math.hypot(x, y, z) || 1
+  const nx = x / length
+  const ny = y / length
+  const nz = Math.max(-1, Math.min(1, z / length))
+  return {
+    ra: normalizeRa(Math.atan2(ny, nx) * RAD_TO_DEG),
+    dec: Math.asin(nz) * RAD_TO_DEG,
+  }
+}
+
+function rotateVectorAroundAxis(vector, axis, angleRad) {
+  const cos = Math.cos(angleRad)
+  const sin = Math.sin(angleRad)
+  const dot = vector.x * axis.x + vector.y * axis.y + vector.z * axis.z
+  return {
+    x: vector.x * cos + (axis.y * vector.z - axis.z * vector.y) * sin + axis.x * dot * (1 - cos),
+    y: vector.y * cos + (axis.z * vector.x - axis.x * vector.z) * sin + axis.y * dot * (1 - cos),
+    z: vector.z * cos + (axis.x * vector.y - axis.y * vector.x) * sin + axis.z * dot * (1 - cos),
+  }
+}
+
+const northGalacticPoleVector = skyToUnitVector(northGalacticPole)
+
+function rotateSkyCenterAroundGalacticAxis(center, deltaDeg) {
+  return unitVectorToSky(
+    rotateVectorAroundAxis(skyToUnitVector(center), northGalacticPoleVector, deltaDeg * DEG_TO_RAD),
+  )
 }
 
 function interpolateRa(startRa, endRa, progress) {
@@ -1088,7 +1136,48 @@ function bindAladinEvents() {
     host.addEventListener('mousedown', onSkyDown, true)
     host.addEventListener('mouseup', onSkyUp, true)
     host.addEventListener('mousemove', onRibbonHover)
+    host.addEventListener('pointerdown', holdSkyAutoRotate, true)
+    host.addEventListener('pointerup', resumeSkyAutoRotateSoon, true)
+    host.addEventListener('pointercancel', resumeSkyAutoRotateSoon, true)
+    host.addEventListener('wheel', resumeSkyAutoRotateSoon, { passive: true })
+    host.addEventListener('touchstart', holdSkyAutoRotate, { passive: true, capture: true })
+    host.addEventListener('touchend', resumeSkyAutoRotateSoon, { passive: true, capture: true })
+    host.addEventListener('touchcancel', resumeSkyAutoRotateSoon, { passive: true, capture: true })
   }
+}
+
+let skyAutoRotateFrame = 0
+let skyAutoRotateHold = false
+let skyAutoRotateResumeAt = 0
+let skyAutoRotateLast = null
+
+function holdSkyAutoRotate() {
+  skyAutoRotateHold = true
+  skyAutoRotateLast = null
+}
+
+function resumeSkyAutoRotateSoon() {
+  skyAutoRotateHold = false
+  skyAutoRotateResumeAt = performance.now() + autoRotateResumeDelay
+  skyAutoRotateLast = null
+}
+
+function startSkyAutoRotate() {
+  if (skyAutoRotateFrame) return
+  function tick(now) {
+    skyAutoRotateFrame = requestAnimationFrame(tick)
+    const dt = skyAutoRotateLast == null ? 0 : Math.min(now - skyAutoRotateLast, 100) / 1000
+    skyAutoRotateLast = now
+    if (!aladin || skyAutoRotateHold || now < skyAutoRotateResumeAt || activeTween || isTouring || probePlaying) return
+    const center = getAladinCenter()
+    if (!center || !dt) return
+    const nextCenter = rotateSkyCenterAroundGalacticAxis(center, autoRotateDegPerSec * dt)
+    currentView.ra = nextCenter.ra
+    currentView.dec = nextCenter.dec
+    aladin.gotoRaDec(nextCenter.ra, nextCenter.dec)
+    updateHotspotPositions()
+  }
+  skyAutoRotateFrame = requestAnimationFrame(tick)
 }
 
 function toggleBortleCard() {
@@ -1241,6 +1330,7 @@ async function initAladin() {
   })
 
   bindAladinEvents()
+  startSkyAutoRotate()
   addSummerTriangleOverlay()
   addWinterTriangleOverlay()
   // The `target` init option is parsed in the active cooFrame (galactic here),
