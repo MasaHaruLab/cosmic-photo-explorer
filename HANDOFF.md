@@ -1,5 +1,39 @@
 # HANDOFF
 
+Updated: 2026-07-09（**batch7 完成：messengers 方向/环遮挡 + solar 环回退/月火自转/相机抬高**；只本地改，未部署/未 push，未碰首页）
+
+**本批结果（来自 `scratchpad/cosmic-batch7-brief.md`）**：
+- ✅ A：`messengers.html` 自动绕行相机轴从 `new THREE.Vector3(0, 0, 1)` 改为 `new THREE.Vector3(0, 0, -1)`，翻成画面逆时针 CCW；速度和探测器逻辑未改。
+- ✅ B：`messengers.html` 土星环材质改为 `depthTest:true, depthWrite:false`，让不透明土星球体能遮住背面环弧。
+- ✅ C：`solar.html` 土星环材质回到 `map + transparent + DoubleSide + opacity:0.92 + depthWrite:false`；删除 batch6 的 `depthTest:true`/`depthWrite:true`/`alphaTest`、ring `renderOrder=2` 和球体 `renderOrder=1`；保留 `globeSpinDegPerSec = 15`。
+- ✅ D：`solar.html` 月球/火星顶部查看器确认为 Aladin；新增 `gotoRaDec` 经度自动推进，速度 15°/s，拖动/滚轮/点位或切底图后暂停约 3 秒再恢复；地面 360° 全景自动环顾也同步为 15°/s。
+- ✅ E：`solar.html` 3D 球初始相机从平视 `(0,0,3.2)` 改为 22° 俯视：`(0, 3.2*sin(22°), 3.2*cos(22°))`，约 `(0, 1.20, 2.97)`，土星默认可见开口环。
+- ✅ 验证：`cd app && npm run build` 通过；`messengers.html`/`solar.html` 内联脚本语法解析通过。视觉方向/遮挡仍需 CEO 前台确认。
+
+Updated: 2026-07-09（**第三批已批准真实化改动完成：深空信使逆时针 + 真实行星球 + 太阳系真实轴倾/转向**；本地工作树改动，未部署/未 push/未碰 gh-pages）
+
+**本批结果（来自 `scratchpad/cosmic-batch3-brief.md`）**：
+- ✅ 任务 A：`messengers.html` 深空信使场景自动绕 Z 轴自转方向由负号改为正号；继续使用 `cosmic-motion.js` 共享速度/恢复延迟，探测器播放、里程碑、日球层顶未改。
+- ✅ 任务 B：深空信使 8 行星从银光 sprite 改为无辉光 3D 球；水/金/地/木/土/天/海异步加载本地 `textures/2k_*.jpg`，土星环异步加载 `2k_saturn_ring_alpha.png`；火星没有本地 2:1 全球贴图，未把火星地面全景硬套球面，暂用无辉光红褐实体球 fallback。
+- ✅ 任务 C：`solar.html` 可交互球体改成“轴倾 group + 自转 group”两层模型；按水/金/地/月/火/木/土/天/海/冥真实轴倾角和顺/逆行方向驱动，金星/天王星/冥王星方向为逆行，土星环跟随轴倾。当前实际有 `data-globe` 的水/金/地/木/土/天/海立即生效；月/火/冥数据已进表，未来接球体会自动套用。
+- ✅ 验证：`cd app && npm run build` 通过。未部署、未 push、未碰 `scratchpad/ghp-deploy`。
+
+Updated: 2026-07-09（**第二批已批准前端改动完成：查看器加高 + 三处共享慢自转**；本地工作树改动，未部署/未 push/未碰 gh-pages）
+
+**本批结果（来自 `scratchpad/cosmic-batch2-brief.md`）**：
+- ✅ 任务 A：`solar.html` 月球/火星 Aladin 查看器随上一批正文加宽同步加高；桌面上限 680px、移动端同步提高，未改正文宽度。
+- ✅ 任务 B：新增 `app/public/cosmic-motion.js`，共享 `window.COSMIC_ROTATION_DEG_PER_SEC = 2` 与 3 秒恢复延迟；首页 Aladin 大球、太阳系画廊 Three.js 球、深空信使 Three.js 太阳系场景三处均引用同一常量。
+- ✅ 交互规则：三处用户拖动/触摸/滚轮时暂停，松开或停止操作约 3 秒后恢复；深空信使相机绕 Z 轴负向慢转，形成顺时针观感。
+- ✅ 验证：`cd app && npm run build` 通过。未部署、未 push、未碰 `scratchpad/ghp-deploy`。
+
+Updated: 2026-07-09（**前端微调批次完成：导航顺序/箭头 + 三页加宽 + 天宫图对齐**；本地工作树改动，未部署/未 push/未碰 gh-pages）
+
+**本批结果（来自 `scratchpad/cosmic-batch-brief.md`）**：
+- ✅ 7 页导航统一顺序：主页 → 星座 → 太阳系 → 深空信使 → 空间站 → 观星台 → 来源；静态页按当前页位置用 `nav-prev`/`nav-next` CSS 生成前后箭头；首页导航核对并保持全 `→`。
+- ✅ `solar.html` / `stations.html` / `observatories.html` 正文 `.wrap` 统一加宽到 `min(1280px, 92vw)`；`reference.html` 宽度未改。
+- ✅ `stations.html` 天宫渲染图 `grid-column: 1 / -1` 跨满整行，对齐 ISS 图组总宽，并用 `object-fit: contain` 防止变形。
+- ✅ 验证：`cd app && npm run build` 通过；静态断言核对 6 个静态页导航顺序/箭头、三页宽度、天宫跨行样式通过。未部署、未 push、未碰 `scratchpad/ghp-deploy`。
+
 Updated: 2026-07-07（**深空信使页大扩充已上线**；已部署 src master `b9b22eb` / gh-pages `96ca49d`；**回滚点 gh-pages `a83bc31`**）
 
 **跟进 C（2026-07-07·深空信使页大扩充，src `2846649..b9b22eb`，已部署 gh-pages `a83bc31..96ca49d`）**：CEO 逐点提出、live 逐点验收。全部落在 `app/public/messengers.html` 单文件（部署 diff 仅此一文件，首页早已上线不受影响）。
