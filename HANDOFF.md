@@ -1,5 +1,18 @@
 # HANDOFF
 
+Updated: 2026-07-09（**🎬 自播演示模式做完，本地录屏中——未提交、未上线**）
+
+**当前主线 = 黑客松出片（对着本地 5180 录，不是线上版）。**
+- **五页自播演示（`?demo=1`）**：点一次首页 ▶ → 元素全屏 → 用一个满屏 iframe 串起 messengers→solar→constellations→stations→reference，**顶层不跳转所以全屏一路不掉**、无自动化光标、藏鼠标。首页默认 chain（`chain!=='0'`）。落地文件：`app/src/main.js`（runHomepageDemo + setupDemoMode）、新文件 `app/public/cosmic-demo.js`（子页 bootstrap，flags: demo/auto/chain）、四子页各加一段 `setupCosmicDemo(...)`。
+- **时长已按 `docs/演示脚本-v2` 的【念白】停留对齐**（原来快了近一倍）：首页 `HOMEPAGE_DEMO_MS=120000`（S1 28s dive / gaia40 / dss44 / roam 50–85 / 卡片90）、messengers `durationMs:68000`（新增 dolly-in 露太阳+地月 3s→拉回18s→放旅行者25s）、solar `45000`（**改为 click 打开金星/天王星 360° 球、各停~16s**，之前只滚缩略图没打开=CEO 反馈的「没看到 360°」）、constellations `48000`、stations `34000`（滚 how-it-moves→ISS→天宫 + 中/EN/中，收尾 `next:reference.html` 落到来源页）。
+- **状态**：全在工作树，**未提交**（与第 9 行那批 batch7 真实化改动混在同几个文件里，脏树未擅自 commit）；**未部署**（演示模式只在本地 5180，线上版没有）。构建通过。动效我隐藏标签页验不了(rAF 冻结)，靠 CEO 前台实录。
+- **录屏偏黑的根因（CEO 2026-07-10 纠正）**：当时**同时开着 macOS 自带录屏（截屏工具条选区录制），选区之外的屏幕被系统压暗**，暗的画面被 Screen Studio 录了进去——不是无人操作预调暗。规矩：录屏前确认只有一个录屏工具在跑（⌘⇧5 面板关掉自带录制）。`caffeinate -d` 降级为长时间无人录制时的顺手保险，非本次根因。
+- **待办**：① 拿到克隆音后按每幕音频秒数精调各 `durationMs`（音频=主时钟）② S4 念白「NASA 用真实星历」去留待 CEO 定（是 JPL 星历署名，非那删掉的图库）③ 脚本 S7 提了「观星台」但链子未含 observatories.html，只 stations→reference,待定要不要补 ④ **部署仍 HOLD**（CEO：录完先进剪映）。
+- **交作业成片存**：`~/Projects/灵动AI一人公司/火柴人3D大招引擎/docs/黑客松-deck/黑客松提交-星空版/`（内有文字稿 `我的故事-星空版.html`、插图 4 张、我抽好的 `星空探索_字幕念白稿.txt`）。
+- **相关**：CEO 情绪因文件长期散乱到临界 → 桌面新开 `文件储存系统重整/`（周日 Fable5 执行整机重整，我只留描述性 HANDOFF、不写步骤）。
+
+---
+
 Updated: 2026-07-09（**🚀 删「光污染阶梯」已上线**：删掉自渲染 Bortle 图，按 CEO 指示只推此增量，未捎带工作树里那批未上线 backlog）
 
 **LIVE**: https://masaharulab.github.io/cosmic-photo-explorer/
