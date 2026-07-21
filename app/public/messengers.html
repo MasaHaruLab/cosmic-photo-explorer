@@ -6,6 +6,7 @@
 <title data-i18n="msg.pageTitle">深空信使：五艘探测器的真实航迹 · 星空照片探索器</title>
 <script src="./cosmic-motion.js"></script>
 <script src="./i18n.js"></script>
+<script src="./cosmic-demo.js"></script>
 <script>
 // Page dictionary — { zh, en } pairs. Milestone / probe-label copy is data-driven
 // (comes from data/probe_vectors.json at runtime) so only the authored chrome
@@ -1337,6 +1338,30 @@ window.I18N.register({
     updateAllLabelText()
     resize()
     requestAnimationFrame(tick)
+
+    // Demo mode (?demo=1): ▶ starts it. Per S4 we first dolly IN to reveal the central
+    // Sun + the Earth/Moon pair (tiny from the default wide framing), hold so they read,
+    // then ease back OUT so Voyager's full escape path is visible, and finally fly Voyager 1
+    // hands-free (Jupiter → Saturn → pale blue dot → out past the heliopause). The scene
+    // auto-orbits throughout. The dolly is an rAF ramp, so it only animates in the foreground.
+    window.setupCosmicDemo && window.setupCosmicDemo(() => {
+      const v1 = probes.find((p) => p.id === 'voyager-1')
+      const home = camera.position.length()
+      const rampLen = (targetLen, ms) => {
+        const startLen = camera.position.length()
+        const t0 = performance.now()
+        const step = (now) => {
+          const t = Math.min((now - t0) / ms, 1)
+          const e = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2 // easeInOutQuad
+          camera.position.setLength(startLen + (targetLen - startLen) * e)
+          if (t < 1) requestAnimationFrame(step)
+        }
+        requestAnimationFrame(step)
+      }
+      setTimeout(() => rampLen(home * 0.55, 6000), 3000) // 拉近: reveal central Sun + Earth/Moon
+      setTimeout(() => rampLen(home, 5000), 18000)       // ease back out for Voyager's full path
+      setTimeout(() => { if (v1 && v1.dock && !v1.playing) toggleProbePlay(v1) }, 25000) // fly Voyager 1
+    }, { next: 'solar.html', durationMs: 68000 })
   }
 })()
 </script>

@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title data-i18n="con.pageTitle">星座的真相 · 星空照片探索器</title>
 <script src="./i18n.js"></script>
+<script src="./cosmic-demo.js"></script>
 <script>
 // Page dictionary — { zh, en } pairs, human-written English. Registered during
 // head parse, applied by i18n.js on DOMContentLoaded. See TRANSLATION-GUIDE.md.
@@ -687,6 +688,15 @@ window.I18N.register({
     switchTo(CONSTELLATIONS[0])
     resize()
     tick()
+
+    // Demo mode (?demo=1): ▶ starts the hands-free "Orion shatters" — jump to Orion,
+    // hold on the Earth-view belt for a beat, then slowly orbit away so the three belt
+    // stars visibly pull apart across their true ~1000-light-year depth.
+    window.setupCosmicDemo && window.setupCosmicDemo(() => {
+      const orion = CONSTELLATIONS.find((c) => c.id === 'orion')
+      if (orion) switchTo(orion)
+      setTimeout(() => { controls.autoRotate = true; controls.autoRotateSpeed = 1.2 }, 4500)
+    }, { next: 'stations.html', durationMs: 48000 })
   }
 })()
 </script>

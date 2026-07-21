@@ -32,7 +32,8 @@ select {
 }
 
 .shell {
-  min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   padding: 24px;
@@ -73,6 +74,7 @@ h1 {
   max-width: 760px;
   color: rgba(233, 241, 255, 0.72);
   line-height: 1.5;
+  white-space: nowrap;
 }
 
 .badge {
@@ -123,8 +125,10 @@ h1 {
 .stage-wrap {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 320px;
+  grid-template-rows: minmax(0, 1fr);
   gap: 20px;
   flex: 1;
+  min-height: 0;
 }
 
 .stage,
@@ -136,7 +140,7 @@ h1 {
 }
 
 .stage {
-  min-height: 70vh;
+  min-height: 0;
   overflow: hidden;
   position: relative;
 }

@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title data-i18n="st.pageTitle">空间站 · 星空照片探索器</title>
 <script src="./i18n.js"></script>
+<script src="./cosmic-demo.js"></script>
 <script>
 // Page dictionary — { zh, en } pairs, human-written English. Entries with inline
 // <strong> markup are applied via data-i18n-html. See TRANSLATION-GUIDE.md.
@@ -265,6 +266,19 @@ window.I18N.register({
   }
   lightbox.addEventListener('click', () => { lightbox.hidden = true; lightboxImg.src = '' })
   window.addEventListener('keydown', (e) => { if (e.key === 'Escape') { lightbox.hidden = true; lightboxImg.src = '' } })
+</script>
+<script>
+  // Demo mode (?demo=1): S7 closer. Walk down the page (how-it-moves → ISS → 天宫), flip
+  // the whole site 中→EN→中 hands-free along the way, then hand off to the sources page
+  // (reference.html) as the final resting frame — a clean "the end" instead of a dead hang.
+  window.setupCosmicDemo && window.setupCosmicDemo(() => {
+    const scrollTo = (sel) => { const el = document.querySelector(sel); if (el) el.scrollIntoView({ block: 'center', behavior: 'smooth' }) }
+    setTimeout(() => scrollTo('[data-i18n="st.motion.h2"]'), 3000)   // 它到底怎么动的
+    setTimeout(() => window.I18N && window.I18N.toggle(), 8000)       // → English
+    setTimeout(() => scrollTo('[data-i18n="st.iss.h2"]'), 12000)     // ISS
+    setTimeout(() => scrollTo('[data-i18n="st.tg.h2"]'), 22000)      // 天宫
+    setTimeout(() => window.I18N && window.I18N.toggle(), 30000)     // → back to Chinese
+  }, { next: 'reference.html', durationMs: 34000 })
 </script>
 </body>
 </html>

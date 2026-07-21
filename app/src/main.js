@@ -1164,7 +1164,17 @@ function startSkyAutoRotate() {
     if (!aladin || skyAutoRotateHold || now < skyAutoRotateResumeAt || activeTween || isTouring || probePlaying) return
     const center = getAladinCenter()
     if (!center || !dt) return
-    const nextCenter = rotateSkyCenterAroundGalacticAxis(center, autoRotateDegPerSec * dt)
+    // Speed-adaptive rotation: a fixed angular rate looks fine at the wide
+    // overview but races when zoomed in (on-screen pan speed ≈ angular / fov).
+    // Scaling by fov^1 makes on-screen speed perfectly constant — but that reads
+    // as "frozen" up close. Exponent 0.5 (geometric middle) keeps the overview
+    // rate, tames the racing close-up, and still visibly turns. Tune ADAPT_EXP
+    // to taste: 1 = constant on-screen (too slow up close), 0 = no scaling (too
+    // fast up close). Reference = overview fov (150°); capped at 1 for wide views.
+    const ADAPT_EXP = 0.5
+    const liveFov = getAladinFov() || currentView.fov || overviewView.fov
+    const fovFactor = Math.min(1, Math.pow(liveFov / overviewView.fov, ADAPT_EXP))
+    const nextCenter = rotateSkyCenterAroundGalacticAxis(center, autoRotateDegPerSec * fovFactor * dt)
     currentView.ra = nextCenter.ra
     currentView.dec = nextCenter.dec
     aladin.gotoRaDec(nextCenter.ra, nextCenter.dec)
@@ -1926,10 +1936,95 @@ window.__cosmicDebug = {
   get lang() { return I18N.getLang() },
 }
 
-init().catch((error) => {
-  setStatus('status.error')
-  panelTitle.textContent = I18N.t('error.title')
-  panelSummary.textContent = I18N.t('error.summary')
-  panelDetails.textContent = String(error)
-  setNext('error.next')
-})
+// ---- Self-playing demo mode (?demo=1) -------------------------------------
+// The page runs the whole walkthrough itself, so a screen recording needs zero
+// live automation — no "extension is controlling" banner, no cursor, no dwell
+// gaps. One real click enters fullscreen + hides the cursor + starts playback.
+// Timings are the per-scene dwell knobs; tune to match the narration audio.
+function runHomepageDemo() {
+  // Paced to the VO script (docs/演示脚本-v2): S1 ~30s (galaxy just auto-rotates, no
+  // interaction), S2 ~30–85s (dive → auto DSS2 → flip photo↔measurement → auto-roam),
+  // S3 ~90–120s (jump-out-of-the-galaxy card). Homepage budget = HOMEPAGE_DEMO_MS below.
+  setTimeout(() => selectAnchor('orion-nebula'), 28000) // S2: cinematic dive → auto DSS2
+  setTimeout(() => document.querySelector('[data-survey-choice="gaia"]')?.click(), 40000) // flip to Gaia
+  setTimeout(() => document.querySelector('[data-survey-choice="dss2"]')?.click(), 44000) // flip back to photo
+  setTimeout(() => {
+    // fuller dwell now that the roam window is large (~35s) — the tour visits ~5 stops
+    // with room to breathe instead of crawling through barely one
+    if (tourDwellSelect) tourDwellSelect.value = '4500'
+    toggleTour()
+  }, 50000) // auto-roam on
+  setTimeout(() => stopTour({ cancelTween: true }), 85000) // auto-roam off (~35s ≈ 5 stops)
+  setTimeout(() => { // S3: jump-out-of-the-galaxy card
+    toggleGalaxyCard()
+    // reveal the card by scrolling the info panel INTERNALLY, never the window
+    // (scrollIntoView would scroll <body> and clip the page title)
+    const panel = document.querySelector('aside.panel')
+    const card = document.querySelector('[data-galaxy-card]')
+    if (panel && card) {
+      const delta = card.getBoundingClientRect().top - panel.getBoundingClientRect().top - 14
+      panel.scrollTo({ top: panel.scrollTop + delta, behavior: 'smooth' })
+    }
+  }, 90000)
+}
+
+// The homepage is always the entry point of the demo. With chain=1 it hands off to the
+// deep-space-messengers page when S1–S3 finish, so the whole 7-scene walkthrough plays
+// as one continuous take from a single ▶ click (see public/cosmic-demo.js for the flags).
+const HOMEPAGE_DEMO_MS = 120000 // S1(30)+S2(60)+S3(30) per the VO script; tune to the real VO later
+
+function setupDemoMode() {
+  const params = new URLSearchParams(location.search)
+  if (params.get('demo') !== '1') return
+  // The homepage is the entry to the full walkthrough, so it chains by DEFAULT — a bare
+  // ?demo=1 plays every scene across every page. Opt out with ?chain=0 for a homepage-only
+  // clip. (Sub-pages stay opt-in: opened directly they play just their own scene.)
+  const chain = params.get('chain') !== '0'
+  const hideCursor = document.createElement('style')
+  hideCursor.textContent = '*{cursor:none !important}'
+  const start = () => {
+    document.head.appendChild(hideCursor)
+    runHomepageDemo()
+    if (chain) {
+      // Hand off to the remaining scenes WITHOUT a page navigation: a full-viewport
+      // iframe loads them in sequence while THIS document stays fullscreen. A real
+      // location.href would exit fullscreen on the first jump; an iframe's own internal
+      // navigation never touches the parent's fullscreen, so the ▶ click's fullscreen
+      // survives the whole chain — the visitor never has to press anything.
+      setTimeout(() => {
+        const frame = document.createElement('iframe')
+        frame.src = 'messengers.html?demo=1&auto=1&chain=1'
+        frame.allow = 'fullscreen'
+        frame.style.cssText =
+          'position:fixed;inset:0;width:100vw;height:100vh;border:0;z-index:2147483646;background:#05070d;'
+        document.body.appendChild(frame)
+      }, HOMEPAGE_DEMO_MS)
+    }
+  }
+  const btn = document.createElement('button')
+  btn.type = 'button'
+  btn.textContent = '▶ 开始演示'
+  btn.style.cssText =
+    'position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:2147483647;' +
+    'padding:22px 48px;font-size:24px;font-weight:600;color:#fff;background:#0a84ff;border:0;' +
+    'border-radius:16px;cursor:pointer;box-shadow:0 8px 40px rgba(10,132,255,0.5);'
+  btn.addEventListener('click', () => {
+    // The ▶ click is our one user gesture — use it to enter fullscreen. The chain keeps
+    // this alive by loading later scenes in an iframe rather than navigating away, so a
+    // single click covers fullscreen for the whole walkthrough. No keyboard shortcut needed.
+    document.documentElement.requestFullscreen?.().catch(() => {})
+    btn.remove()
+    start()
+  })
+  document.body.appendChild(btn)
+}
+
+init()
+  .then(setupDemoMode)
+  .catch((error) => {
+    setStatus('status.error')
+    panelTitle.textContent = I18N.t('error.title')
+    panelSummary.textContent = I18N.t('error.summary')
+    panelDetails.textContent = String(error)
+    setNext('error.next')
+  })

@@ -6,6 +6,7 @@
 <title data-i18n="solar.pageTitle">太阳系 · 星空照片探索器</title>
 <script src="./cosmic-motion.js"></script>
 <script src="./i18n.js"></script>
+<script src="./cosmic-demo.js"></script>
 <script>
 // Page dictionary — { zh, en } pairs, human-written English. Registered during
 // head parse, applied by i18n.js on DOMContentLoaded. See TRANSLATION-GUIDE.md.
@@ -767,6 +768,25 @@ window.I18N.register({
     else addEventListener('load', landOnHash)
   }
   addEventListener('hashchange', () => scrollToHashTarget(false))
+</script>
+<script>
+  // Demo mode (?demo=1): a ▶ button gives the fullscreen gesture, then the cursor hides
+  // and we OPEN each headline planet's 360° globe (a click on the figure triggers
+  // openGlobe → the big interactive sphere auto-spins at 15°/s). We dwell ~16s on each so
+  // a good chunk of a full turn is visible: Venus spins retrograde, Uranus rolls on its
+  // side. Scrolling alone only shows the flat thumbnail — the 3D effect needs the click.
+  window.setupCosmicDemo && window.setupCosmicDemo(() => {
+    const el = (sel) => document.querySelector(sel)
+    const scrollTo = (sel) => { const n = el(sel); if (n) n.scrollIntoView({ block: 'center', behavior: 'smooth' }) }
+    const openGlobe = (sel) => { const n = el(sel); if (n) n.click() }
+    const closeGlobe = () => el('[data-globe-close]')?.click()
+    setTimeout(() => scrollTo('#body-venus'), 2500)
+    setTimeout(() => openGlobe('#body-venus'), 4500)   // Venus 3D globe — retrograde spin
+    setTimeout(() => closeGlobe(), 21000)              // ~16s to watch it turn
+    setTimeout(() => scrollTo('#body-uranus'), 22500)
+    setTimeout(() => openGlobe('#body-uranus'), 24500) // Uranus 3D globe — rolls sideways
+    setTimeout(() => closeGlobe(), 41000)              // ~16s
+  }, { next: 'constellations.html', durationMs: 45000 })
 </script>
 </body>
 </html>
